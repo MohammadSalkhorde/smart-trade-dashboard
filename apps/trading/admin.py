@@ -3,8 +3,10 @@ from .models import TradingPair, LeadTrader
 
 @admin.register(TradingPair)
 class TradingPairAdmin(admin.ModelAdmin):
-    list_display = ('display_name', 'symbol', 'real_price', 'manual_profit_percent', 'manipulated_price')
-    list_editable = ('manual_profit_percent',) # اجازه ادیت سریع درصد در لیست
+    # نمایش فیلدها در جدول ادمین
+    list_display = ('display_name', 'symbol', 'real_price', 'manipulation_percent', 'display_price')
+    # قابلیت ویرایش مستقیم درصد دستکاری از داخل جدول بدون باز کردن صفحه جدید
+    list_editable = ('manipulation_percent',)
 
 @admin.register(LeadTrader)
 class LeadTraderAdmin(admin.ModelAdmin):
