@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-4" style="border-radius: 16px;">
+            <h4 class="fw-bold mb-3">Deposit USDT (TRC20)</h4>
+            <p class="text-muted small">Please send the exact amount of USDT to the address below and enter the Transaction Hash.</p>
+            
+            <div class="alert alert-info border-0" style="background-color: #eef3ff; color: #0052ff;">
+                <small class="d-block text-uppercase fw-bold mb-1">Network: TRC20</small>
+                <code class="d-block p-2 bg-white rounded text-dark" id="walletAddr">{{ wallet }}</code>
+                <button class="btn btn-sm btn-link p-0 mt-2 text-decoration-none" onclick="copyWallet()">Copy Address</button>
+            </div>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Amount (USDT)</label>
+                    {{ form.amount }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Transaction Hash (TXID)</label>
+                    {{ form.tx_hash }}
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Submit Deposit Request</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyWallet() {
+    var copyText = document.getElementById("walletAddr").innerText;
+    navigator.clipboard.writeText(copyText);
+    alert("Address Copied: " + copyText);
+}
+</script>
+{% endblock %}
