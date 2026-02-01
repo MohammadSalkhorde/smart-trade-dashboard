@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold">Markets</h2>
+        <p class="text-muted">Live cryptocurrency prices with advanced tracking.</p>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr class="text-muted small uppercase">
+                    <th class="ps-4 py-3">Asset</th>
+                    <th class="py-3">Symbol</th>
+                    <th class="py-3">Last Price</th>
+                    <th class="py-3">24h Change</th>
+                    <th class="pe-4 text-end py-3">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in market_data %}
+                <tr>
+                    <td class="ps-4 py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-size: 12px;">
+                                {{ item.name|slice:":1" }}
+                            </div>
+                            <span class="fw-bold">{{ item.name }}</span>
+                        </div>
+                    </td>
+                    <td class="text-muted">{{ item.symbol }}</td>
+                    <td class="fw-bold">
+                        ${{ item.display_price|floatformat:4 }}
+                    </td>
+                    <td>
+                        {% if item.manipulation >= 0 %}
+                            <span class="text-success fw-bold">+{{ item.manipulation }}%</span>
+                        {% else %}
+                            <span class="text-danger fw-bold">{{ item.manipulation }}%</span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-4 text-end">
+                        <a href="#" class="btn btn-sm btn-outline-primary px-3">Trade</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
