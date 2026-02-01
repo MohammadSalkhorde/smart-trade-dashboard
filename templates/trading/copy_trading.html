@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Copy Trading</h2>
+    <div class="input-group style='width: 300px;'">
+        <input type="text" class="form-control" placeholder="Search Traders...">
+    </div>
+</div>
+
+<div class="row">
+    {% for trader in traders %}
+    <div class="col-md-4 mb-4">
+        <div class="trader-card p-4">
+            <div class="d-flex align-items-center mb-3">
+                <img src="{{ trader.avatar.url|default:'https://via.placeholder.com/50' }}" class="rounded-circle me-3" width="50" height="50">
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ trader.name }}</h6>
+                    <small class="text-muted">{{ trader.followers_count }} Followers</small>
+                </div>
+                <button class="btn btn-copy ms-auto fw-bold">Copy</button>
+            </div>
+
+            <div class="row my-4">
+                <div class="col-6">
+                    <small class="text-muted d-block text-uppercase">30D ROI</small>
+                    <span class="roi-text">+{{ trader.roi_30d }}%</span>
+                </div>
+                <div class="col-6 text-end">
+                    <small class="text-muted d-block text-uppercase">Drawdown</small>
+                    <span class="text-dark fw-bold">{{ trader.max_drawdown }}%</span>
+                </div>
+            </div>
+
+            <div style="height: 60px;">
+                <canvas id="chart-{{ trader.id }}"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx{{ trader.id }} = document.getElementById('chart-{{ trader.id }}').getContext('2d');
+        new Chart(ctx{{ trader.id }}, {
+            type: 'line',
+            data: {
+                labels: [1,2,3,4,5,6,7],
+                datasets: [{
+                    data: {{ trader.chart_history_json|safe }},
+                    borderColor: '#0ecb81',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: 'rgba(14, 203, 129, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+    </script>
+    {% endfor %}
+</div>
+{% endblock %}
