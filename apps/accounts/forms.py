@@ -18,3 +18,14 @@ class RegisterForm(UserCreationForm):
                 'style': 'border-radius: 10px;',
                 'placeholder': f'Enter {field.capitalize()}'
             })
+            
+from .models import User
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'wallet_address']
+        widgets = {
+            field: forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary'})
+            for field in ['first_name', 'last_name', 'email', 'wallet_address']
+        }

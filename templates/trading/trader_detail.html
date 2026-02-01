@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --brand-blue: #0062ff;
+        --soft-blue: #f0f7ff;
+        --success-green: #10b981;
+        --danger-red: #ef4444;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --bg-light: #f8fafd;
+    }
+
+    body { background-color: var(--bg-light) !important; color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    
+    .nav-tabs .nav-link { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; border: none !important; padding: 10px 15px; }
+    .nav-tabs .nav-link.active { color: var(--brand-blue) !important; border-bottom: 3px solid var(--brand-blue) !important; background: transparent !important; }
+    
+    /* اصلاح ریسپانسیو کارت‌ها */
+    .stats-card-light { 
+        background: #ffffff; 
+        border-radius: 12px; 
+        padding: 12px 8px; 
+        border: 1px solid #e2e8f0; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .label-text { color: var(--text-muted); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; display: block; }
+    .value-text { 
+        font-size: 1rem; /* سایز بهینه برای موبایل */
+        font-weight: 800; 
+        color: var(--text-main); 
+        word-break: break-all; /* جلوگیری از بیرون زدگی عدد */
+    }
+
+    @media (min-width: 768px) {
+        .value-text { font-size: 1.25rem; }
+        .label-text { font-size: 0.75rem; }
+    }
+
+    .order-row-light { background: #ffffff; border-radius: 12px; margin-bottom: 10px; padding: 12px; border: 1px solid #e2e8f0; border-left: 4px solid var(--success-green); }
+    .history-row { border-left-color: var(--text-muted); opacity: 0.8; }
+    
+    .fixed-action-bar-light { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #e2e8f0; z-index: 1000; }
+    
+    .avatar-placeholder-blue { background: var(--soft-blue); color: var(--brand-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #fff; }
+</style>
+
+<div class="container-fluid py-3 pb-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+        <a href="javascript:history.back()" class="text-dark text-decoration-none fs-4"><i class="bi bi-chevron-left"></i></a>
+        <h6 class="fw-bold mb-0">Trader Profile</h6>
+        <div class="d-flex gap-3">
+            <i class="bi bi-star fs-5 text-muted" id="fav-btn" style="cursor: pointer;"></i>
+            <i class="bi bi-share fs-5 text-muted" id="share-btn" style="cursor: pointer;"></i>
+        </div>
+    </div>
+
+    <div class="px-2 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="position-relative">
+                {% if trader.avatar %}
+                    <img src="{{ trader.avatar.url }}" class="rounded-circle shadow-sm border border-2 border-white" width="70" height="70" style="object-fit: cover;">
+                {% else %}
+                    <div class="avatar-placeholder-blue shadow-sm" style="width: 70px; height: 70px; font-size: 1.6rem;">{{ trader.name|first|upper }}</div>
+                {% endif %}
+                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle shadow-sm" style="width: 16px; height: 16px;"></span>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <h4 class="fw-bold mb-0" style="font-size: 1.2rem;">{{ trader.name }}</h4>
+                    <span class="badge bg-primary rounded-pill" style="font-size: 0.6rem;">PRO</span>
+                </div>
+                <p class="text-muted small mt-1 mb-0">Real-time Trading Strategy</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2 px-1 mb-4 text-center">
+        <div class="col-4">
+            <div class="stats-card-light">
+                <span class="label-text">ROI (30D)</span>
+                <span class="value-text text-success">+{{ trader.roi_30d }}%</span>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stats-card-light">
+                <span class="label-text">Win Rate</span>
+                <span class="value-text">{{ trader.win_rate }}%</span>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stats-card-light">
+                <span class="label-text">Drawdown</span>
+                <span class="value-text text-danger">{{ trader.max_drawdown }}%</span>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs border-0 px-2 mb-3" id="traderTab" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview-pane">Overview</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders-pane">Lead Orders</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#history-pane">History</button></li>
+    </ul>
+
+    <div class="tab-content px-2">
+        <div class="tab-pane fade show active" id="overview-pane">
+            <div class="bg-white p-3 rounded-4 border shadow-sm mb-4">
+                <h6 class="fw-bold small mb-3 text-muted">Equity Growth</h6>
+                <div id="big-chart"></div>
+            </div>
+            
+            <div class="stats-card-light mb-3">
+                <h6 class="fw-bold mb-3 small">Risk Analysis</h6>
+                <div class="progress bg-light" style="height: 6px; border-radius: 10px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ trader.risk_level }}0%"></div>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <span class="text-muted" style="font-size: 0.7rem;">Conservative</span>
+                    <span class="text-primary fw-bold" style="font-size: 0.7rem;">Level {{ trader.risk_level }}/10</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="orders-pane">
+            {% if open_orders %}
+                {% for order in open_orders %}
+                <div class="order-row-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold d-block">{{ order.symbol }} <span class="text-primary">{{ order.leverage }}x</span></span>
+                            <small class="text-muted">Entry: {{ order.entry_price }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold {% if order.pnl >= 0 %}text-success{% else %}text-danger{% endif %}">{{ order.pnl }}%</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="text-muted mt-2">No active lead orders currently.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="history-pane">
+            <div class="order-row-light history-row border-start-0">
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">Past 7 Days History</span>
+                    <span class="text-success small fw-bold">14 Wins / 2 Losses</span>
+                </div>
+            </div>
+            <div class="order-row-light border-success">
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">ETHUSDT Short</span>
+                    <span class="text-success fw-bold">+45.20%</span>
+                </div>
+                <small class="text-muted">Closed: 2026-02-01</small>
+            </div>
+            <div class="order-row-light border-danger">
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold">SOLUSDT Long</span>
+                    <span class="text-danger fw-bold">-10.15%</span>
+                </div>
+                <small class="text-muted">Closed: 2026-01-30</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-action-bar-light p-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-5">
+                    <span class="label-text mb-0 d-block">Min. Copy</span>
+                    <span class="fw-bold fs-5 text-dark">$100.00</span>
+                </div>
+                <div class="col-7 text-end">
+                    <a href="{% url 'trading:copy_action' trader.id %}" class="btn btn-primary w-100 fw-bold py-3 rounded-pill shadow-lg" style="background: var(--brand-blue); border: none;">
+                        Copy Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // ۱. چارت
+        var options = {
+            series: [{ name: 'Growth', data: {{ trader.chart_history_json|safe|default:"[10, 25, 60, 45, 90, 120, 180]" }} }],
+            chart: { type: 'area', height: 280, toolbar: { show: false } },
+            colors: ['#0062ff'],
+            stroke: { curve: 'smooth', width: 3 },
+            fill: { type: 'gradient', gradient: { opacityFrom: 0.3, opacityTo: 0.01 } },
+            grid: { borderColor: '#f1f5f9' },
+            xaxis: { labels: { show: false }, axisBorder: { show: false } },
+            yaxis: { labels: { style: { colors: '#94a3b8' } } },
+            tooltip: { theme: 'light' }
+        };
+        new ApexCharts(document.querySelector("#big-chart"), options).render();
+
+        // ۲. دکمه اشتراک‌گذاری واقعی
+        document.getElementById('share-btn').addEventListener('click', function() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Profile link copied to clipboard!');
+            });
+        });
+
+        // ۳. دکمه ستاره (Favorite)
+        document.getElementById('fav-btn').addEventListener('click', function() {
+            this.classList.toggle('bi-star');
+            this.classList.toggle('bi-star-fill');
+            this.classList.toggle('text-warning');
+        });
+    });
+</script>
+{% endblock %}

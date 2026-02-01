@@ -99,3 +99,14 @@ def stop_copy_action(request, follow_id):
     
     messages.info(request, f"Stopped copying {trader_name}. Funds have been returned to your balance.")
     return redirect('accounts:dashboard')
+
+
+def trader_detail(request, trader_id):
+    """نمایش صفحه جزئیات هر تریدر (پروفایل)"""
+    trader = get_object_or_404(LeadTrader, id=trader_id)
+    # اینجا می‌توانید آمارهای دقیق‌تر یا لیست اوردرها را هم بگیرید
+    context = {
+        'trader': trader,
+        'page_title': f"{trader.name}'s Profile"
+    }
+    return render(request, 'trading/trader_detail.html', context)

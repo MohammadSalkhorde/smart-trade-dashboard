@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm 
+from .forms import *
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from apps.transactions.models import Transaction
 from apps.trading.models import LeadTrader
@@ -47,3 +48,18 @@ def user_dashboard(request):
         'page_title': 'User Dashboard' # اصلاح شد
     }
     return render(request, 'accounts/dashboard.html', context)
+
+
+
+@login_required
+def profile_dashboard(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('accounts:profile_dashboard')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    return render(request, 'users/profile.html', {'form': form})
