@@ -3,7 +3,7 @@ from .models import *
 from services.price_fetcher import CryptoPriceService
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from decimal import Decimal
 def copy_trading_dashboard(request):
     """نمایش لیست تریدرها و کارت‌های کپی‌تریدینگ"""
     traders = LeadTrader.objects.all()
@@ -53,24 +53,49 @@ def market_list(request):
 @login_required
 def copy_action(request, trader_id):
     trader = get_object_or_404(LeadTrader, id=trader_id)
+    user = request.user
     
-    # 1. Check Balance
-    if request.user.balance < 10: 
-        messages.error(request, f"Insufficient balance. Minimum $10 is required to copy {trader.name}.") # اصلاح شد
-        return redirect('transactions:deposit')
-    
-    # 2. Check if already following
-    already_following = FollowedTrader.objects.filter(user=request.user, trader=trader).exists()
+    # تعیین یک مبلغ ثابت برای کپی کردن (مثلاً ۱۰۰ دلار) یا می‌توانید از فرم بگیرید
+    copy_amount = Decimal('100.00') 
+
+    # ۱. چک کردن موجودی کاربر
+    if user.balance < copy_amount:
+        messages.error(request, f"Insufficient balance! You need at least ${copy_amount} to copy this trader.")
+        return redirect('trading:copy_list')
+
+    # ۲. چک کردن اینکه آیا قبلاً این تریدر را کپی کرده یا خیر
+    already_following = FollowedTrader.objects.filter(user=user, trader=trader).exists()
     if already_following:
-        messages.warning(request, f"You are already copying {trader.name}.") # اصلاح شد
+        messages.warning(request, "You are already following this trader.")
         return redirect('accounts:dashboard')
 
-    # 3. Create Follower Record
+    # ۳. کسر مبلغ از موجودی کاربر و ذخیره
+    user.balance -= copy_amount
+    user.save()
+
+    # ۴. ثبت در جدول تریدرهای کپی شده
     FollowedTrader.objects.create(
-        user=request.user, 
+        user=user, 
         trader=trader, 
-        investment_amount=10
+        investment_amount=copy_amount
     )
+
+    messages.success(request, f"Strategy copying started! ${copy_amount} has been allocated to {trader.name}.")
+    return redirect('accounts:dashboard')
+
+@login_required
+def stop_copy_action(request, follow_id):
+    # پیدا کردن رکورد کپی بر اساس ID
+    followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
-    messages.success(request, f"Strategy copying for {trader.name} started successfully!") # اصلاح شد
+    # برگرداندن پول به موجودی کاربر
+    user = request.user
+    user.balance += followed_trader.investment_amount
+    user.save()
+    
+    # حذف رکورد از لیست کپی‌ها
+    trader_name = followed_trader.trader.name
+    followed_trader.delete()
+    
+    messages.info(request, f"Stopped copying {trader_name}. Funds have been returned to your balance.")
     return redirect('accounts:dashboard')

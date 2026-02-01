@@ -1,6 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .card-balance {
+        background: linear-gradient(135deg, #0052ff 0%, #003db3 100%);
+        border-radius: 24px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    /* افکت SVG پس‌زمینه کارت برای حرفه‌ای شدن */
+    .card-balance::after {
+        content: "";
+        position: absolute;
+        top: -20%;
+        right: -10%;
+        width: 200px;
+        height: 200px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' fill-opacity='0.05'%3E%3Cpath d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z'/%3E%3C/svg%3E") no-repeat;
+        background-size: contain;
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h3 class="fw-bold text-dark">Welcome back, {{ user.username }} 👋</h3>
@@ -15,20 +41,22 @@
 
 <div class="row g-4">
     <div class="col-md-4">
-        <div class="card border-0 p-4 shadow-sm" style="background: linear-gradient(135deg, #0052ff 0%, #003db3 100%); border-radius: 24px; color: white;">
+        <div class="card border-0 p-4 shadow-sm card-balance">
             <div class="d-flex justify-content-between align-items-start mb-4">
                 <span class="opacity-75 small">Total Balance (USDT)</span>
                 <i class="bi bi-wallet2 fs-4"></i>
             </div>
             <h2 class="fw-bold mb-3">${{ user.balance|floatformat:2 }}</h2>
             <div class="d-flex gap-2">
-                <span class="badge bg-white bg-opacity-25 rounded-pill px-3">Secure Wallet</span>
+                <span class="badge bg-white bg-opacity-25 rounded-pill px-3">
+                    <i class="bi bi-shield-check me-1"></i> Secure Wallet
+                </span>
             </div>
         </div>
     </div>
 
     <div class="col-md-8">
-        <div class="card border-0 shadow-sm h-100 p-4" style="border-radius: 24px; background: #ffffff;">
+        <div class="card border-0 shadow-sm h-100 p-4 hover-shadow" style="border-radius: 24px; background: #ffffff;">
             <h6 class="fw-bold text-muted mb-4 text-uppercase small">Activity Summary</h6>
             <div class="row text-center g-3">
                 <div class="col-4 border-end">
@@ -37,19 +65,25 @@
                 </div>
                 <div class="col-4 border-end">
                     <small class="text-muted d-block mb-1">Total PnL</small>
-                    <span class="h4 fw-bold text-success">+$0.00</span>
+                    <span class="h4 fw-bold text-success">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="me-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                        +$0.00
+                    </span>
                 </div>
                 <div class="col-4">
                     <small class="text-muted d-block mb-1">Account Status</small>
-                    <span class="badge bg-success-subtle text-success border border-success px-3">Verified</span>
+                    <span class="badge bg-success-subtle text-success border border-success px-3">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm mt-5" style="border-radius: 24px; overflow: hidden;">
-    <div class="card-header bg-white border-0 py-4 px-4">
+<div class="card border-0 shadow-sm mt-5 hover-shadow" style="border-radius: 24px; overflow: hidden;">
+    <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%230052ff" stroke-width="2" class="me-2 text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
         <h5 class="fw-bold mb-0">Active Copy Trading Positions</h5>
     </div>
     <div class="table-responsive">
@@ -72,20 +106,22 @@
                                 {{ item.trader.name|slice:":1" }}
                             </div>
                             <div>
-                                <div class="fw-bold">{{ item.trader.name }}</div>
+                                <div class="fw-bold text-dark">{{ item.trader.name }}</div>
                                 <small class="text-muted" style="font-size: 11px;">Pro Account</small>
                             </div>
                         </div>
                     </td>
-                    <td class="fw-bold">${{ item.investment_amount }}</td>
+                    <td class="fw-bold text-dark">${{ item.investment_amount }}</td>
                     <td>
-                        <span class="text-success fw-bold">
-                            <i class="bi bi-caret-up-fill small"></i> +{{ item.trader.roi_30d }}%
+                        <span class="text-success fw-bold bg-success bg-opacity-10 px-2 py-1 rounded">
+                            <i class="bi bi-caret-up-fill small"></i> {{ item.trader.roi_30d }}%
                         </span>
                     </td>
                     <td class="text-muted small">{{ item.created_at|date:"M d, Y" }}</td>
                     <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-danger px-3 rounded-pill">Stop Copy</button>
+                        <a href="{% url 'trading:stop_copy_action' item.id %}" class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-bold">
+                            <i class="bi bi-stop-circle me-1"></i> Stop Copying
+                        </a>
                     </td>
                 </tr>
                 {% empty %}

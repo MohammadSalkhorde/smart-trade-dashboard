@@ -69,10 +69,15 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-3">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'trading:copy_list' %}">SmartTrade</a>
-        
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home' %}">
+            <div class="bg-primary rounded-3 p-1 me-2 d-flex">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+            </div>
+            <span class="text-dark">Smart<span class="text-primary">Trade</span></span>
+        </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -80,31 +85,33 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link fw-medium" href="{% url 'trading:market_list' %}">Market</a>
+                    <a class="nav-link fw-semibold px-3" href="{% url 'trading:market_list' %}">Markets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold px-3" href="{% url 'trading:copy_list' %}">Copy Trading</a>
                 </li>
             </ul>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-3">
                 {% if user.is_authenticated %}
-                    <div class="balance-box me-3">
-                        <span class="text-muted">Balance:</span>
-                        <span class="text-primary">${{ user.balance|floatformat:2 }}</span>
-                    </div>
-                    
                     <div class="dropdown">
-                        <a class="btn btn-sm btn-light dropdown-toggle fw-bold" href="#" role="button" data-bs-toggle="dropdown">
-                            👤 {{ user.username }}
+                        <a class="btn btn-light rounded-pill px-3 fw-bold dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-wallet2 me-1 text-primary"></i> ${{ user.balance|floatformat:2 }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item fw-bold" href="{% url 'accounts:dashboard' %}">📊 Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{% url 'transactions:history' %}">🕒 History</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3" style="border-radius: 15px;">
+                            <li><a class="dropdown-item py-2" href="{% url 'transactions:deposit' %}"><i class="bi bi-plus-circle me-2 text-success"></i> Deposit Funds</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'transactions:withdraw' %}"><i class="bi bi-arrow-up-right-circle me-2 text-danger"></i> Withdraw</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'transactions:history' %}"><i class="bi bi-clock-history me-2"></i> History</a></li>
                         </ul>
                     </div>
+
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary rounded-pill px-4 fw-bold">Dashboard</a>
+
+                    <a href="{% url 'accounts:logout' %}" class="text-muted text-decoration-none ms-2"><i class="bi bi-box-arrow-right fs-5"></i></a>
                 {% else %}
-                    <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-outline-primary me-2">Login</a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-primary">Register</a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-light fw-bold px-4">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary rounded-pill px-4 fw-bold">Join Now</a>
                 {% endif %}
             </div>
         </div>

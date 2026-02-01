@@ -1,8 +1,20 @@
-from django import forms
+from django import forms  # این خط اصلاح شد
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class RegisterForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = User
         fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # استایل‌دهی به فیلدها برای اینکه با ظاهر شیک ما همخوانی داشته باشند
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control border-0 bg-light py-2 px-3',
+                'style': 'border-radius: 10px;',
+                'placeholder': f'Enter {field.capitalize()}'
+            })
