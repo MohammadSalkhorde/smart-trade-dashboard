@@ -1,150 +1,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    /* استایل اختصاصی برای کارتهای بینگ-ایکس */
-    .section-title { font-size: 24px; font-weight: 700; color: #1e2329; margin-bottom: 24px; }
-    .trader-card {
-        background: #ffffff;
-        border: 1px solid #eaecef;
-        border-radius: 12px;
-        padding: 20px;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-    .trader-card:hover {
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
-        border-color: #0052ff;
-    }
-    .trader-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    .avatar-placeholder {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background-color: #f0f3fa;
-        color: #0052ff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 18px;
-    }
-    .roi-value { color: #03ad70; font-size: 20px; font-weight: 700; }
-    .label-text { color: #707a8a; font-size: 12px; text-transform: uppercase; }
-    .stat-value { color: #1e2329; font-weight: 600; font-size: 14px; }
-    .btn-copy {
-        background-color: #0052ff;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 6px 16px;
-        font-weight: 600;
-        font-size: 14px;
-        transition: 0.2s;
-    }
-    .btn-copy:hover { background-color: #0041cc; color: white; }
-    .chart-container { width: 100%; height: 70px; margin-top: 15px; }
-</style>
+<div class="mb-5">
+    <h2 class="fw-bold text-dark">Top Lead Traders</h2>
+    <p class="text-muted">Copy the world's best strategies with high precision and low risk.</p>
+</div>
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="section-title">Copy Trading</h1>
-        <div class="search-box">
-            <input type="text" class="form-control form-control-sm" placeholder="Search traders..." style="width: 250px; border-radius: 8px;">
-        </div>
-    </div>
-
-    <div class="row">
-        {% for trader in traders %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="trader-card">
-                <div class="d-flex align-items-center mb-3">
-                    {% if trader.avatar %}
-                        <img src="{{ trader.avatar.url }}" class="trader-avatar me-3" alt="{{ trader.name }}">
-                    {% else %}
-                        <div class="avatar-placeholder me-3">{{ trader.name|slice:":1" }}</div>
-                    {% endif %}
-                    
-                    <div class="flex-grow-1">
-                        <h6 class="mb-0 fw-bold" style="color: #1e2329;">{{ trader.name }}</h6>
-                        <small class="label-text">{{ trader.followers_count }} Followers</small>
-                    </div>
-                    
-                    <button class="btn btn-copy">Copy</button>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <div class="label-text">30D ROI</div>
-                        <div class="roi-value">+{{ trader.roi_30d }}%</div>
-                    </div>
-                    <div class="col-6 text-end">
-                        <div class="label-text">Max. Drawdown</div>
-                        <div class="stat-value text-danger">{{ trader.max_drawdown }}%</div>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between border-top pt-2">
-                    <div>
-                        <span class="label-text">30D Profit:</span>
-                        <span class="stat-value text-success">${{ trader.pnl_30d }}</span>
+<div class="row g-4">
+    {% for trader in traders %}
+    <div class="col-lg-4 col-md-6">
+        <div class="card border-0 shadow-sm h-100 p-3" style="border-radius: 24px; transition: transform 0.2s ease;">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-light rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold text-primary" style="width: 50px; height: 50px; font-size: 20px;">
+                        {{ trader.name|slice:":1" }}
                     </div>
                     <div>
-                        <span class="label-text">AUM:</span>
-                        <span class="stat-value">${{ trader.aum }}</span>
+                        <h6 class="fw-bold mb-0 text-dark">{{ trader.name }}</h6>
+                        <small class="text-muted">{{ trader.followers_count }} Followers</small>
                     </div>
                 </div>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small">Elite</span>
+            </div>
 
-                <div class="chart-container">
-                    <canvas id="traderChart{{ trader.id }}"></canvas>
+            <div class="row g-2 mb-3 bg-light rounded-4 p-3 mx-0">
+                <div class="col-6">
+                    <small class="text-muted d-block small">ROI (30d)</small>
+                    <span class="fw-bold text-success">+{{ trader.roi_30d }}%</span>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block small">Max Drawdown</small>
+                    <span class="fw-bold text-dark">{{ trader.max_drawdown }}%</span>
                 </div>
             </div>
-        </div>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const ctx{{ trader.id }} = document.getElementById('traderChart{{ trader.id }}').getContext('2d');
-                new Chart(ctx{{ trader.id }}, {
-                    type: 'line',
-                    data: {
-                        labels: [1, 2, 3, 4, 5, 6, 7], // فرضی برای ۷ نقطه
-                        datasets: [{
-                            data: {{ trader.chart_history_json|safe }},
-                            borderColor: '#03ad70',
-                            borderWidth: 2,
-                            fill: true,
-                            backgroundColor: (context) => {
-                                const gradient = ctx{{ trader.id }}.createLinearGradient(0, 0, 0, 70);
-                                gradient.addColorStop(0, 'rgba(3, 173, 112, 0.2)');
-                                gradient.addColorStop(1, 'rgba(3, 173, 112, 0)');
-                                return gradient;
-                            },
-                            tension: 0.4,
-                            pointRadius: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                        scales: {
-                            x: { display: false },
-                            y: { display: false }
-                        }
-                    }
-                });
-            });
-        </script>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <p class="text-muted">No traders found. Add some from the admin panel!</p>
+            <div class="mb-3">
+                <small class="text-muted d-block small mb-1">AUM (Assets Under Management)</small>
+                <span class="fw-bold text-dark">${{ trader.aum }}</span>
+            </div>
+
+            <div class="mb-4" style="height: 40px; width: 100%;">
+                <svg viewBox="0 0 100 20" style="width: 100%; height: 100%;">
+                    <path d="M0 15 Q 25 5, 50 12 T 100 2" fill="none" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <a href="{% url 'trading:copy_action' trader.id %}" class="btn btn-primary w-100 py-2 fw-bold" style="border-radius: 14px;">
+                Copy Now
+            </a>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 {% endblock %}

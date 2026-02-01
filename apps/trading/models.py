@@ -41,3 +41,12 @@ class LeadTrader(models.Model):
 
     def __str__(self):
         return self.name
+    
+class FollowedTrader(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    trader = models.ForeignKey(LeadTrader, on_delete=models.CASCADE)
+    investment_amount = models.DecimalField(max_digits=20, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} follows {self.trader.name}"

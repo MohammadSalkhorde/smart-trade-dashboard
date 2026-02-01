@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .hero-section {
+        padding: 100px 0;
+        background: radial-gradient(circle at top right, #f0f5ff, transparent);
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #1e2329;
+    }
+    .text-gradient {
+        background: linear-gradient(45deg, #0052ff, #00a3ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .feature-card {
+        border: none;
+        border-radius: 24px;
+        transition: transform 0.3s ease, shadow 0.3s ease;
+        background: #ffffff;
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 82, 255, 0.1);
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #0052ff;
+    }
+    .btn-hero {
+        padding: 15px 35px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="hero-title mb-4">Trade Smarter with <br><span class="text-gradient">AI Copy Trading</span></h1>
+            <p class="lead text-muted mb-5">بهترین تریدرهای دنیا را پیدا کنید، استراتژی‌های آن‌ها را کپی کنید و بدون نیاز به دانش تخصصی، سود دلاری کسب کنید.</p>
+            <div class="d-flex gap-3">
+                <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-hero shadow-lg">شروع رایگان</a>
+                <a href="{% url 'trading:copy_list' %}" class="btn btn-outline-dark btn-hero">مشاهده تریدرها</a>
+            </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block">
+            
+        </div>
+    </div>
+</div>
+
+<div class="row text-center my-5">
+    <div class="col-md-4">
+        <div class="stat-number">$15M+</div>
+        <p class="text-muted">حجم معاملات روزانه</p>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-number">45K+</div>
+        <p class="text-muted">کاربر فعال</p>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-number">98%</div>
+        <p class="text-muted">رضایت کاربران</p>
+    </div>
+</div>
+
+<div class="py-5">
+    <h2 class="text-center fw-bold mb-5">چرا SmartTrade را انتخاب کنید؟</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card feature-card p-4 shadow-sm h-100 text-center">
+                <div class="mb-3 text-primary"><i class="bi bi-shield-check fs-1"></i></div>
+                <h5 class="fw-bold">امنیت تضمین شده</h5>
+                <p class="text-muted small">دارایی‌های شما در کیف‌پول‌های سرد نگهداری می‌شوند و پروتکل‌های امنیتی چند لایه از آن‌ها محافظت می‌کنند.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card feature-card p-4 shadow-sm h-100 text-center">
+                <div class="mb-3 text-primary"><i class="bi bi-lightning-charge fs-1"></i></div>
+                <h5 class="fw-bold">کپی لحظه‌ای</h5>
+                <p class="text-muted small">معاملات تریدرهای حرفه‌ای با سرعت میلی‌ثانیه در حساب شما اجرا می‌شوند تا هیچ سودی را از دست ندهید.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card feature-card p-4 shadow-sm h-100 text-center">
+                <div class="mb-3 text-primary"><i class="bi bi-graph-up-arrow fs-1"></i></div>
+                <h5 class="fw-bold">گزارش‌دهی دقیق</h5>
+                <p class="text-muted small">تمام جزئیات سود، ضرر و روند رشد دارایی خود را در داشبورد پیشرفته مشاهده کنید.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ from .forms import RegisterForm
 from django.contrib.auth.decorators import login_required
 from apps.transactions.models import Transaction
 from apps.trading.models import LeadTrader
+from apps.trading.models import *
 
 def register_view(request):
     if request.method == 'POST':
@@ -32,19 +33,17 @@ def logout_view(request):
     logout(request)
     return redirect('accounts:login')
 
-
 @login_required
 def user_dashboard(request):
-    # تاریخچه تراکنش‌های اخیر کاربر
+    # 1. Get traders followed by the user
+    my_followed_traders = FollowedTrader.objects.filter(user=request.user).select_related('trader')
+    
+    # 2. Get recent transactions
     recent_transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')[:5]
     
-    # اینجا در آینده مدل 'FollowedTraders' رو اضافه می‌کنیم
-    # فعلاً برای خالی نبودن، تریدرهای برتر رو نشون می‌دیم
-    suggested_traders = LeadTrader.objects.all()[:3]
-
     context = {
+        'followed_traders': my_followed_traders,
         'recent_transactions': recent_transactions,
-        'suggested_traders': suggested_traders,
-        'page_title': 'Account Dashboard'
+        'page_title': 'User Dashboard' # اصلاح شد
     }
     return render(request, 'accounts/dashboard.html', context)

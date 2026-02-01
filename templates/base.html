@@ -124,5 +124,30 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast show align-items-center text-white {% if message.tags == 'success' %}bg-success{% elif message.tags == 'error' %}bg-danger{% else %}bg-primary{% endif %} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 12px; min-width: 250px;">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi {% if message.tags == 'success' %}bi-check-circle{% else %}bi-exclamation-circle{% endif %} me-2"></i>
+                        {{ message }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl, { delay: 5000 }); // پیام بعد از ۵ ثانیه محو شود
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -1,49 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2 class="fw-bold">Markets</h2>
-        <p class="text-muted">Live cryptocurrency prices with advanced tracking.</p>
-    </div>
+<div class="mb-5">
+    <h2 class="fw-bold text-dark">Market Prices</h2>
+    <p class="text-muted small">Real-time cryptocurrency prices with localized market trends.</p>
 </div>
 
-<div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+<div class="card border-0 shadow-sm" style="border-radius: 24px; overflow: hidden;">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="bg-light">
-                <tr class="text-muted small uppercase">
+                <tr class="text-muted small text-uppercase">
                     <th class="ps-4 py-3">Asset</th>
-                    <th class="py-3">Symbol</th>
-                    <th class="py-3">Last Price</th>
-                    <th class="py-3">24h Change</th>
-                    <th class="pe-4 text-end py-3">Action</th>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>24h Change</th>
+                    <th class="text-end pe-4">Trade</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in market_data %}
                 <tr>
-                    <td class="ps-4 py-3">
+                    <td class="ps-4">
                         <div class="d-flex align-items-center">
-                            <div class="bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-size: 12px;">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; font-size: 12px;">
                                 {{ item.name|slice:":1" }}
                             </div>
                             <span class="fw-bold">{{ item.name }}</span>
                         </div>
                     </td>
-                    <td class="text-muted">{{ item.symbol }}</td>
-                    <td class="fw-bold">
-                        ${{ item.display_price|floatformat:4 }}
-                    </td>
+                    <td class="text-muted small">{{ item.symbol }}</td>
+                    <td class="fw-bold">${{ item.display_price|floatformat:4 }}</td>
                     <td>
                         {% if item.manipulation >= 0 %}
-                            <span class="text-success fw-bold">+{{ item.manipulation }}%</span>
+                            <span class="text-success fw-bold">+{{ item.manipulation }}% <i class="bi bi-graph-up"></i></span>
                         {% else %}
-                            <span class="text-danger fw-bold">{{ item.manipulation }}%</span>
+                            <span class="text-danger fw-bold">{{ item.manipulation }}% <i class="bi bi-graph-down"></i></span>
                         {% endif %}
                     </td>
-                    <td class="pe-4 text-end">
-                        <a href="#" class="btn btn-sm btn-outline-primary px-3">Trade</a>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-dark rounded-pill px-4">Buy</button>
                     </td>
                 </tr>
                 {% endfor %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import LeadTrader, TradingPair
+from .models import *
 from services.price_fetcher import CryptoPriceService
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -52,12 +52,25 @@ def market_list(request):
 
 @login_required
 def copy_action(request, trader_id):
-    """منطق دکمه کپی کردن تریدر"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
-    if request.user.balance < 10: # شرط حداقل موجودی
-        messages.error(request, f"Insufficient balance to copy {trader.name}. Please deposit funds.")
+    
+    # 1. Check Balance
+    if request.user.balance < 10: 
+        messages.error(request, f"Insufficient balance. Minimum $10 is required to copy {trader.name}.") # اصلاح شد
         return redirect('transactions:deposit')
     
-    # اینجا می‌توانید رابطه‌ای بین کاربر و تریدر ثبت کنید
-    messages.success(request, f"Successfully started copying {trader.name}!")
+    # 2. Check if already following
+    already_following = FollowedTrader.objects.filter(user=request.user, trader=trader).exists()
+    if already_following:
+        messages.warning(request, f"You are already copying {trader.name}.") # اصلاح شد
+        return redirect('accounts:dashboard')
+
+    # 3. Create Follower Record
+    FollowedTrader.objects.create(
+        user=request.user, 
+        trader=trader, 
+        investment_amount=10
+    )
+    
+    messages.success(request, f"Strategy copying for {trader.name} started successfully!") # اصلاح شد
     return redirect('accounts:dashboard')

@@ -3,17 +3,31 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card border-0 shadow-sm p-4" style="border-radius: 16px;">
-            <h4 class="fw-bold mb-3">Deposit USDT (TRC20)</h4>
-            <p class="text-muted small">Please send the exact amount of USDT to the address below and enter the Transaction Hash.</p>
+        <div class="card border-0 shadow-lg p-4" style="border-radius: 24px;">
+            <h4 class="fw-bold mb-4">Deposit USDT</h4>
             
-            <div class="alert alert-info border-0" style="background-color: #eef3ff; color: #0052ff;">
-                <small class="d-block text-uppercase fw-bold mb-1">Network: TRC20</small>
-                <code class="d-block p-2 bg-white rounded text-dark" id="walletAddr">{{ wallet }}</code>
-                <button class="btn btn-sm btn-link p-0 mt-2 text-decoration-none" onclick="copyWallet()">Copy Address</button>
+            <div class="alert alert-light border-0 p-3 mb-4" style="background-color: #f0f5ff; border-radius: 15px;">
+                <div class="d-flex">
+                    <div class="me-3 mt-1">
+                        <span class="badge bg-primary rounded-circle">1</span>
+                    </div>
+                    <div>
+                        <p class="small mb-0 text-muted">Send <strong>USDT</strong> via <strong>TRC20</strong> network to the address below.</p>
+                    </div>
+                </div>
             </div>
 
-            <form method="post" class="mt-4">
+            <div class="text-center mb-4">
+                <div class="p-3 bg-light rounded-3 mb-2">
+                    <small class="text-muted d-block mb-1">TRC20 Wallet Address</small>
+                    <strong id="walletAddr" class="text-break">{{ wallet_address }}</strong>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard()">Copy Address</button>
+            </div>
+
+            <hr class="my-4 opacity-50">
+
+            <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Amount (USDT)</label>
@@ -22,18 +36,20 @@
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Transaction Hash (TXID)</label>
                     {{ form.tx_hash }}
+                    <div class="form-text mt-1" style="font-size: 11px;">Enter the hash to verify your payment.</div>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Submit Deposit Request</button>
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mt-2" style="border-radius: 12px;">Submit Request</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-function copyWallet() {
-    var copyText = document.getElementById("walletAddr").innerText;
-    navigator.clipboard.writeText(copyText);
-    alert("Address Copied: " + copyText);
+function copyToClipboard() {
+    var text = document.getElementById("walletAddr").innerText;
+    navigator.clipboard.writeText(text).then(function() {
+        alert("Wallet address copied!");
+    });
 }
 </script>
 {% endblock %}
