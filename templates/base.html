@@ -96,9 +96,9 @@
                             👤 {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">My Trades</a></li>
-                            <li><hr class="dropdown-content"></li>
+                            <li><a class="dropdown-item fw-bold" href="{% url 'accounts:dashboard' %}">📊 Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'transactions:history' %}">🕒 History</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
                         </ul>
                     </div>
