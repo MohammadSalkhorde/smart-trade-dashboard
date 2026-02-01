@@ -1,16 +1,99 @@
 from django.contrib import admin
-from .models import TradingPair, LeadTrader
+from django import forms
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.contrib.admin import helpers
+from .models import SystemSettings, TradingPair, LeadTrader, FollowedTrader
 
-@admin.register(TradingPair)
-class TradingPairAdmin(admin.ModelAdmin):
-    # نمایش فیلدها در جدول ادمین
-    list_display = ('display_name', 'symbol', 'real_price', 'manipulation_percent', 'display_price')
-    # قابلیت ویرایش مستقیم درصد دستکاری از داخل جدول بدون باز کردن صفحه جدید
-    list_editable = ('manipulation_percent',)
-# apps/trading/admin.py
+# --- Form for Injection Action ---
+class ActionValueForm(forms.Form):
+    _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
+    value = forms.FloatField(
+        label="Profit Percentage (%)", 
+        help_text="Enter the amount to add to the current ROI (e.g., 5.2 or -2.1)",
+        widget=forms.NumberInput(attrs={'step': '0.01', 'style': 'width: 100%;'})
+    )
 
+# --- LeadTrader Admin ---
 @admin.register(LeadTrader)
 class LeadTraderAdmin(admin.ModelAdmin):
-    # مقدار followers_count را با followers_count_manual یا copiers_count جایگزین کن
-    list_display = ('name', 'roi_30d', 'followers_count_manual', 'win_rate', 'risk_level') 
-    # اگر فیلدهای دیگر هم ارور دادند، مطمئن شو نامشان با مدل جدید یکی است
+    # نمایش فیلدها در لیست اصلی
+    list_display = ('name', 'roi_30d', 'total_copiers', 'risk_level', 'target_profit_growth')
+    list_editable = ('target_profit_growth', 'risk_level')
+    actions = ['inject_custom_profit', 'apply_target_growth_step']
+    
+    # فیلدهایی که نباید دستی تغییر کنند (چون سیستمی هستند)
+    readonly_fields = ('roi_30d', 'chart_history_json')
+
+    # دسته‌بندی فیلدها در صفحه ویرایش برای ظاهر حرفه‌ای‌تر
+    fieldsets = (
+        ('Identity & Status', {
+            'fields': ('name', 'avatar', 'risk_level', 'capacity')
+        }),
+        ('Marketing Stats (Fake for Attraction)', {
+            'fields': ('pnl_30d', 'aum', 'max_drawdown', 'win_rate', 'followers_count_manual'),
+            'classes': ('collapse',), # این بخش را می‌توان جمع کرد
+        }),
+        ('Algorithm & Performance', {
+            'fields': ('roi_30d', 'chart_history_json', 'target_profit_growth'),
+            'description': 'Performance metrics are updated via "Inject Profit" actions.'
+        }),
+    )
+
+    # اکشن تزریق سود با فرم اختصاصی
+    def inject_custom_profit(self, request, queryset):
+        form = None
+        action_checkbox_name = helpers.ACTION_CHECKBOX_NAME
+        
+        if 'apply' in request.POST:
+            form = ActionValueForm(request.POST)
+            if form.is_valid():
+                value = form.cleaned_data['value']
+                for trader in queryset:
+                    trader.add_profit_point(value)
+                self.message_user(request, f"Successfully injected {value}% profit to {queryset.count()} traders.")
+                return HttpResponseRedirect(request.get_full_path())
+        
+        if not form:
+            form = ActionValueForm(initial={
+                '_selected_action': request.POST.getlist(action_checkbox_name)
+            })
+        
+        return render(request, 'admin/action_value_form.html', {
+            'items': queryset, 
+            'form': form, 
+            'title': 'Execute Profit Injection'
+        })
+    
+    inject_custom_profit.short_description = "Inject Custom Profit (%%)"
+
+    @admin.action(description='Apply one step of Target Growth (1/7)')
+    def apply_target_growth_step(self, request, queryset):
+        for trader in queryset:
+            if trader.target_profit_growth > 0:
+                trader.add_profit_point(trader.target_profit_growth / 7)
+        self.message_user(request, "Target growth steps applied successfully.")
+
+# --- TradingPair Admin ---
+@admin.register(TradingPair)
+class TradingPairAdmin(admin.ModelAdmin):
+    list_display = ('display_name', 'symbol', 'real_price', 'manipulation_percent', 'display_price', 'is_active')
+    list_editable = ('manipulation_percent', 'is_active')
+    search_fields = ('symbol', 'display_name')
+    list_filter = ('is_active',)
+
+# --- SystemSettings Admin ---
+@admin.register(SystemSettings)
+class SystemSettingsAdmin(admin.ModelAdmin):
+    list_display = ('site_name', 'tron_wallet_address', 'min_deposit_amount')
+    
+    def has_add_permission(self, request):
+        # جلوگیری از ساخت بیش از یک تنظیمات کلان
+        return not SystemSettings.objects.exists()
+
+# --- FollowedTrader Admin ---
+@admin.register(FollowedTrader)
+class FollowedTraderAdmin(admin.ModelAdmin):
+    list_display = ('user', 'trader', 'investment_amount', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('user__username', 'trader__name')

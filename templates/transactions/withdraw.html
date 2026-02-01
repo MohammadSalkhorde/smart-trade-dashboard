@@ -1,45 +1,140 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card border-0 shadow-lg p-4" style="border-radius: 24px;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold mb-0 text-danger">Withdraw</h4>
-                <div class="text-end">
-                    <small class="text-muted d-block">Available Balance</small>
-                    <span class="fw-bold text-dark">${{ user.balance|floatformat:2 }}</span>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <div class="withdraw-card border-0 shadow-lg position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 opacity-10" style="margin-top: -20px; margin-right: -20px;">
+                    <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="100" fill="#dc3545"/>
+                    </svg>
+                </div>
+
+                <div class="card-body p-4 p-md-5 position-relative">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-shape bg-danger text-white rounded-3 me-3 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                            </div>
+                            <h3 class="fw-bold mb-0 text-dark">Withdraw</h3>
+                        </div>
+                        <div class="text-end bg-light p-2 rounded-3 px-3 border">
+                            <small class="text-muted d-block" style="font-size: 10px; font-weight: 800; text-transform: uppercase;">Available</small>
+                            <span class="fw-bold text-dark font-monospace">${{ user.balance|floatformat:2 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="warning-box p-3 mb-4 d-flex align-items-center">
+                        <div class="flex-shrink-0 text-warning">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <div class="ms-3">
+                            <p class="small mb-0 text-dark-50 fw-medium">Ensure the destination address is <span class="text-danger fw-bold">TRC20</span>. Incorrect network may lead to permanent loss of funds.</p>
+                        </div>
+                    </div>
+
+                    <form method="post" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Withdraw Amount (USDT)</label>
+                            <div class="input-group input-group-lg h-50">
+                                {{ form.amount }}
+                                <span class="input-group-text bg-white border-start-0 text-muted fw-bold small">USDT</span>
+                            </div>
+                            {% if form.amount.errors %}
+                                <div class="text-danger small mt-2 d-flex align-items-center">
+                                    <svg width="12" height="12" fill="currentColor" class="me-1" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/></svg>
+                                    {{ form.amount.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary">Destination Wallet Address</label>
+                            <div class="position-relative">
+                                {{ form.tx_hash }}
+                                <div class="position-absolute end-0 top-50 translate-middle-y me-3">
+                                    <svg width="18" height="18" fill="none" stroke="#6c757d" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </div>
+                            </div>
+                            <div class="form-text mt-2 small text-muted">Paste your TRC20 wallet address only.</div>
+                        </div>
+
+                        <div class="summary-box p-3 mb-4 rounded-4 border border-dashed">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Network Fee</span>
+                                <span class="fw-bold text-dark small">1.00 USDT</span>
+                            </div>
+                            <div class="d-flex justify-content-between border-top pt-2">
+                                <span class="fw-bold text-dark">You will receive</span>
+                                <span id="receive-amount" class="fw-bold text-danger">-- USDT</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold shadow-red rounded-3 btn-withdraw">
+                            <span class="me-2">Confirm Withdrawal</span>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">USDT Amount to Withdraw</label>
-                    <div class="input-group">
-                        {{ form.amount }}
-                        <span class="input-group-text bg-white border-start-0">USDT</span>
-                    </div>
-                    {% if form.amount.errors %}
-                        <div class="text-danger small mt-1">{{ form.amount.errors.0 }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label small fw-bold">Your Withdrawal Address (TRC20)</label>
-                    {{ form.tx_hash }}
-                </div>
-
-                <div class="p-3 mb-4 rounded-3" style="background-color: #fff8f8; border: 1px dashed #ffcedb;">
-                    <div class="d-flex justify-content-between small">
-                        <span class="text-muted">Network Fee</span>
-                        <span class="fw-bold text-dark">1.00 USDT</span>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-danger w-100 py-3 fw-bold" style="border-radius: 12px;">Confirm & Withdraw</button>
-            </form>
+            <div class="text-center mt-4">
+                <a href="{% url 'transactions:history' %}" class="text-decoration-none text-muted small hover-danger">
+                    View Transaction History
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --withdraw-red: #dc3545;
+        --soft-red: #fff5f6;
+    }
+    .withdraw-card { background: #ffffff; border-radius: 28px; }
+    .icon-shape { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+    .warning-box { background-color: #fffaf0; border-radius: 16px; border-left: 4px solid #ffc107; }
+    .summary-box { background-color: var(--soft-red); border-color: #ffcedb !important; }
+    
+    /* Input Styling */
+    input[type="number"], input[type="text"] {
+        border-radius: 14px;
+        padding: 12px 18px;
+        border: 1px solid #e9ecef;
+        width: 100%;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    input:focus {
+        border-color: var(--withdraw-red) !important;
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1) !important;
+        outline: none;
+    }
+    .shadow-red { box-shadow: 0 10px 20px rgba(220, 53, 69, 0.2); }
+    .btn-withdraw { transition: all 0.3s ease; }
+    .btn-withdraw:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(220, 53, 69, 0.3); }
+    .hover-danger:hover { color: var(--withdraw-red) !important; }
+    .font-monospace { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+</style>
+
+<script>
+    // محاسبه آنی مبلغ دریافتی (مبلغ منهای ۱ دلار کارمزد)
+    const amountInput = document.querySelector('input[name="amount"]');
+    const receiveDisplay = document.getElementById('receive-amount');
+
+    if(amountInput) {
+        amountInput.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (val > 1) {
+                receiveDisplay.innerText = (val - 1).toFixed(2) + ' USDT';
+            } else {
+                receiveDisplay.innerText = '0.00 USDT';
+            }
+        });
+    }
+</script>
 {% endblock %}

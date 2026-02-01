@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # تنظیمات امنیتی (در حالت توسعه)
 SECRET_KEY = 'django-insecure-*xmm7ru+t1&@nrc3+piqq^26qlwku7mmp*a^tprjm7^jb)!b8k'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # تعریف اپلیکیشن‌ها
 INSTALLED_APPS = [
@@ -94,3 +94,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # تنظیمات پیش‌فرض فیلد ID
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_TRUSTED_ORIGINS = ['https://challenging-belle-best-kathy.trycloudflare.com']

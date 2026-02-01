@@ -1,25 +1,48 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import Transaction
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'tx_type', 'amount', 'currency', 'status', 'created_at')
+    # 'status' حتماً باید در list_display باشد تا list_editable کار کند
+    list_display = ('user', 'tx_type', 'amount', 'currency', 'status', 'status_colored', 'created_at')
     list_filter = ('status', 'tx_type', 'created_at')
     search_fields = ('user__username', 'tx_hash')
     
-    # این خط باعث می‌شود در لیست اصلی بتوان وضعیت را سریع تغییر داد و ذخیره کرد
+    # اجازه ویرایش سریع وضعیت در لیست اصلی
     list_editable = ('status',)
     
-    # رنگی کردن وضعیت‌ها برای تشخیص سریع‌تر
-    def get_status_display(self, obj):
-        from django.utils.html import format_html
+    actions = ['approve_transactions', 'reject_transactions']
+
+    def status_colored(self, obj):
         colors = {
-            'pending': '#f39c12',  # نارنجی
-            'approved': '#2ecc71', # سبز
-            'rejected': '#e74c3c', # قرمز
+            'pending': '#f39c12',  # Orange
+            'approved': '#2ecc71', # Green
+            'rejected': '#e74c3c', # Red
         }
         return format_html(
             '<span style="color: {}; font-weight: bold;">{}</span>',
             colors.get(obj.status, 'black'),
-            obj.status.upper()
+            obj.get_status_display().upper()
         )
+    status_colored.short_description = 'Visual Status'
+
+    @admin.action(description='Approve selected transactions')
+    def approve_transactions(self, request, queryset):
+        count = 0
+        for tx in queryset:
+            if tx.status == 'pending':
+                tx.status = 'approved'
+                tx.save() # متد save مدل، موجودی کاربر را آپدیت می‌کند
+                count += 1
+        self.message_user(request, f"Successfully approved {count} transactions.")
+
+    @admin.action(description='Reject selected transactions')
+    def reject_transactions(self, request, queryset):
+        count = 0
+        for tx in queryset:
+            if tx.status == 'pending':
+                tx.status = 'rejected'
+                tx.save() # مت1 save مدل، در صورت برداشت، پول را برمی‌گرداند
+                count += 1
+        self.message_user(request, f"Successfully rejected {count} transactions.")

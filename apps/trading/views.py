@@ -4,109 +4,104 @@ from services.price_fetcher import CryptoPriceService
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
+from django.db import transaction 
+
 def copy_trading_dashboard(request):
-    """نمایش لیست تریدرها و کارت‌های کپی‌تریدینگ"""
+    """نمایش لیست تریدرها و آپدیت قیمت‌ها"""
     traders = LeadTrader.objects.all()
-    
-    # برای بهینه‌سازی، فقط قیمت جفت‌ارزهای اصلی را بروزرسانی می‌کنیم
     pairs = TradingPair.objects.filter(is_active=True)
+    
     for pair in pairs:
         try:
-            current_real_price = CryptoPriceService.fetch_real_time_price(pair.symbol)
+            # ارسال قیمت فعلی دیتابیس به عنوان Fallback برای جلوگیری از کندی
+            current_real_price = CryptoPriceService.fetch_real_time_price(pair.symbol, pair.real_price)
             if current_real_price > 0:
                 pair.real_price = current_real_price
                 pair.save()
         except Exception:
-            pass # اگر اینترنت قطع بود، قیمت قبلی دیتابیس بماند
+            pass 
 
-    context = {
+    return render(request, 'trading/copy_trading.html', {
         'traders': traders,
         'pairs': pairs,
-        'page_title': 'Copy Trading Dashboard'
-    }
-    return render(request, 'trading/copy_trading.html', context)
+        'page_title': 'Copy Trading'
+    })
 
-
-def market_list(request):
-    """نمایش جدول قیمت‌های بازار با اعمال دستکاری"""
-    pairs = TradingPair.objects.filter(is_active=True)
-    market_data = []
+def trader_detail(request, trader_id):
+    """نمایش جزئیات تریدر بدون نیاز به مدل Order"""
+    trader = get_object_or_404(LeadTrader, id=trader_id)
     
-    for pair in pairs:
-        try:
-            real_price = CryptoPriceService.fetch_real_time_price(pair.symbol)
-            if real_price > 0:
-                pair.real_price = real_price
-                pair.save()
-        except Exception:
-            pass
-
-        market_data.append({
-            'name': pair.display_name,
-            'symbol': pair.symbol,
-            'display_price': pair.display_price,
-            'manipulation': pair.manipulation_percent
-        })
-
-    return render(request, 'trading/market.html', {'market_data': market_data, 'page_title': 'Crypto Markets'})
+    # چون مدل Order نداریم، فعلاً لیست سفارشات باز را خالی می‌فرستیم
+    # یا می‌توانیم از داده‌های استاتیک برای نمایش در ظاهر استفاده کنیم
+    return render(request, 'trading/trader_detail.html', {
+        'trader': trader,
+        'open_orders': []  # لیست خالی برای جلوگیری از ارور در تمپلیت
+    })
 
 @login_required
 def copy_action(request, trader_id):
     trader = get_object_or_404(LeadTrader, id=trader_id)
     user = request.user
     
-    # تعیین یک مبلغ ثابت برای کپی کردن (مثلاً ۱۰۰ دلار) یا می‌توانید از فرم بگیرید
-    copy_amount = Decimal('100.00') 
+    # مبلغ را از فرم بگیر، اگر نبود پیش‌فرض 100
+    amount_str = request.POST.get('amount', '100.00')
+    try:
+        copy_amount = Decimal(amount_str)
+    except:
+        copy_amount = Decimal('100.00')
 
-    # ۱. چک کردن موجودی کاربر
     if user.balance < copy_amount:
-        messages.error(request, f"Insufficient balance! You need at least ${copy_amount} to copy this trader.")
-        return redirect('trading:copy_list')
+        messages.error(request, f"Insufficient balance! You need ${copy_amount}")
+        return redirect('trading:copy_trading_dashboard')
 
-    # ۲. چک کردن اینکه آیا قبلاً این تریدر را کپی کرده یا خیر
-    already_following = FollowedTrader.objects.filter(user=user, trader=trader).exists()
-    if already_following:
-        messages.warning(request, "You are already following this trader.")
-        return redirect('accounts:dashboard')
+    with transaction.atomic():
+        # کسر از موجودی کاربر
+        user.balance -= copy_amount
+        user.save()
+        
+        # اضافه کردن به دارایی تحت مدیریت تریدر (برای کلاس کار!)
+        trader.aum = Decimal(trader.aum) + copy_amount
+        trader.save()
+        
+        FollowedTrader.objects.create(
+            user=user, 
+            trader=trader, 
+            investment_amount=copy_amount
+        )
 
-    # ۳. کسر مبلغ از موجودی کاربر و ذخیره
-    user.balance -= copy_amount
-    user.save()
-
-    # ۴. ثبت در جدول تریدرهای کپی شده
-    FollowedTrader.objects.create(
-        user=user, 
-        trader=trader, 
-        investment_amount=copy_amount
-    )
-
-    messages.success(request, f"Strategy copying started! ${copy_amount} has been allocated to {trader.name}.")
+    messages.success(request, f"Successfully started copying {trader.name} with ${copy_amount}!")
     return redirect('accounts:dashboard')
 
 @login_required
 def stop_copy_action(request, follow_id):
-    # پیدا کردن رکورد کپی بر اساس ID
+    """توقف کپی و بازگشت وجه"""
     followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
-    # برگرداندن پول به موجودی کاربر
-    user = request.user
-    user.balance += followed_trader.investment_amount
-    user.save()
+    with transaction.atomic():
+        user = request.user
+        user.balance += followed_trader.investment_amount
+        user.save()
+        
+        trader_name = followed_trader.trader.name
+        followed_trader.delete()
     
-    # حذف رکورد از لیست کپی‌ها
-    trader_name = followed_trader.trader.name
-    followed_trader.delete()
-    
-    messages.info(request, f"Stopped copying {trader_name}. Funds have been returned to your balance.")
+    messages.info(request, f"Stopped copying {trader_name}. Funds returned to balance.")
     return redirect('accounts:dashboard')
 
-
-def trader_detail(request, trader_id):
-    """نمایش صفحه جزئیات هر تریدر (پروفایل)"""
-    trader = get_object_or_404(LeadTrader, id=trader_id)
-    # اینجا می‌توانید آمارهای دقیق‌تر یا لیست اوردرها را هم بگیرید
-    context = {
-        'trader': trader,
-        'page_title': f"{trader.name}'s Profile"
-    }
-    return render(request, 'trading/trader_detail.html', context)
+def market_list(request):
+    """نمایش لیست مارکت با قیمت‌های آپدیت شده"""
+    pairs = TradingPair.objects.filter(is_active=True)
+    
+    market_data = [] # ساخت لیستی که تمپلیت منتظر آن است
+    for pair in pairs:
+        # استفاده از سرویس کش که قبلاً نوشتیم برای سرعت بالا
+        data = CryptoPriceService.fetch_market_data(pair.symbol)
+        
+        market_data.append({
+            'name': pair.display_name,
+            'symbol': pair.symbol,
+            'display_price': data['price'] if data['price'] > 0 else pair.real_price,
+            'manipulation': data['change'] if data['change'] != 0 else pair.manipulation_percent
+        })
+        
+    return render(request, 'trading/market.html', {'market_data': market_data})

@@ -6,7 +6,7 @@
         <div>
             <nav class="d-flex gap-4 border-bottom mb-2">
                 <a href="#" class="nav-link-custom active">Top Lead traders</a>
-                <a href="#" class="nav-link-custom text-muted">All Lead traders</a>
+                <a href="{% url 'trading:market_list' %}" class="nav-link-custom text-muted">Market Prices</a>
             </nav>
             <p class="text-muted small mb-0">Discover and copy the best performing strategies in real-time.</p>
         </div>
@@ -21,123 +21,102 @@
     <div class="row g-3">
         {% for trader in traders %}
         <div class="col-12">
-            <a href="{% url 'trading:trader_detail' trader.id %}" class="text-decoration-none">
-                <div class="card trader-card-blue border-0 shadow-sm p-3">
-                    <div class="row align-items-center">
-                        
-                        <div class="col-lg-3 col-md-4 mb-3 mb-md-0">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="avatar-box">
-                                    {% if trader.avatar %}
-                                        <img src="{{ trader.avatar.url }}" class="rounded-circle border" width="56" height="56" style="object-fit: cover;">
-                                    {% else %}
-                                        <div class="avatar-placeholder-blue">{{ trader.name|first|upper }}</div>
-                                    {% endif %}
-                                    <div class="v-badge"><i class="bi bi-patch-check-fill"></i></div>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold text-dark mb-0">{{ trader.name }}</h6>
-                                    <span class="text-muted tiny-text"><i class="bi bi-people-fill"></i> {{ trader.copiers_count }}/{{ trader.capacity }}</span>
-                                    <div class="mt-2">
-                                        <small class="text-muted d-block x-small-label">30D ROI</small>
-                                        <h4 class="roi-blue mb-0">+{{ trader.roi_30d }}%</h4>
-                                    </div>
+            <div class="card trader-card-blue border-0 shadow-sm p-3 position-relative" 
+                 onclick="location.href='{% url 'trading:trader_detail' trader.id %}'" 
+                 style="cursor: pointer;">
+                
+                <div class="row align-items-center">
+                    <div class="col-lg-4 col-md-5 col-12 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-box position-relative">
+                                {% if trader.avatar %}
+                                    <img src="{{ trader.avatar.url }}" class="rounded-circle border" width="60" height="60" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="avatar-placeholder-blue">{{ trader.name|first|upper }}</div>
+                                {% endif %}
+                                <div class="v-badge"><i class="bi bi-patch-check-fill"></i></div>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">{{ trader.name }}</h6>
+                                <span class="text-muted tiny-text"><i class="bi bi-people-fill"></i> {{ trader.copiers_count }}/{{ trader.capacity }} Copiers</span>
+                                <div class="mt-2 d-flex align-items-baseline gap-2">
+                                    <h4 class="roi-blue mb-0">+{{ trader.roi_30d }}%</h4>
+                                    <small class="text-muted x-small-label">30D ROI</small>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-lg-5 col-md-5 border-start px-4">
-                            <div class="row g-2">
-                                <div class="col-4">
-                                    <label class="text-muted d-block x-small-label">30D Profit</label>
-                                    <span class="fw-bold text-dark small">${{ trader.pnl_30d }}</span>
-                                </div>
-                                <div class="col-4 px-2">
-                                    <label class="text-muted d-block x-small-label">AUM</label>
-                                    <span class="fw-bold text-dark small">${{ trader.aum }}</span>
-                                </div>
-                                <div class="col-4">
-                                    <label class="text-muted d-block x-small-label">Drawdown</label>
-                                    <span class="fw-bold text-danger small">{{ trader.max_drawdown }}%</span>
-                                </div>
-                                <div class="col-12 mt-2">
-                                    <div class="d-flex gap-2">
-                                        <span class="badge-blue-soft">Futures</span>
-                                        <span class="badge-blue-soft text-success">Low Risk</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 col-md-3 text-end">
-                            <div class="d-flex flex-column align-items-end">
-                                <button onclick="event.preventDefault(); window.location.href='{% url 'trading:copy_action' trader.id %}'" class="btn btn-copy-blue shadow-sm mb-3">Copy</button>
-                                <div class="chart-box-blue w-100">
-                                    <div id="trader-chart-{{ trader.id }}"></div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
+
+                    <div class="col-lg-5 col-md-4 col-12 border-start-md px-md-4 border-start-custom">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <label class="text-muted d-block x-small-label">30D Profit</label>
+                                <span class="fw-bold text-dark small">${{ trader.pnl_30d }}</span>
+                            </div>
+                            <div class="col-4">
+                                <label class="text-muted d-block x-small-label">AUM</label>
+                                <span class="fw-bold text-dark small">${{ trader.aum }}</span>
+                            </div>
+                            <div class="col-4">
+                                <label class="text-muted d-block x-small-label">Drawdown</label>
+                                <span class="fw-bold text-danger small">{{ trader.max_drawdown }}%</span>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <div class="d-flex gap-2">
+                                    <span class="badge-blue-soft">Futures</span>
+                                    <span class="badge-blue-soft text-success">Low Risk</span>
+                                    <span class="badge-blue-soft text-warning">Verified</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-12 text-end mt-3 mt-md-0">
+                        <button onclick="event.stopPropagation(); window.location.href='{% url 'trading:copy_action' trader.id %}'" 
+                                class="btn btn-copy-blue shadow-sm w-100 py-2">
+                            Copy
+                        </button>
+                    </div>
+
                 </div>
-            </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No traders found at the moment.</p>
         </div>
         {% endfor %}
     </div>
 </div>
 
 <style>
-    /* تم آبی و سفید حرفه‌ای */
-    body { background-color: #f8fafd; }
+    body { background-color: #f8fafd; overflow-x: hidden; }
     
     .nav-link-custom { text-decoration: none; font-weight: 700; font-size: 0.95rem; color: #64748b; padding-bottom: 8px; position: relative; }
     .nav-link-custom.active { color: #0062ff; }
     .nav-link-custom.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: #0062ff; border-radius: 2px; }
 
     .trader-card-blue { border-radius: 16px; background: #ffffff; transition: all 0.3s ease; border: 1px solid #e2e8f0 !important; }
-    .trader-card-blue:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,98,255,0.08) !important; border-color: #0062ff33 !important; }
+    .trader-card-blue:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,98,255,0.08) !important; border-color: #0062ff33 !important; }
 
-    .avatar-placeholder-blue { width: 56px; height: 56px; border-radius: 50%; background: #e0eaff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0062ff; font-size: 1.2rem; }
-    .v-badge { position: absolute; bottom: 0; right: 0; color: #0062ff; background: #fff; border-radius: 50%; font-size: 14px; line-height: 1; }
+    .avatar-placeholder-blue { width: 60px; height: 60px; border-radius: 50%; background: #e0eaff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0062ff; font-size: 1.3rem; }
+    .v-badge { position: absolute; bottom: 0; right: 0; color: #0062ff; background: #fff; border-radius: 50%; font-size: 16px; line-height: 1; z-index: 2; border: 2px solid #fff; }
 
-    .roi-blue { color: #10b981; font-weight: 800; }
+    .roi-blue { color: #10b981; font-weight: 800; font-size: 1.6rem; }
     .x-small-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
-    .badge-blue-soft { background: #f0f7ff; color: #0062ff; font-size: 0.7rem; padding: 3px 10px; border-radius: 6px; font-weight: 600; }
+    .badge-blue-soft { background: #f0f7ff; color: #0062ff; font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
 
-    /* دکمه آبی هماهنگ با تم سایت */
-    .btn-copy-blue { background: #0062ff; color: #fff; font-weight: 700; border: none; border-radius: 10px; padding: 8px 35px; transition: 0.2s; }
-    .btn-copy-blue:hover { background: #0052d6; transform: scale(1.05); color: #fff; }
+    .btn-copy-blue { background: #0062ff; color: #fff; font-weight: 700; border: none; border-radius: 12px; transition: 0.2s; }
+    .btn-copy-blue:hover { background: #0052d6; transform: translateY(-1px); color: #fff; }
 
-    .chart-box-blue { height: 60px; min-width: 140px; }
     .tiny-text { font-size: 0.75rem; color: #64748b; }
-</style>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        {% for trader in traders %}
-        new ApexCharts(document.querySelector("#trader-chart-{{ trader.id }}"), {
-            series: [{
-                name: 'Growth',
-                data: {{ trader.chart_history_json|safe|default:"[10, 25, 20, 45, 40, 75, 90]" }}
-            }],
-            chart: {
-                type: 'area',
-                height: 70,
-                sparklines: { enabled: true },
-                animations: { enabled: true, speed: 800 }
-            },
-            stroke: { curve: 'smooth', width: 2, colors: ['#0062ff'] }, // خط نمودار آبی
-            fill: {
-                type: 'gradient',
-                gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0, stops: [0, 90, 100] }
-            },
-            tooltip: {
-                theme: 'light',
-                y: { formatter: function(v) { return v + "%" } }
-            }
-        }).render();
-        {% endfor %}
-    });
-</script>
+    @media (min-width: 768px) {
+        .border-start-md { border-left: 1px solid #e2e8f0 !important; }
+    }
+    @media (max-width: 767px) {
+        .border-start-custom { border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; border-left: none !important; }
+        .roi-blue { font-size: 1.8rem; }
+    }
+</style>
 {% endblock %}

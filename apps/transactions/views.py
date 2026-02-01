@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import DepositForm, WithdrawForm
 from .models import Transaction
+from django.conf import settings
 
 @login_required
 def deposit_view(request):
@@ -14,20 +15,24 @@ def deposit_view(request):
             deposit.tx_type = 'deposit'
             deposit.status = 'pending'
             deposit.save()
-            messages.success(request, "Deposit request submitted! Waiting for admin approval.") # اصلاح شد
+            messages.success(request, "Deposit request submitted! Waiting for admin approval.")
             return redirect('transactions:history')
     else:
         form = DepositForm()
     
+    # آدرس ولت را از تنظیمات می‌خوانیم (بهتر است در settings.py باشد)
+    wallet_address = getattr(settings, 'TRON_WALLET_ADDRESS', "TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim")
+    
     return render(request, 'transactions/deposit.html', {
         'form': form,
-        'wallet_address': "TYourAdminWalletAddressXYZ",
-        'page_title': 'Deposit Funds' # اضافه شد
+        'wallet_address': wallet_address,
+        'page_title': 'Deposit Funds'
     })
 
 @login_required
 def withdraw_view(request):
     if request.method == 'POST':
+        # پاس دادن کاربر به فرم برای چک کردن موجودی در clean_amount
         form = WithdrawForm(request.POST, user=request.user)
         if form.is_valid():
             withdraw = form.save(commit=False)
@@ -35,12 +40,12 @@ def withdraw_view(request):
             withdraw.tx_type = 'withdraw'
             withdraw.status = 'pending'
             
-            # Lock balance
+            # کسر موقت از موجودی (Lock balance)
             request.user.balance -= withdraw.amount
             request.user.save()
             
             withdraw.save()
-            messages.success(request, "Withdrawal request submitted. Funds are locked until approval.") # اصلاح شد
+            messages.success(request, "Withdrawal request submitted. Funds are locked until approval.")
             return redirect('transactions:history')
     else:
         form = WithdrawForm(user=request.user)

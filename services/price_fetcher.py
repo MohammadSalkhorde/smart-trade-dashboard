@@ -1,21 +1,27 @@
 import requests
+from django.core.cache import cache
 
 class CryptoPriceService:
     @staticmethod
-    def fetch_real_time_price(symbol, current_price=None):
-        """دریافت قیمت واقعی با مکانیزم Fallback"""
+    def fetch_market_data(symbol):
+        """گرفتن قیمت و درصد تغییرات ۲۴ ساعته"""
+        cache_key = f'market_data_{symbol.replace("/", "")}'
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return cached_data
+
         try:
             ticker = symbol.replace('/', '')
-            url = f"https://api.binance.com/api/v3/ticker/price?symbol={ticker}"
-            
-            # تایم‌اوت رو به 10 ثانیه افزایش دادیم
-            response = requests.get(url, timeout=10) 
-            
+            url = f"https://api.binance.com/api/v3/ticker/24hr?symbol={ticker}"
+            response = requests.get(url, timeout=2)
             if response.status_code == 200:
-                return float(response.json()['price'])
-        
-        except Exception as e:
-            print(f"Error fetching {symbol}: {e}")
-        
-        # نکته طلایی: اگر خطا خورد، قیمت قبلی رو برگردون نه صفر!
-        return current_price if current_price is not None else 0.0
+                data = response.json()
+                result = {
+                    'price': float(data['lastPrice']),
+                    'change': float(data['priceChangePercent'])
+                }
+                cache.set(cache_key, result, 30)
+                return result
+        except:
+            pass
+        return {'price': 0, 'change': 0}

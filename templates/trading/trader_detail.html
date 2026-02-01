@@ -17,7 +17,6 @@
     .nav-tabs .nav-link { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; border: none !important; padding: 10px 15px; }
     .nav-tabs .nav-link.active { color: var(--brand-blue) !important; border-bottom: 3px solid var(--brand-blue) !important; background: transparent !important; }
     
-    /* اصلاح ریسپانسیو کارت‌ها */
     .stats-card-light { 
         background: #ffffff; 
         border-radius: 12px; 
@@ -31,10 +30,10 @@
     }
     .label-text { color: var(--text-muted); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; display: block; }
     .value-text { 
-        font-size: 1rem; /* سایز بهینه برای موبایل */
+        font-size: 1rem; 
         font-weight: 800; 
         color: var(--text-main); 
-        word-break: break-all; /* جلوگیری از بیرون زدگی عدد */
+        word-break: break-all; 
     }
 
     @media (min-width: 768px) {
@@ -111,7 +110,7 @@
         <div class="tab-pane fade show active" id="overview-pane">
             <div class="bg-white p-3 rounded-4 border shadow-sm mb-4">
                 <h6 class="fw-bold small mb-3 text-muted">Equity Growth</h6>
-                <div id="big-chart"></div>
+                <div id="big-chart" style="min-height: 280px;"></div>
             </div>
             
             <div class="stats-card-light mb-3">
@@ -193,29 +192,65 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // ۱. چارت
+        // ۱. منطق هوشمند دیتا برای چارت
+        let rawData = {{ trader.chart_history_json|safe|default:"[]" }};
+        
+        // اگر دیتا خالی بود یا آرایه نبود، دیتای دمو صعودی جایگزین شود
+        if (!Array.isArray(rawData) || rawData.length === 0) {
+            rawData = [15, 30, 25, 50, 45, 80, 75, 120, 110, 150, 190]; 
+        }
+
         var options = {
-            series: [{ name: 'Growth', data: {{ trader.chart_history_json|safe|default:"[10, 25, 60, 45, 90, 120, 180]" }} }],
-            chart: { type: 'area', height: 280, toolbar: { show: false } },
+            series: [{ name: 'Equity Growth', data: rawData }],
+            chart: { 
+                type: 'area', 
+                height: 280, 
+                toolbar: { show: false },
+                animations: { enabled: true, speed: 1000 }
+            },
             colors: ['#0062ff'],
             stroke: { curve: 'smooth', width: 3 },
-            fill: { type: 'gradient', gradient: { opacityFrom: 0.3, opacityTo: 0.01 } },
-            grid: { borderColor: '#f1f5f9' },
-            xaxis: { labels: { show: false }, axisBorder: { show: false } },
-            yaxis: { labels: { style: { colors: '#94a3b8' } } },
-            tooltip: { theme: 'light' }
+            fill: { 
+                type: 'gradient', 
+                gradient: { 
+                    shadeIntensity: 1, 
+                    opacityFrom: 0.45, 
+                    opacityTo: 0.05, 
+                    stops: [20, 100] 
+                } 
+            },
+            grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+            xaxis: { 
+                labels: { show: false }, 
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: { 
+                labels: { 
+                    style: { colors: '#94a3b8', fontWeight: 600 },
+                    formatter: function(val) { return val + "%"; }
+                } 
+            },
+            markers: { size: 0, hover: { size: 5 } },
+            tooltip: { 
+                theme: 'light',
+                x: { show: false },
+                y: { formatter: function(val) { return "+" + val + "%" } }
+            }
         };
-        new ApexCharts(document.querySelector("#big-chart"), options).render();
 
-        // ۲. دکمه اشتراک‌گذاری واقعی
+        const chart = new ApexCharts(document.querySelector("#big-chart"), options);
+        chart.render();
+
+        // ۲. دکمه اشتراک‌گذاری
         document.getElementById('share-btn').addEventListener('click', function() {
             const url = window.location.href;
             navigator.clipboard.writeText(url).then(() => {
-                alert('Profile link copied to clipboard!');
+                alert('Trader profile link copied!');
             });
         });
 
-        // ۳. دکمه ستاره (Favorite)
+        // ۳. دکمه Favorite
         document.getElementById('fav-btn').addEventListener('click', function() {
             this.classList.toggle('bi-star');
             this.classList.toggle('bi-star-fill');

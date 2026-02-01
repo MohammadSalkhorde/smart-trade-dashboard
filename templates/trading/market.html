@@ -1,50 +1,140 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="mb-5">
-    <h2 class="fw-bold text-dark">Market Prices</h2>
-    <p class="text-muted small">Real-time cryptocurrency prices with localized market trends.</p>
-</div>
+<div class="container py-4">
+    <div class="mb-4 mb-md-5 text-center text-md-start">
+        <h2 class="fw-bold text-dark">Market Quotes</h2>
+        <p class="text-muted small">Real-time cryptocurrency prices with 24h market trends.</p>
+    </div>
 
-<div class="card border-0 shadow-sm" style="border-radius: 24px; overflow: hidden;">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light">
-                <tr class="text-muted small text-uppercase">
-                    <th class="ps-4 py-3">Asset</th>
-                    <th>Symbol</th>
-                    <th>Price</th>
-                    <th>24h Change</th>
-                    <th class="text-end pe-4">Trade</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in market_data %}
-                <tr>
-                    <td class="ps-4">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; font-size: 12px;">
-                                {{ item.name|slice:":1" }}
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; background: #ffffff;">
+        <div class="table-responsive-custom">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: #f8fafd;">
+                    <tr class="text-muted small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                        <th class="ps-3 ps-md-4 py-3 fw-bold">Asset</th>
+                        <th class="fw-bold d-none d-sm-table-cell">Symbol</th>
+                        <th class="fw-bold">Last Price</th>
+                        <th class="fw-bold">24h Change</th>
+                        <th class="text-end pe-3 pe-md-4 fw-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in market_data %}
+                    <tr>
+                        <td class="ps-3 ps-md-4 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol-icon-container me-2 me-md-3">
+                                    <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/{{ item.symbol|slice:':3'|lower }}.png" 
+                                         onerror="this.src='https://cdn-icons-png.flaticon.com/512/25/25228.png'" 
+                                         width="28" height="28" alt="{{ item.name }}">
+                                </div>
+                                <div>
+                                    <span class="fw-bold d-block text-dark small-mobile-font">{{ item.name }}</span>
+                                    <span class="text-muted x-small-label d-none d-md-block">Mainnet</span>
+                                </div>
                             </div>
-                            <span class="fw-bold">{{ item.name }}</span>
-                        </div>
-                    </td>
-                    <td class="text-muted small">{{ item.symbol }}</td>
-                    <td class="fw-bold">${{ item.display_price|floatformat:4 }}</td>
-                    <td>
-                        {% if item.manipulation >= 0 %}
-                            <span class="text-success fw-bold">+{{ item.manipulation }}% <i class="bi bi-graph-up"></i></span>
-                        {% else %}
-                            <span class="text-danger fw-bold">{{ item.manipulation }}% <i class="bi bi-graph-down"></i></span>
-                        {% endif %}
-                    </td>
-                    <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-dark rounded-pill px-4">Buy</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td class="d-none d-sm-table-cell">
+                            <span class="badge bg-light text-dark border fw-medium px-2 py-1" style="font-size: 0.65rem;">{{ item.symbol }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-dark small-mobile-font">${{ item.display_price|floatformat:2 }}</span>
+                        </td>
+                        <td>
+                            {% if item.manipulation >= 0 %}
+                                <div class="d-flex align-items-center text-success fw-bold small-mobile-font">
+                                    <i class="bi bi-caret-up-fill me-1"></i>
+                                    <span>+{{ item.manipulation }}%</span>
+                                </div>
+                            {% else %}
+                                <div class="d-flex align-items-center text-danger fw-bold small-mobile-font">
+                                    <i class="bi bi-caret-down-fill me-1"></i>
+                                    <span>{{ item.manipulation }}%</span>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-3 pe-md-4">
+                            <a href="{% url 'trading:copy_list' %}" class="btn btn-sm btn-trade-blue rounded-pill px-3 px-md-4 fw-bold shadow-sm">
+                                Trade
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No market data available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-5 py-4 border-top text-center">
+        <p class="text-muted x-small-label mb-1">© 2026 SmartTrade Ecosystem</p>
+        <p class="text-muted small">Crafted with precision by <strong>Mohammad</strong></p>
     </div>
 </div>
+
+<style>
+    body { background-color: #f8fafd; overflow-x: hidden; }
+
+    .x-small-label { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
+
+    /* استایل دکمه ترید */
+    .btn-trade-blue { 
+        background-color: #0062ff; 
+        color: white; 
+        border: none; 
+        font-size: 0.75rem;
+        transition: 0.3s;
+    }
+    .btn-trade-blue:hover { 
+        background-color: #0052d6; 
+        color: white; 
+        transform: translateY(-2px);
+    }
+
+    /* جلوگیری از اسکرول و بهینه سازی جدول */
+    .table-responsive-custom {
+        overflow-x: hidden; /* جلوگیری از اسکرول افقی */
+        width: 100%;
+    }
+
+    .symbol-icon-container {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* استایل‌های اختصاصی موبایل */
+    @media (max-width: 576px) {
+        .small-mobile-font {
+            font-size: 0.8rem !important;
+        }
+        .btn-trade-blue {
+            padding: 5px 15px !important;
+            font-size: 0.7rem !important;
+        }
+        .container {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .symbol-icon-container img {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f0f7ff !important;
+    }
+
+    .table td, .table th {
+        border-bottom: 1px solid #f1f5f9;
+        white-space: nowrap; /* جلوگیری از شکستن خطوط در قیمت */
+    }
+</style>
 {% endblock %}

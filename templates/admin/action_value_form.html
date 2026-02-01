@@ -1,0 +1,117 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div style="background: #0f172a; min-height: 80vh; padding: 40px 20px; font-family: 'Inter', system-ui, -apple-system, sans-serif; display: flex; justify-content: center; align-items: flex-start;">
+    
+    <div style="width: 100%; max-width: 550px; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden;">
+        
+        <div style="height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);"></div>
+
+        <form action="" method="post" style="padding: 40px;">
+            {% csrf_token %}
+            
+            <div style="text-align: center; margin-bottom: 35px;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: rgba(59, 130, 246, 0.1); border-radius: 20px; margin-bottom: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </div>
+                <h2 style="color: #f8fafc; margin: 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.025em;">Profit Injection</h2>
+                <p style="color: #94a3b8; margin-top: 8px; font-size: 0.95rem;">Algorithm Adjustment Protocol</p>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.5); border-radius: 16px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span style="display: block; color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Active Targets</span>
+                    <span style="display: block; color: #3b82f6; font-size: 1.25rem; font-weight: 700;">{{ items|length }} Lead Trader(s)</span>
+                </div>
+                <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 12px #22c55e;"></div>
+            </div>
+
+            <div style="margin-bottom: 35px;">
+                <label style="display: block; margin-bottom: 12px; color: #f1f5f9; font-weight: 500; font-size: 1rem;">Injection Percentage</label>
+                <div style="position: relative;">
+                    {{ form.value }}
+                    <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-weight: 600;">%</span>
+                </div>
+                {% if form.value.help_text %}
+                <div style="display: flex; align-items: center; margin-top: 12px; color: #94a3b8; font-size: 0.85rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    {{ form.value.help_text }}
+                </div>
+                {% endif %}
+            </div>
+
+            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+            <input type="hidden" name="action" value="inject_custom_profit" />
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <button type="submit" name="apply" class="btn-primary">
+                    Confirm Injection
+                </button>
+                <a href="." class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Custom Styling for the Form Input */
+    input[type="number"] {
+        width: 100% !important;
+        background: rgba(15, 23, 42, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+        color: #fff !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-sizing: border-box !important;
+    }
+    input[type="number"]:focus {
+        outline: none !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+    }
+
+    .btn-primary {
+        background: #3b82f6 !important;
+        color: white !important;
+        padding: 16px !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        cursor: pointer !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.025em !important;
+    }
+    .btn-primary:hover {
+        background: #2563eb !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4) !important;
+    }
+
+    .btn-secondary {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important;
+        color: #94a3b8 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        transition: all 0.3s !important;
+    }
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: #fff !important;
+    }
+    
+    /* Hide spin buttons for cleaner look */
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+{% endblock %}

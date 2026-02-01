@@ -6,6 +6,7 @@
     <title>{{ page_title|default:"SmartTrade Dashboard" }}</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -22,7 +23,6 @@
             color: var(--text-dark);
         }
 
-        /* استایل نوار بالا */
         .navbar {
             background-color: #ffffff;
             border-bottom: 1px solid var(--border-color);
@@ -35,124 +35,103 @@
             font-size: 22px;
         }
 
-        .balance-box {
-            background-color: #f0f3fa;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* دکمه‌های سفارشی */
         .btn-primary {
             background-color: var(--primary-blue);
             border: none;
             font-weight: 600;
         }
 
-        .btn-outline-primary {
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-            font-weight: 600;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-/* اصلاح دراپ‌دان برای موبایل */
         @media (max-width: 576px) {
             .dropdown-menu-end {
-                /* لغو تراز لبه‌ای و اعمال تراز مرکزی */
                 right: 50% !important;
                 left: 50% !important;
                 transform: translateX(-50%) translateY(15px) !important;
-                width: 90vw !important; /* اشغال ۹۰ درصد عرض صفحه */
+                width: 90vw !important;
                 max-width: 350px;
                 margin: 0 auto;
             }
         }
 
-        /* حذف حاشیه آبی هنگام کلیک روی منوی همبرگری */
-.navbar-toggler:focus {
-    box-shadow: none !important;
-    outline: none !important;
-}
+        .navbar-toggler:focus {
+            box-shadow: none !important;
+            outline: none !important;
+        }
 
-/* بهبود ظاهر لینک‌ها در منوی موبایل */
-@media (max-width: 991.98px) {
-    .navbar-collapse {
-        background: #ffffff;
-        margin-top: 15px;
-        padding: 20px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        border: 1px solid var(--border-color);
-    }
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: #ffffff;
+                margin-top: 15px;
+                padding: 20px;
+                border-radius: 20px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+                border: 1px solid var(--border-color);
+            }
 
-    .navbar-nav .nav-link {
-        padding: 12px 15px !important;
-        margin-bottom: 8px;
-        border-radius: 12px;
-        background-color: #f8f9fa;
-        transition: all 0.2s ease;
-        color: var(--text-dark) !important;
-    }
+            .navbar-nav .nav-link {
+                padding: 12px 15px !important;
+                margin-bottom: 8px;
+                border-radius: 12px;
+                background-color: #f8f9fa;
+                transition: all 0.2s ease;
+                color: var(--text-dark) !important;
+            }
 
-    .navbar-nav .nav-link:hover {
-        background-color: var(--primary-blue);
-        color: white !important;
-        transform: translateX(5px);
-    }
+            .navbar-nav .nav-link:hover {
+                background-color: var(--primary-blue);
+                color: white !important;
+                transform: translateX(5px);
+            }
+        }
 
-    /* تنظیم چیدمان دکمه‌های داشبورد و موجودی در موبایل */
-    .navbar-collapse .d-flex {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid var(--border-color);
-        justify-content: center;
-        width: 100%;
-    }
-}
+        .navbar-collapse {
+            flex-basis: 100%;
+            flex-grow: 1;
+        }
 
-/* اصلاح کلی برای تمامی سایزها */
-.navbar-collapse {
-    flex-basis: 100%; /* در موبایل و تبلت کل عرض را می‌گیرد */
-    flex-grow: 1;
-}
+        @media (min-width: 992px) {
+            .navbar-collapse {
+                flex-basis: auto;
+            }
+        }
 
-@media (min-width: 992px) {
-    .navbar-collapse {
-        flex-basis: auto; /* در دسکتاپ به حالت عادی برمی‌گردد */
-    }
-}
+        @media (max-width: 400px) {
+            .btn-sm {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                font-size: 0.75rem !important;
+            }
+            .navbar-brand span {
+                display: none;
+            }
+        }
 
-@media (max-width: 991.98px) {
-    .navbar-brand {
-        font-size: 18px; /* کمی کوچک‌تر برای جا شدن همه چیز */
-    }
-    .navbar-collapse {
-        background: #ffffff;
-        margin-top: 10px;
-        padding: 15px;
-        border-radius: 15px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    }
-}
-
-/* جلوگیری از به هم ریختگی دکمه‌ها در سایزهای بین ۳۲۰ تا ۴۸۰ پیکسل */
-@media (max-width: 400px) {
-    .btn-sm {
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-        font-size: 0.75rem !important;
-    }
-    .navbar-brand span {
-        display: none; /* مخفی کردن متن برند در گوشی‌های خیلی کوچک برای باز شدن فضا */
-    }
-}
+        /* Footer Styles */
+        .footer-modern { background: linear-gradient(to right, #ffffff, #fcfdfe); }
+        .signature-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        .signature-link .dev-name { font-size: 0.85rem; font-weight: 700; color: #1e2329; }
+        .signature-link .dev-status {
+            width: 8px; height: 8px; background-color: #0052ff; border-radius: 50%;
+            margin-left: 8px; position: relative;
+        }
+        .signature-link .dev-status::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            background: #0052ff; border-radius: 50%; opacity: 0.5;
+            animation: pulse-blue 2s infinite;
+        }
+        @keyframes pulse-blue {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 82, 255, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(0, 82, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 82, 255, 0); }
+        }
     </style>
 </head>
 <body>
@@ -169,7 +148,7 @@
 
         <div class="d-flex align-items-center gap-2 order-lg-2 ms-2">
             {% if user.is_authenticated %}
-                <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary rounded-pill px-2 px-sm-3 fw-bold shadow-sm btn-sm">
+                <a href="{% url 'accounts:profile_dashboard' %}" class="btn btn-primary rounded-pill px-2 px-sm-3 fw-bold shadow-sm btn-sm">
                     <span class="d-none d-sm-inline">Dashboard</span>
                     <i class="bi bi-speedometer2 d-inline d-sm-none"></i>
                 </a>
@@ -187,6 +166,8 @@
                             <p class="text-muted small mb-0">Signed in as</p>
                             <p class="fw-bold mb-0 text-dark">{{ user.username }}</p>
                         </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-gear me-2 text-primary"></i> Account Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item py-2" href="{% url 'transactions:deposit' %}"><i class="bi bi-plus-circle me-2 text-success"></i> Deposit</a></li>
                         <li><a class="dropdown-item py-2" href="{% url 'transactions:withdraw' %}"><i class="bi bi-arrow-up-right-circle me-2 text-danger"></i> Withdraw</a></li>
@@ -220,12 +201,13 @@
         </div>
     </div>
 </nav>
+
 <div class="container mt-5 main-container">
     {% block content %}
     {% endblock %}
 </div>
 
-<footer class="footer-modern py-4 bg-white border-top">
+<footer class="footer-modern py-4 bg-white border-top mt-5">
     <div class="container">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
             <div class="copyright-info">
@@ -245,70 +227,7 @@
     </div>
 </footer>
 
-<style>
-    .footer-modern {
-        background: linear-gradient(to right, #ffffff, #fcfdfe);
-    }
-
-    .signature-link {
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        padding: 5px 12px;
-        border-radius: 50px;
-        background: #f8f9fa;
-        border: 1px solid #eee;
-        transition: all 0.3s ease;
-    }
-
-    .signature-link .dev-name {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #1e2329;
-        letter-spacing: 0.3px;
-    }
-
-    .signature-link .dev-status {
-        width: 8px;
-        height: 8px;
-        background-color: #0052ff;
-        border-radius: 50%;
-        margin-left: 8px;
-        position: relative;
-    }
-
-    /* افکت پالس برای نقطه آبی (حس زنده بودن کد) */
-    .signature-link .dev-status::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: #0052ff;
-        border-radius: 50%;
-        opacity: 0.5;
-        animation: pulse-blue 2s infinite;
-    }
-
-    .signature-link:hover {
-        background: #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transform: translateY(-2px);
-        border-color: #0052ff;
-    }
-
-    .signature-link:hover .dev-name {
-        color: #0052ff;
-    }
-
-    @keyframes pulse-blue {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 82, 255, 0.7); }
-        70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(0, 82, 255, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 82, 255, 0); }
-    }
-</style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
     {% if messages %}
@@ -330,7 +249,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var toastElList = [].slice.call(document.querySelectorAll('.toast'))
         var toastList = toastElList.map(function (toastEl) {
-            return new bootstrap.Toast(toastEl, { delay: 5000 }); // پیام بعد از ۵ ثانیه محو شود
+            return new bootstrap.Toast(toastEl, { delay: 5000 });
         });
     });
 </script>
