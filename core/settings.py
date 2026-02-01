@@ -95,4 +95,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # تنظیمات پیش‌فرض فیلد ID
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['https://challenging-belle-best-kathy.trycloudflare.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.trycloudflare.com',
+    'https://coleman-glenn-manor-basement.trycloudflare.com', # لینک فعلی شما
+]
