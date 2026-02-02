@@ -1,31 +1,66 @@
-from django import forms  # این خط اصلاح شد
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+import re
 
 User = get_user_model()
 
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("username", "email")
+        fields = ("email", "username")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # استایل‌دهی به فیلدها برای اینکه با ظاهر شیک ما همخوانی داشته باشند
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({
+        
+        # --- اصلاح لیبل‌های پسورد ---
+        if 'password1' in self.fields:
+            self.fields['password1'].label = "Password"
+        if 'password2' in self.fields:
+            self.fields['password2'].label = "Confirm Password"
+        
+        # اعمال استایل و هندل کردن پلیس‌هولدرها
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
                 'class': 'form-control border-0 bg-light py-2 px-3',
                 'style': 'border-radius: 10px;',
-                'placeholder': f'Enter {field.capitalize()}'
+                'placeholder': f'Enter your {field.label.lower()}'
             })
-            
-from .models import User
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email').lower()
+        
+        # چک کردن فرمت کلی
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_regex, email):
+            raise ValidationError("Please enter a valid professional email address.")
+
+        # لیست سفید سرویس‌دهنده‌ها
+        valid_domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'protonmail.com']
+        domain = email.split('@')[-1]
+        if domain not in valid_domains:
+            raise ValidationError(f"For security, please use a major provider like Gmail or Yahoo.")
+
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("This email is already registered.")
+
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if len(username) < 4:
+            raise ValidationError("Username must be at least 4 characters long.")
+        return username
+
+# فرم پروفایل (بدون تغییر)
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'wallet_address']
         widgets = {
-            field: forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary'})
-            for field in ['first_name', 'last_name', 'email', 'wallet_address']
+            'first_name': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'readonly': 'readonly'}),
+            'wallet_address': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Enter your USDT (TRC20) Address'}),
         }

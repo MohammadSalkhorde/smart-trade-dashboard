@@ -7,22 +7,22 @@
         <p class="text-muted small">Real-time cryptocurrency prices with 24h market trends.</p>
     </div>
 
-    <div class="card border-0 shadow-sm" style="border-radius: 20px; background: #ffffff;">
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; background: #ffffff; overflow: hidden;">
         <div class="table-responsive-custom">
-            <table class="table table-hover align-middle mb-0">
-                <thead style="background-color: #f8fafd;">
+            <table class="table table-hover align-middle mb-0" id="market-table">
+                <thead class="d-none d-md-table-header-group" style="background-color: #f8fafd;">
                     <tr class="text-muted small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                        <th class="ps-3 ps-md-4 py-3 fw-bold">Asset</th>
-                        <th class="fw-bold d-none d-sm-table-cell">Symbol</th>
+                        <th class="ps-4 py-3 fw-bold">Asset</th>
+                        <th class="fw-bold">Symbol</th>
                         <th class="fw-bold">Last Price</th>
                         <th class="fw-bold">24h Change</th>
-                        <th class="text-end pe-3 pe-md-4 fw-bold">Action</th>
+                        <th class="text-end pe-4 fw-bold">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in market_data %}
-                    <tr>
-                        <td class="ps-3 ps-md-4 py-3">
+                    <tr class="responsive-tr">
+                        <td class="ps-md-4 py-3 asset-td">
                             <div class="d-flex align-items-center">
                                 <div class="symbol-icon-container me-2 me-md-3">
                                     <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/{{ item.symbol|slice:':3'|lower }}.png" 
@@ -31,17 +31,17 @@
                                 </div>
                                 <div>
                                     <span class="fw-bold d-block text-dark small-mobile-font">{{ item.name }}</span>
-                                    <span class="text-muted x-small-label d-none d-md-block">Mainnet</span>
+                                    <span class="text-muted x-small-label d-md-block">Mainnet</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="d-none d-sm-table-cell">
+                        <td class="symbol-td">
                             <span class="badge bg-light text-dark border fw-medium px-2 py-1" style="font-size: 0.65rem;">{{ item.symbol }}</span>
                         </td>
-                        <td>
+                        <td class="price-td">
                             <span class="fw-bold text-dark small-mobile-font">${{ item.display_price|floatformat:2 }}</span>
                         </td>
-                        <td>
+                        <td class="change-td">
                             {% if item.manipulation >= 0 %}
                                 <div class="d-flex align-items-center text-success fw-bold small-mobile-font">
                                     <i class="bi bi-caret-up-fill me-1"></i>
@@ -54,8 +54,8 @@
                                 </div>
                             {% endif %}
                         </td>
-                        <td class="text-end pe-3 pe-md-4">
-                            <a href="{% url 'trading:copy_list' %}" class="btn btn-sm btn-trade-blue rounded-pill px-3 px-md-4 fw-bold shadow-sm">
+                        <td class="text-md-end pe-md-4 action-td">
+                            <a href="{% url 'trading:copy_list' %}" class="btn btn-trade-blue rounded-pill fw-bold shadow-sm w-100-mobile">
                                 Trade
                             </a>
                         </td>
@@ -77,64 +77,47 @@
 </div>
 
 <style>
-    body { background-color: #f8fafd; overflow-x: hidden; }
-
+    body { background-color: #f8fafd; overflow-x: hidden; width: 100%; }
     .x-small-label { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
 
-    /* استایل دکمه ترید */
     .btn-trade-blue { 
         background-color: #0062ff; 
-        color: white; 
+        color: white !important; 
         border: none; 
         font-size: 0.75rem;
+        padding: 8px 20px;
         transition: 0.3s;
     }
-    .btn-trade-blue:hover { 
-        background-color: #0052d6; 
-        color: white; 
-        transform: translateY(-2px);
-    }
 
-    /* جلوگیری از اسکرول و بهینه سازی جدول */
-    .table-responsive-custom {
-        overflow-x: hidden; /* جلوگیری از اسکرول افقی */
-        width: 100%;
-    }
-
-    .symbol-icon-container {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* استایل‌های اختصاصی موبایل */
-    @media (max-width: 576px) {
-        .small-mobile-font {
-            font-size: 0.8rem !important;
+    /* استایل اصلی موبایل (بدون اسکرول افقی) */
+    @media (max-width: 767.98px) {
+        .responsive-tr {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
         }
-        .btn-trade-blue {
-            padding: 5px 15px !important;
-            font-size: 0.7rem !important;
-        }
-        .container {
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-        .symbol-icon-container img {
-            width: 24px;
-            height: 24px;
-        }
+        
+        .asset-td { width: 60%; order: 1; border: none !important; padding: 0 !important; }
+        .price-td { width: 40%; order: 2; text-align: right; border: none !important; padding: 0 !important; }
+        .symbol-td { width: 60%; order: 3; border: none !important; padding: 5px 0 0 38px !important; }
+        .change-td { width: 40%; order: 4; text-align: right; border: none !important; padding: 5px 0 0 0 !important; }
+        .action-td { width: 100%; order: 5; border: none !important; padding: 15px 0 0 0 !important; }
+        
+        .w-100-mobile { width: 100%; display: block; text-align: center; }
+        .small-mobile-font { font-size: 0.9rem !important; }
+        
+        .table-responsive-custom { overflow-x: hidden; }
+        .symbol-icon-container { width: 32px; height: 32px; }
     }
 
-    .table-hover tbody tr:hover {
-        background-color: #f0f7ff !important;
+    /* دسکتاپ */
+    @media (min-width: 768px) {
+        .btn-trade-blue:hover { transform: translateY(-2px); background-color: #0052d6; }
+        .table td { white-space: nowrap; }
     }
 
-    .table td, .table th {
-        border-bottom: 1px solid #f1f5f9;
-        white-space: nowrap; /* جلوگیری از شکستن خطوط در قیمت */
-    }
+    .table-hover tbody tr:hover { background-color: #f0f7ff !important; }
 </style>
 {% endblock %}

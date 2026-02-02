@@ -7,6 +7,12 @@ from django.conf import settings
 
 @login_required
 def deposit_view(request):
+    # Anti-Spam: Limit pending requests to 3 per user
+    pending_count = Transaction.objects.filter(user=request.user, status='pending', tx_type='deposit').count()
+    if pending_count >= 3:
+        messages.error(request, "You have too many pending requests. Please wait for admin approval.")
+        return redirect('transactions:history')
+
     if request.method == 'POST':
         form = DepositForm(request.POST)
         if form.is_valid():
@@ -15,18 +21,15 @@ def deposit_view(request):
             deposit.tx_type = 'deposit'
             deposit.status = 'pending'
             deposit.save()
-            messages.success(request, "Deposit request submitted! Waiting for admin approval.")
+            messages.success(request, "Deposit request submitted successfully! Pending admin review.")
             return redirect('transactions:history')
     else:
         form = DepositForm()
     
-    # آدرس ولت را از تنظیمات می‌خوانیم (بهتر است در settings.py باشد)
     wallet_address = getattr(settings, 'TRON_WALLET_ADDRESS', "TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim")
-    
     return render(request, 'transactions/deposit.html', {
         'form': form,
         'wallet_address': wallet_address,
-        'page_title': 'Deposit Funds'
     })
 
 @login_required

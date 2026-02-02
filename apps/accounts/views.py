@@ -12,8 +12,12 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_verified = True 
+            user.save()
+            
             login(request, user)
+            messages.success(request, "Registration successful! Your account is now verified.")
             return redirect('trading:copy_list')
     else:
         form = RegisterForm()
@@ -25,11 +29,17 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
             return redirect('trading:copy_list')
+        else:
+            # نمایش پیام خطا در صورت اشتباه بودن ایمیل یا پسورد
+            messages.error(request, "Invalid email or password. Please try again.")
     else:
         form = AuthenticationForm()
+        form.fields['username'].label = "Email"
+        form.fields['username'].widget.attrs.update({'placeholder': 'Enter your email'})
+    
     return render(request, 'accounts/login.html', {'form': form})
-
 def logout_view(request):
     logout(request)
     return redirect('accounts:login')
@@ -45,21 +55,28 @@ def user_dashboard(request):
     context = {
         'followed_traders': my_followed_traders,
         'recent_transactions': recent_transactions,
-        'page_title': 'User Dashboard' # اصلاح شد
+        'page_title': 'User Dashboard'
     }
     return render(request, 'accounts/dashboard.html', context)
 
-
+from django.db.models import Sum
 
 @login_required
 def profile_dashboard(request):
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile updated successfully!")
-            return redirect('accounts:profile_dashboard')
-    else:
-        form = UserProfileForm(instance=request.user)
+    followed_traders = FollowedTrader.objects.filter(user=request.user).select_related('trader')
     
-    return render(request, 'users/profile.html', {'form': form})
+    # محاسبه مجموع PnL بر اساس ROI تریدرها
+    # فرض می‌کنیم PnL مجموع درصدهای تریدرهای فعال کاربر است
+    total_pnl_percent = sum(item.trader.roi_30d for item in followed_traders)
+    
+    # محاسبه سود دلاری (اختیاری): 
+    # total_pnl_usd = sum((item.investment_amount * item.trader.roi_30d) / 100 for item in followed_traders)
+
+    recent_transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')[:5]
+    
+    context = {
+        'followed_traders': followed_traders,
+        'total_pnl': total_pnl_percent, # فرستادن مقدار به تمپلیت
+        'recent_transactions': recent_transactions,
+    }
+    return render(request, 'accounts/dashboard.html', context)

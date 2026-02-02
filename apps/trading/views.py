@@ -13,7 +13,7 @@ def copy_trading_dashboard(request):
     
     for pair in pairs:
         try:
-            # ارسال قیمت فعلی دیتابیس به عنوان Fallback برای جلوگیری از کندی
+            # استفاده از قیمت لحظه‌ای با Fallback قیمت دیتابیس
             current_real_price = CryptoPriceService.fetch_real_time_price(pair.symbol, pair.real_price)
             if current_real_price > 0:
                 pair.real_price = current_real_price
@@ -28,75 +28,83 @@ def copy_trading_dashboard(request):
     })
 
 def trader_detail(request, trader_id):
-    """نمایش جزئیات تریدر بدون نیاز به مدل Order"""
+    """نمایش جزئیات تریدر"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
-    
-    # چون مدل Order نداریم، فعلاً لیست سفارشات باز را خالی می‌فرستیم
-    # یا می‌توانیم از داده‌های استاتیک برای نمایش در ظاهر استفاده کنیم
     return render(request, 'trading/trader_detail.html', {
         'trader': trader,
-        'open_orders': []  # لیست خالی برای جلوگیری از ارور در تمپلیت
+        'open_orders': []  
     })
 
 @login_required
 def copy_action(request, trader_id):
+    """عملیات کپی تریدینگ با چک کردن موجودی و هدایت به واریز"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
     user = request.user
     
-    # مبلغ را از فرم بگیر، اگر نبود پیش‌فرض 100
+    # دریافت مبلغ از فرم (پیش‌فرض 100 دلار)
     amount_str = request.POST.get('amount', '100.00')
     try:
         copy_amount = Decimal(amount_str)
     except:
         copy_amount = Decimal('100.00')
 
+    # کنترل موجودی: اگر کافی نبود، پیام بده و بفرست صفحه واریز
     if user.balance < copy_amount:
-        messages.error(request, f"Insufficient balance! You need ${copy_amount}")
-        return redirect('trading:copy_trading_dashboard')
+        messages.error(request, f"Insufficient balance! You need ${copy_amount}. Please deposit first.")
+        return redirect('transactions:deposit')
 
     with transaction.atomic():
         # کسر از موجودی کاربر
         user.balance -= copy_amount
         user.save()
         
-        # اضافه کردن به دارایی تحت مدیریت تریدر (برای کلاس کار!)
+        # آپدیت دارایی تحت مدیریت تریدر (AUM)
         trader.aum = Decimal(trader.aum) + copy_amount
         trader.save()
         
-        FollowedTrader.objects.create(
+        # ایجاد یا آپدیت رکورد کپی
+        follow, created = FollowedTrader.objects.get_or_create(
             user=user, 
-            trader=trader, 
-            investment_amount=copy_amount
+            trader=trader,
+            defaults={'investment_amount': copy_amount}
         )
+        
+        if not created:
+            follow.investment_amount += copy_amount
+            follow.save()
 
     messages.success(request, f"Successfully started copying {trader.name} with ${copy_amount}!")
+    # هدایت به داشبورد (نام صحیح در urls شما 'dashboard' است)
     return redirect('accounts:dashboard')
 
 @login_required
 def stop_copy_action(request, follow_id):
-    """توقف کپی و بازگشت وجه"""
+    """توقف کپی و بازگشت وجه به کیف پول کاربر"""
     followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
     with transaction.atomic():
         user = request.user
+        # بازگشت وجه
         user.balance += followed_trader.investment_amount
         user.save()
         
-        trader_name = followed_trader.trader.name
+        # کم کردن از AUM تریدر
+        trader = followed_trader.trader
+        trader.aum = max(0, Decimal(trader.aum) - followed_trader.investment_amount)
+        trader.save()
+        
+        trader_name = trader.name
         followed_trader.delete()
     
-    messages.info(request, f"Stopped copying {trader_name}. Funds returned to balance.")
+    messages.info(request, f"Stopped copying {trader_name}. Funds returned to your balance.")
     return redirect('accounts:dashboard')
 
 def market_list(request):
-    """نمایش لیست مارکت با قیمت‌های آپدیت شده"""
+    """نمایش لیست مارکت"""
     pairs = TradingPair.objects.filter(is_active=True)
-    
-    market_data = [] # ساخت لیستی که تمپلیت منتظر آن است
+    market_data = [] 
     for pair in pairs:
-        # استفاده از سرویس کش که قبلاً نوشتیم برای سرعت بالا
         data = CryptoPriceService.fetch_market_data(pair.symbol)
-        
         market_data.append({
             'name': pair.display_name,
             'symbol': pair.symbol,

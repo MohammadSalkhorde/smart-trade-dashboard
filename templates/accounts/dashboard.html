@@ -2,14 +2,16 @@
 
 {% block content %}
 <style>
+    /* 1. Base Styles & Balance Card */
     .card-balance {
         background: linear-gradient(135deg, #0052ff 0%, #003db3 100%);
         border-radius: 24px;
         color: white;
         position: relative;
         overflow: hidden;
+        transition: all 0.3s ease;
     }
-    /* افکت SVG پس‌زمینه کارت برای حرفه‌ای شدن */
+
     .card-balance::after {
         content: "";
         position: absolute;
@@ -20,10 +22,98 @@
         background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' fill-opacity='0.05'%3E%3Cpath d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z'/%3E%3C/svg%3E") no-repeat;
         background-size: contain;
     }
+
     .hover-shadow:hover {
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+        transform: translateY(-3px);
+    }
+
+    .bg-success-subtle { background-color: rgba(25, 135, 84, 0.1) !important; }
+    .bg-warning-subtle { background-color: rgba(255, 193, 7, 0.1) !important; }
+
+    /* 2. Responsive Table (Mobile Layout) */
+    @media (max-width: 768px) {
+        /* Hide Table Headers */
+        .table-responsive thead {
+            display: none;
+        }
+
+        /* Convert Rows to Individual Cards */
+        .table-responsive tbody tr {
+            display: block;
+            margin-bottom: 1.25rem;
+            border: 1px solid #edf2f7;
+            border-radius: 20px;
+            padding: 12px;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .table-responsive td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            padding: 10px 8px !important;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        /* Add Label Headings via CSS */
+        .table-responsive td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 10px;
+            color: #adb5bd;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Special Fix: Stop Copying Button (Last Cell) --- */
+        .table-responsive td[data-label="Control"] {
+            justify-content: center !important; /* Center the content */
+            border-top: 1px solid #f8f9fa;
+            margin-top: 8px;
+            padding-top: 15px !important;
+        }
+
+        /* Remove the "Control" title only for the button cell */
+        .table-responsive td[data-label="Control"]::before {
+            display: none !important;
+            content: "" !important;
+        }
+
+        /* Make button wider and centered on mobile */
+        .w-100-mobile {
+            width: 85% !important;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .ps-4, .pe-4 {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+    }
+
+    /* 3. Small Mobile Adjustments (Header & Balance) */
+    @media (max-width: 576px) {
+        h3 { font-size: 1.3rem; }
+        .card-balance h2 { font-size: 1.6rem; }
+        
+        .d-flex.justify-content-between.align-items-center.mb-4 {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 15px;
+        }
+
+        .text-end, .btn-primary { 
+            width: 100%;
+        }
+
+        .btn-primary {
+            padding: 12px;
+        }
     }
 </style>
 
@@ -41,7 +131,7 @@
 
 <div class="row g-4">
     <div class="col-md-4">
-        <div class="card border-0 p-4 shadow-sm card-balance">
+        <div class="card border-0 p-4 shadow-sm card-balance h-100">
             <div class="d-flex justify-content-between align-items-start mb-4">
                 <span class="opacity-75 small">Total Balance (USDT)</span>
                 <i class="bi bi-wallet2 fs-4"></i>
@@ -65,16 +155,22 @@
                 </div>
                 <div class="col-4 border-end">
                     <small class="text-muted d-block mb-1">Total PnL</small>
-                    <span class="h4 fw-bold text-success">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="me-1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                        +$0.00
+                    <span class="h4 fw-bold {% if total_pnl >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        <i class="bi {% if total_pnl >= 0 %}bi-graph-up-arrow{% else %}bi-graph-down-arrow{% endif %} me-1"></i>
+                        {{ total_pnl }}%
                     </span>
                 </div>
                 <div class="col-4">
                     <small class="text-muted d-block mb-1">Account Status</small>
-                    <span class="badge bg-success-subtle text-success border border-success px-3">
-                        <i class="bi bi-patch-check-fill me-1"></i> Verified
-                    </span>
+                    {% if user.is_verified %}
+                        <span class="badge bg-success-subtle text-success border border-success px-2 px-md-3 py-2 rounded-pill small">
+                            <i class="bi bi-patch-check-fill me-1"></i> Verified
+                        </span>
+                    {% else %}
+                        <span class="badge bg-warning-subtle text-warning border border-warning px-2 px-md-3 py-2 rounded-pill small">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Unverified
+                        </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -83,14 +179,16 @@
 
 <div class="card border-0 shadow-sm mt-5 hover-shadow" style="border-radius: 24px; overflow: hidden;">
     <div class="card-header bg-white border-0 py-4 px-4 d-flex align-items-center">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%230052ff" stroke-width="2" class="me-2 text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        <div class="icon-box bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+        </div>
         <h5 class="fw-bold mb-0">Active Copy Trading Positions</h5>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive p-md-0 p-3">
         <table class="table align-middle mb-0">
-            <thead class="bg-light">
-                <tr class="text-muted small">
-                    <th class="ps-4">Lead Trader</th>
+            <thead style="background-color: #f8fafd;">
+                <tr class="text-muted small text-uppercase">
+                    <th class="ps-4 py-3">Lead Trader</th>
                     <th>Investment</th>
                     <th>ROI (30d)</th>
                     <th>Start Date</th>
@@ -100,35 +198,35 @@
             <tbody>
                 {% for item in followed_traders %}
                 <tr>
-                    <td class="ps-4">
+                    <td class="ps-4" data-label="Lead Trader">
                         <div class="d-flex align-items-center">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px; border: 1px solid rgba(0,82,255,0.1);">
                                 {{ item.trader.name|slice:":1" }}
                             </div>
-                            <div>
+                            <div class="text-start">
                                 <div class="fw-bold text-dark">{{ item.trader.name }}</div>
-                                <small class="text-muted" style="font-size: 11px;">Pro Account</small>
+                                <small class="text-muted" style="font-size: 10px;">Pro Account</small>
                             </div>
                         </div>
                     </td>
-                    <td class="fw-bold text-dark">${{ item.investment_amount }}</td>
-                    <td>
+                    <td class="fw-bold text-dark" data-label="Investment">${{ item.investment_amount }}</td>
+                    <td data-label="ROI (30d)">
                         <span class="text-success fw-bold bg-success bg-opacity-10 px-2 py-1 rounded">
                             <i class="bi bi-caret-up-fill small"></i> {{ item.trader.roi_30d }}%
                         </span>
                     </td>
-                    <td class="text-muted small">{{ item.created_at|date:"M d, Y" }}</td>
-                    <td class="text-end pe-4">
-                        <a href="{% url 'trading:stop_copy_action' item.id %}" class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-bold">
+                    <td class="text-muted small" data-label="Start Date">{{ item.created_at|date:"M d, Y" }}</td>
+                    <td class="text-end pe-4" data-label="Control">
+                        <a href="{% url 'trading:stop_copy_action' item.id %}" class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-bold w-100-mobile">
                             <i class="bi bi-stop-circle me-1"></i> Stop Copying
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center py-5">
+                    <td colspan="5" class="text-center py-5 border-0">
                         <div class="text-muted mb-3">You are not following any traders yet.</div>
-                        <a href="{% url 'trading:copy_list' %}" class="btn btn-sm btn-light rounded-pill px-4">Explore Traders</a>
+                        <a href="{% url 'trading:copy_list' %}" class="btn btn-primary rounded-pill px-4">Explore Traders</a>
                     </td>
                 </tr>
                 {% endfor %}

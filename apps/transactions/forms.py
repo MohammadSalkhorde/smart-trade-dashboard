@@ -1,5 +1,8 @@
 from django import forms
 from .models import Transaction
+import re
+from django import forms
+from django.core.exceptions import ValidationError
 
 class DepositForm(forms.ModelForm):
     class Meta:
@@ -9,13 +12,39 @@ class DepositForm(forms.ModelForm):
             'amount': forms.NumberInput(attrs={
                 'class': 'form-control', 
                 'placeholder': '0.00',
-                'step': '0.01'
+                'min': '1',
             }),
             'tx_hash': forms.TextInput(attrs={
                 'class': 'form-control', 
-                'placeholder': 'Enter Transaction Hash (TXID)'
+                'placeholder': 'Enter 64-character TXID',
+                'maxlength': '64',
             }),
         }
+
+    def clean_amount(self):
+        amount = self.cleaned_data.get('amount')
+        if amount <= 0:
+            raise ValidationError("Amount must be greater than zero.")
+        if amount > 1000000:
+            raise ValidationError("Invalid amount. Please contact support for large deposits.")
+        return amount
+
+    def clean_tx_hash(self):
+        tx_hash = self.cleaned_data.get('tx_hash').strip()
+        
+        # Security Filter: Block script/shell injection characters
+        if re.search(r'[<>{}[\]\(\);|&]', tx_hash):
+            raise ValidationError("Invalid characters detected in transaction hash.")
+
+        # Format Filter: TRON TXID must be exactly 64 hex characters
+        if not re.match(r'^[a-fA-F0-9]{64}$', tx_hash):
+            raise ValidationError("Invalid TXID format. Must be a 64-character hex string.")
+
+        # Anti-Spam: Prevent duplicate TXID entry
+        if Transaction.objects.filter(tx_hash=tx_hash).exists():
+            raise ValidationError("This transaction hash has already been submitted.")
+            
+        return tx_hash
 
 class WithdrawForm(forms.ModelForm):
     class Meta:
