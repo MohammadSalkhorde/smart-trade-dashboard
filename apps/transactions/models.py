@@ -29,18 +29,28 @@ class Transaction(models.Model):
         return f"{self.user.username} - {self.tx_type} - {self.amount}"
 
     def save(self, *args, **kwargs):
-        if self.pk:
-            old_transaction = Transaction.objects.get(pk=self.pk)
-            # اگر ادمین واریز را تایید کرد -> موجودی اضافه شود
-            if old_transaction.status == 'pending' and self.status == 'approved':
-                if self.tx_type == 'deposit':
-                    self.user.balance += self.amount
-                    self.user.save()
+            if self.pk:
+                # گرفتن وضعیت قبلی از دیتابیس
+                old_transaction = Transaction.objects.get(pk=self.pk)
+                
+                # حالت ۱: تایید واریز (Deposit Approved)
+                if old_transaction.status == 'pending' and self.status == 'approved':
+                    if self.tx_type == 'deposit':
+                        # اضافه کردن موجودی به خود کاربر
+                        self.user.balance += self.amount
+                        self.user.save()
+                        
+                        # منطق سود ۱۰ درصدی زیرمجموعه (Referral System)
+                        if hasattr(self.user, 'referred_by') and self.user.referred_by:
+                            from decimal import Decimal
+                            referral_bonus = self.amount * Decimal('0.10')
+                            self.user.referred_by.balance += referral_bonus
+                            self.user.referred_by.save()
+                
+                # حالت ۲: رد شدن برداشت (Withdraw Rejected) -> پول باید به موجودی کاربر برگردد
+                elif old_transaction.status == 'pending' and self.status == 'rejected':
+                    if self.tx_type == 'withdraw':
+                        self.user.balance += self.amount
+                        self.user.save()
             
-            # اگر ادمین درخواست برداشتی که قبلاً پولش کسر شده بود را رد کرد -> پول برگردد
-            elif old_transaction.status == 'pending' and self.status == 'rejected':
-                if self.tx_type == 'withdraw':
-                    self.user.balance += self.amount
-                    self.user.save()
-        
-        super().save(*args, **kwargs)
+            super().save(*args, **kwargs)

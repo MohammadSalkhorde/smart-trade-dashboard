@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import uuid
 
 class User(AbstractUser):
     # اجباری و یکتا کردن ایمیل برای جایگزینی با یوزرنیم
@@ -20,12 +21,21 @@ class User(AbstractUser):
     )
 
     is_verified = models.BooleanField(default=True)
+    
+    referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    referral_code = models.CharField(max_length=10, unique=True, blank=True)
 
     # تنظیم ایمیل به عنوان فیلد اصلی برای لاگین
     USERNAME_FIELD = 'email'
     # فیلدهایی که موقع createsuperuser پرسیده می‌شوند (یوزرنیم اینجا اجباری می‌ماند)
     REQUIRED_FIELDS = ['username']
 
+
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = str(uuid.uuid4())[:8] # تولید کد دعوت یکتا
+        super().save(*args, **kwargs)
+        
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'

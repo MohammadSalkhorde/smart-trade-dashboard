@@ -31,6 +31,12 @@ class TradingPair(models.Model):
     is_active = models.BooleanField(default=True)
     last_updated = models.DateTimeField(auto_now=True)
 
+    nickname = models.CharField(max_length=100, blank=True, null=True) 
+
+    @property
+    def final_display_name(self):
+        return self.nickname if self.nickname else self.display_name
+    
     @property
     def display_price(self):
         if not self.real_price:
@@ -77,6 +83,17 @@ class LeadTrader(models.Model):
         self.chart_history_json = history[-30:] # فقط ۳۰ روز آخر
         self.roi_30d = new_point
         self.save()
+        
+    # Trading App - models.py - کلاس LeadTrader
+
+    def update_chart_by_profit(self):
+        """هماهنگ سازی چارت با درصد سود ادمین"""
+        history = list(self.chart_history_json)
+        # اگر ادمین عدد سود را دستی تغییر داد، چارت را آپدیت کن
+        if history:
+            history[-1] = float(self.roi_30d)
+            self.chart_history_json = history
+            self.save()
 
     def __str__(self):
         return f"{self.name} (ROI: {self.roi_30d}%)"
