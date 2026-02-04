@@ -49,40 +49,21 @@
 
                     <div class="col-lg-4 col-12 mb-3 mb-md-0 px-md-3">
                         <div class="tradingview-widget-container position-relative" style="height: 75px; background: #fff; border-radius: 8px;">
-                            
-                            <div style="
-                                position: absolute; 
-                                top: 0; 
-                                left: 0; 
-                                width: 100%; 
-                                height: 45px; 
-                                background: #ffffff; 
-                                z-index: 10; 
-                                padding: 8px 12px;
-                                pointer-events: none;
-                            ">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 45px; background: #ffffff; z-index: 10; padding: 8px 12px; pointer-events: none;">
                                 <div class="d-flex align-items-center">
                                     <div class="fw-bold" style="font-size: 0.9rem; color: #1e293b; letter-spacing: -0.2px;">
                                         {{ trader.name }} <span class="text-muted fw-normal" style="font-size: 0.75rem;">/ USDT</span>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="tradingview-widget-container__widget"></div>
                             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
                             {
                             "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}BINANCE:SOLUSDT{% elif forloop.counter|divisibleby:2 %}BINANCE:ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
-                            "width": "100%",
-                            "height": "100%",
-                            "locale": "en",
-                            "dateRange": "12M",
-                            "colorTheme": "light",
-                            "trendLineColor": "{% if '-' in trader.roi_30d %}#ef4444{% else %}#10b981{% endif %}",
+                            "width": "100%", "height": "100%", "locale": "en", "dateRange": "12M",
+                            "colorTheme": "light", "trendLineColor": "{% if '-' in trader.roi_30d %}#ef4444{% else %}#10b981{% endif %}",
                             "underLineColor": "{% if '-' in trader.roi_30d %}rgba(239, 68, 68, 0.05){% else %}rgba(16, 185, 129, 0.05){% endif %}",
-                            "isTransparent": true,
-                            "autosize": true,
-                            "chartOnly": false,
-                            "noTimeScale": false
+                            "isTransparent": true, "autosize": true, "chartOnly": false, "noTimeScale": false
                             }
                             </script>
                         </div>
@@ -113,19 +94,49 @@
                     </div>
 
                     <div class="col-lg-2 col-md-3 col-12 text-end mt-3 mt-md-0">
-                        <button onclick="event.stopPropagation(); window.location.href='{% url 'trading:copy_action' trader.id %}'" 
-                                class="btn btn-copy-blue shadow-sm w-100 py-2">
+                        <button type="button" 
+                                class="btn btn-copy-blue shadow-sm w-100 py-2"
+                                onclick="event.stopPropagation(); document.getElementById('simpleForm{{ trader.id }}').style.display='block';">
                             Copy
                         </button>
                     </div>
+                </div>
 
+                <div id="simpleForm{{ trader.id }}" class="simple-overlay-form shadow-lg" onclick="event.stopPropagation();">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold text-dark" style="font-size: 0.95rem;">Copy Strategy</span>
+                        <button type="button" class="btn-close-custom" onclick="this.parentElement.parentElement.style.display='none';">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <label class="x-small-label text-muted">Investment Amount</label>
+                                <span class="text-primary fw-bold x-small-label">USDT</span>
+                            </div>
+                            <input type="number" name="amount" class="form-control form-control-custom" 
+                                   placeholder="0.00" min="1" step="0.01" required>
+                        </div>
+                        
+                        <div class="info-box-mini mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Trader:</span>
+                                <span class="text-dark fw-bold">{{ trader.name }}</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" style="font-size: 0.85rem;">
+                            Confirm & Start
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5">
-            <p class="text-muted">No traders found at the moment.</p>
-        </div>
+        <div class="col-12 text-center py-5"><p class="text-muted">No traders found.</p></div>
         {% endfor %}
     </div>
 </div>
@@ -133,11 +144,27 @@
 <style>
     body { background-color: #f8fafd; overflow-x: hidden; }
     
+    /* فرم ساده بدون لایه تیره */
+    .simple-overlay-form {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        background: white;
+        border: 2px solid #0062ff;
+        border-radius: 15px;
+        padding: 20px;
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
     .nav-link-custom { text-decoration: none; font-weight: 700; font-size: 0.95rem; color: #64748b; padding-bottom: 8px; position: relative; }
     .nav-link-custom.active { color: #0062ff; }
     .nav-link-custom.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: #0062ff; border-radius: 2px; }
 
-    .trader-card-blue { border-radius: 16px; background: #ffffff; transition: all 0.3s ease; border: 1px solid #e2e8f0 !important; }
+    .trader-card-blue { border-radius: 16px; background: #ffffff; transition: all 0.3s ease; border: 1px solid #e2e8f0 !important; z-index: 1; }
     .trader-card-blue:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,98,255,0.08) !important; border-color: #0062ff33 !important; }
 
     .avatar-placeholder-blue { width: 60px; height: 60px; border-radius: 50%; background: #e0eaff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0062ff; font-size: 1.3rem; }
@@ -147,33 +174,66 @@
     .x-small-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
     .badge-blue-soft { background: #f0f7ff; color: #0062ff; font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
 
-    .btn-copy-blue { background: #0062ff; color: #fff; font-weight: 700; border: none; border-radius: 12px; transition: 0.2s; }
-    .btn-copy-blue:hover { background: #0052d6; transform: translateY(-1px); color: #fff; }
+    .btn-copy-blue { background: #0062ff; color: #fff; font-weight: 700; border: none; border-radius: 12px; transition: 0.2s; position: relative; z-index: 5; }
+    .btn-copy-blue:hover { background: #0052d6; color: #fff; }
 
     .tiny-text { font-size: 0.75rem; color: #64748b; }
 
-    .tradingview-widget-container { pointer-events: none; }
-
-    @media (min-width: 768px) {
-        .border-start-md { border-left: 1px solid #e2e8f0 !important; }
-    }
-
+    @media (min-width: 768px) { .border-start-md { border-left: 1px solid #e2e8f0 !important; } }
     @media (max-width: 767px) {
-        .border-start-custom { 
-            border-top: 1px solid #f1f5f9; 
-            padding-top: 15px; 
-            margin-top: 15px; 
-            border-left: none !important; 
-        }
-        .roi-blue { 
-            font-size: 1.5rem; 
-        }
-        .tradingview-widget-container { 
-            height: 120px !important; 
-            margin-top: 10px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #f8fafd; 
-        }
+        .border-start-custom { border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; border-left: none !important; }
     }
+
+    /* استایل فرم بازشونده شیک */
+    .simple-overlay-form {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 280px;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 20px;
+        z-index: 2000;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+
+    .form-control-custom {
+        background: #f1f5f9 !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        padding: 10px 15px !important;
+        font-size: 1rem;
+        color: #1e293b;
+    }
+    
+    .form-control-custom:focus {
+        border-color: #0062ff !important;
+        box-shadow: none !important;
+        background: #fff !important;
+    }
+
+    .info-box-mini {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .btn-close-custom {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.1rem;
+        transition: 0.2s;
+        line-height: 1;
+        padding: 0;
+    }
+    
+    .btn-close-custom:hover { color: #ef4444; }
 </style>
 {% endblock %}

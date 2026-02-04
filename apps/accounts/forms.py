@@ -53,14 +53,22 @@ class RegisterForm(UserCreationForm):
             raise ValidationError("Username must be at least 4 characters long.")
         return username
 
-# فرم پروفایل (بدون تغییر)
+from django import forms
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'wallet_address']
-        widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Last Name'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'readonly': 'readonly'}),
-            'wallet_address': forms.TextInput(attrs={'class': 'form-control bg-dark text-white border-secondary', 'placeholder': 'Enter your USDT (TRC20) Address'}),
-        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # اعمال استایل یکپارچه به تمام فیلدها
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update({
+                'class': 'form-control',
+            })
+        # غیرقابل ویرایش کردن ایمیل
+        self.fields['email'].widget.attrs['readonly'] = True

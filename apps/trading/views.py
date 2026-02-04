@@ -3,17 +3,15 @@ from .models import *
 from services.price_fetcher import CryptoPriceService
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.db import transaction 
 
 def copy_trading_dashboard(request):
-    """نمایش لیست تریدرها و آپدیت قیمت‌ها"""
     traders = LeadTrader.objects.all()
     pairs = TradingPair.objects.filter(is_active=True)
     
     for pair in pairs:
         try:
-            # استفاده از قیمت لحظه‌ای با Fallback قیمت دیتابیس
             current_real_price = CryptoPriceService.fetch_real_time_price(pair.symbol, pair.real_price)
             if current_real_price > 0:
                 pair.real_price = current_real_price
@@ -28,7 +26,6 @@ def copy_trading_dashboard(request):
     })
 
 def trader_detail(request, trader_id):
-    """نمایش جزئیات تریدر"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
     return render(request, 'trading/trader_detail.html', {
         'trader': trader,
@@ -37,58 +34,56 @@ def trader_detail(request, trader_id):
 
 @login_required
 def copy_action(request, trader_id):
-    """عملیات کپی تریدینگ با چک کردن موجودی و هدایت به واریز"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
     user = request.user
     
-    # دریافت مبلغ از فرم (پیش‌فرض 100 دلار)
-    amount_str = request.POST.get('amount', '100.00')
-    try:
-        copy_amount = Decimal(amount_str)
-    except:
-        copy_amount = Decimal('100.00')
+    if request.method == 'POST':
+        amount_str = request.POST.get('amount')
+        try:
+            copy_amount = Decimal(amount_str)
+        except (TypeError, ValueError, InvalidOperation):
+            messages.error(request, "Invalid amount entered.")
+            return redirect('trading:copy_trading_dashboard')
 
-    # کنترل موجودی: اگر کافی نبود، پیام بده و بفرست صفحه واریز
-    if user.balance < copy_amount:
-        messages.error(request, f"Insufficient balance! You need ${copy_amount}. Please deposit first.")
-        return redirect('transactions:deposit')
+        if copy_amount < Decimal('1.00'):
+            messages.error(request, "Minimum investment amount is $1.00")
+            return redirect('trading:copy_trading_dashboard')
 
-    with transaction.atomic():
-        # کسر از موجودی کاربر
-        user.balance -= copy_amount
-        user.save()
-        
-        # آپدیت دارایی تحت مدیریت تریدر (AUM)
-        trader.aum = Decimal(trader.aum) + copy_amount
-        trader.save()
-        
-        # ایجاد یا آپدیت رکورد کپی
-        follow, created = FollowedTrader.objects.get_or_create(
-            user=user, 
-            trader=trader,
-            defaults={'investment_amount': copy_amount}
-        )
-        
-        if not created:
-            follow.investment_amount += copy_amount
-            follow.save()
+        if user.balance < copy_amount:
+            messages.error(request, f"Insufficient balance! You need ${copy_amount}.")
+            return redirect('transactions:deposit')
 
-    messages.success(request, f"Successfully started copying {trader.name} with ${copy_amount}!")
-    # هدایت به داشبورد (نام صحیح در urls شما 'dashboard' است)
-    return redirect('accounts:dashboard')
+        with transaction.atomic():
+            user.balance -= copy_amount
+            user.save()
+            
+            trader.aum = Decimal(trader.aum) + copy_amount
+            trader.save()
+            
+            follow, created = FollowedTrader.objects.get_or_create(
+                user=user, 
+                trader=trader,
+                defaults={'investment_amount': copy_amount}
+            )
+            
+            if not created:
+                follow.investment_amount += copy_amount
+                follow.save()
+
+        messages.success(request, f"Successfully started copying {trader.name} with ${copy_amount}!")
+        return redirect('accounts:dashboard')
+    
+    return redirect('trading:copy_trading_dashboard')
 
 @login_required
 def stop_copy_action(request, follow_id):
-    """توقف کپی و بازگشت وجه به کیف پول کاربر"""
     followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
     with transaction.atomic():
         user = request.user
-        # بازگشت وجه
         user.balance += followed_trader.investment_amount
         user.save()
         
-        # کم کردن از AUM تریدر
         trader = followed_trader.trader
         trader.aum = max(0, Decimal(trader.aum) - followed_trader.investment_amount)
         trader.save()
@@ -100,7 +95,6 @@ def stop_copy_action(request, follow_id):
     return redirect('accounts:dashboard')
 
 def market_list(request):
-    """نمایش لیست مارکت"""
     pairs = TradingPair.objects.filter(is_active=True)
     market_data = [] 
     for pair in pairs:
