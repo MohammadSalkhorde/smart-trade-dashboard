@@ -1,165 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row mb-4 align-items-end">
-        <div class="col-md-8">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}" class="text-decoration-none text-muted">Dashboard</a></li>
-                    <li class="breadcrumb-item active fw-bold text-primary">Settings</li>
-                </ol>
-            </nav>
-            <h2 class="fw-bold text-dark mb-0">Account Settings</h2>
-        </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            <span class="text-muted small">Account Type: <span class="text-dark fw-bold text-uppercase">Standard Investor</span></span>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
-                <div class="card-header bg-primary py-4 text-center border-0 position-relative">
-                    <div class="position-relative d-inline-block">
-                        <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary shadow" style="width: 90px; height: 90px; font-size: 2.2rem; border: 4px solid rgba(255,255,255,0.2);">
-                            {{ user.username|first|upper }}
-                        </div>
-                        {% if user.is_verified %}
-                        <div class="position-absolute bottom-0 end-0 bg-success rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 28px; height: 28px; border: 2px solid white;">
-                            <i class="bi bi-patch-check-fill text-white" style="font-size: 14px;"></i>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <h5 class="text-white fw-bold mt-3 mb-0">{{ user.username }}</h5>
-                    <span class="text-white-50 small">{{ user.email }}</span>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-light">
-                            <span class="text-muted small">Verification Status</span>
-                            {% if user.is_verified %}
-                                <span class="badge bg-success-soft text-success rounded-pill px-3">Verified Member</span>
-                            {% else %}
-                                <span class="badge bg-danger-soft text-danger rounded-pill px-3">Unverified</span>
-                            {% endif %}
-                        </div>
-                        <div class="list-group-item py-4 bg-light-subtle text-center">
-                            <span class="text-muted fw-bold small d-block mb-1">TOTAL BALANCE</span>
-                            <h3 class="fw-bold text-dark mb-3">${{ user.balance|floatformat:2 }}</h3>
-                            <a href="{% url 'transactions:deposit' %}" class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm py-2">
-                                <i class="bi bi-plus-lg me-1"></i> Add Funds
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header bg-white py-3 border-bottom border-light">
-                    <ul class="nav nav-tabs card-header-tabs border-0">
-                        <li class="nav-item">
-                            <a class="nav-link active fw-bold px-4" href="#"><i class="bi bi-person-gear me-2"></i>Profile Details</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body p-4 p-md-5">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4 rounded-3" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary small">First Name</label>
-                                <div class="input-group-modern">
-                                    <i class="bi bi-person"></i>
-                                    {{ form.first_name }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary small">Last Name</label>
-                                <div class="input-group-modern">
-                                    <i class="bi bi-person"></i>
-                                    {{ form.last_name }}
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-bold text-secondary small">Email Address (Primary)</label>
-                                <div class="input-group-modern disabled-style">
-                                    <i class="bi bi-envelope"></i>
-                                    {{ form.email }}
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-bold text-secondary small">Withdrawal Wallet Address (USDT TRC20)</label>
-                                <div class="input-group-modern">
-                                    <i class="bi bi-wallet2"></i>
-                                    {{ form.wallet_address }}
-                                </div>
-                                <div class="form-text mt-2 text-muted small">
-                                    <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> 
-                                    Double-check your address. Incorrect TRC20 addresses may result in permanent loss of funds.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-5 border-top pt-4 text-end">
-                            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill shadow">
-                                <i class="bi bi-check2-all me-2"></i>Update Profile
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm mt-4 overflow-hidden" style="border-radius: 16px; border-left: 5px solid #dc3545 !important;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                        <div>
-                            <h6 class="fw-bold text-danger mb-1">Security & Sessions</h6>
-                            <p class="text-muted small mb-0">Once logged out, you'll need to re-authenticate to access your assets.</p>
-                        </div>
-                        <form action="{% url 'accounts:logout' %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm px-4 fw-bold rounded-pill">
-                                <i class="bi bi-box-arrow-right me-2"></i>Secure Logout
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="alert alert-info border-0 shadow-sm rounded-4">
-    <label class="small fw-bold text-uppercase opacity-75">Your Referral Link</label>
-    <div class="input-group mt-2">
-        <input type="text" class="form-control bg-white border-0" id="refLink" value="{{ referral_link }}" readonly>
-        <button class="btn btn-primary px-3" onclick="copyRef()">Copy</button>
-    </div>
-</div>
-
-<script>
-function copyRef() {
-    var copyText = document.getElementById("refLink");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Referral link copied!");
-}
-</script>
 <style>
     body { background-color: #f8fafd; }
 
-    /* Input Groups Modern Integration */
+    /* استایل‌های مدرن اینپوت‌ها */
     .input-group-modern {
         position: relative;
         display: flex;
@@ -174,7 +19,6 @@ function copyRef() {
         pointer-events: none;
     }
 
-    /* Target Django Input Classes */
     .input-group-modern input {
         width: 100%;
         padding: 12px 15px 12px 45px !important;
@@ -198,18 +42,185 @@ function copyRef() {
         cursor: not-allowed;
     }
 
+    /* استایل اختصاصی بخش رفرال */
+    .input-group-copy {
+        display: flex;
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .input-group-copy input {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding-left: 15px;
+    }
+
     .bg-success-soft { background-color: #e8f5e9; color: #2e7d32; }
     .bg-danger-soft { background-color: #ffebee; color: #c62828; }
+    .bg-primary-soft { background-color: #f0f7ff; color: #0052ff; }
 
     .btn-primary { background-color: #0052ff; border: none; }
     .btn-primary:hover { background-color: #0046d5; transform: translateY(-1px); }
 
-    .breadcrumb-item + .breadcrumb-item::before { content: "›"; font-size: 1.2rem; }
-
+    .container { animation: fadeInUp 0.5s ease-out; }
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(15px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    .container { animation: fadeInUp 0.5s ease-out; }
 </style>
+
+<div class="container py-5">
+    <div class="row mb-4 align-items-end">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:profile_dashboard' %}" class="text-decoration-none text-muted">Dashboard</a></li>
+                    <li class="breadcrumb-item active fw-bold text-primary">Settings</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">Account Settings</h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
+                <div class="card-header bg-primary py-4 text-center border-0">
+                    <div class="position-relative d-inline-block">
+                        <div class="rounded-circle bg-white d-flex align-items-center justify-content-center fw-bold text-primary shadow" style="width: 90px; height: 90px; font-size: 2.2rem;">
+                            {{ user.username|first|upper }}
+                        </div>
+                    </div>
+                    <h5 class="text-white fw-bold mt-3 mb-0">{{ user.username }}</h5>
+                    <span class="text-white-50 small">{{ user.email }}</span>
+                </div>
+                <div class="card-body p-0 text-center bg-light-subtle py-4">
+                    <span class="text-muted fw-bold small d-block mb-1">TOTAL BALANCE</span>
+                    <h3 class="fw-bold text-dark mb-3">${{ user.balance|floatformat:2 }}</h3>
+                    <div class="px-3">
+                        <a href="{% url 'transactions:deposit' %}" class="btn btn-primary w-100 fw-bold rounded-pill shadow-sm">
+                            <i class="bi bi-plus-lg me-1"></i> Add Funds
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-4 overflow-hidden" style="border-radius: 16px;">
+                <div class="card-header bg-white py-3 border-bottom border-light">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-people me-2 text-primary"></i>Referral Program</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <div class="p-3 rounded-4 bg-light text-center border">
+                                <span class="text-muted small d-block">Referrals</span>
+                                <h5 class="fw-bold mb-0">{{ referral_count }}</h5>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded-4 bg-primary-soft text-center border border-primary-subtle">
+                                <span class="text-primary small d-block">Earned</span>
+                                <h5 class="fw-bold mb-0">${{ referral_earnings }}</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="form-label fw-bold text-secondary small">Invite Link</label>
+                    <div class="input-group-copy">
+                        <input type="text" class="form-control" id="refLink" value="{{ referral_link }}" readonly>
+                        <button class="btn btn-primary px-3 fw-bold" onclick="copyRef()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-white py-3 border-bottom border-light text-primary fw-bold">
+                    <i class="bi bi-person-gear me-2"></i>Profile Details
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4 rounded-3" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">First Name</label>
+                                <div class="input-group-modern">
+                                    <i class="bi bi-person"></i>
+                                    {{ form.first_name }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small">Last Name</label>
+                                <div class="input-group-modern">
+                                    <i class="bi bi-person"></i>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-secondary small">Email Address</label>
+                                <div class="input-group-modern disabled-style">
+                                    <i class="bi bi-envelope"></i>
+                                    {{ form.email }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-secondary small">Withdrawal Wallet (TRC20)</label>
+                                <div class="input-group-modern">
+                                    <i class="bi bi-wallet2"></i>
+                                    {{ form.wallet_address }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill shadow">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-4" style="border-radius: 16px; border-left: 5px solid #dc3545 !important;">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="fw-bold text-danger mb-0">Secure Sign Out</h6>
+                        <p class="text-muted small mb-0">End your current session</p>
+                    </div>
+                    <form action="{% url 'accounts:logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm px-4 fw-bold rounded-pill">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyRef() {
+    var copyText = document.getElementById("refLink");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    
+    // تغییر موقت دکمه برای بازخورد به کاربر
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = "Copied!";
+    setTimeout(() => { btn.innerText = originalText; }, 2000);
+}
+</script>
 {% endblock %}

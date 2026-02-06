@@ -12,69 +12,96 @@
         --bg-light: #f8fafd;
     }
 
-    body { background-color: var(--bg-light) !important; color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    body { 
+        background-color: var(--bg-light) !important; 
+        color: var(--text-main); 
+        font-family: 'Inter', sans-serif; 
+        overflow-x: hidden; 
+        padding-bottom: 180px !important; 
+    }
     
-    .nav-tabs .nav-link { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; border: none !important; padding: 10px 15px; }
-    .nav-tabs .nav-link.active { color: var(--brand-blue) !important; border-bottom: 3px solid var(--brand-blue) !important; background: transparent !important; }
-    
+    /* استایل چارت تمیز و محافظت شده */
+    .chart-clean-wrapper {
+        position: relative;
+        height: 170px; /* کوتاه‌تر و شیک‌تر مثل صفحه لیست */
+        background: transparent;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .tradingview-widget-container iframe {
+        position: absolute;
+        top: -10px !important;
+        height: 180px !important;
+        width: 100% !important;
+        /* حذف حاشیه‌های اضافی و متن‌ها */
+        clip-path: inset(5px 0 5px 0);
+    }
+
+    /* لایه محافظ برای جلوگیری از کلیک و انتقال به تریدینگ‌ویو */
+    .chart-touch-shield {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background: transparent;
+        cursor: default;
+    }
+
+    /* دکمه ثابت پایین صفحه */
+    .fixed-action-bar-light { 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        background: rgba(255, 255, 255, 0.95); 
+        backdrop-filter: blur(10px); 
+        border-top: 1px solid #e2e8f0; 
+        z-index: 1000; 
+        padding: 15px;
+    }
+
+    /* تنظیم دکمه برای موبایل (بالای منوی گوشی) */
+    @media (max-width: 991.98px) {
+        .fixed-action-bar-light {
+            bottom: 90px; 
+            left: 15px;
+            right: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    }
+
     .stats-card-light { 
         background: #ffffff; 
         border-radius: 12px; 
-        padding: 12px 8px; 
+        padding: 12px; 
         border: 1px solid #e2e8f0; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
     }
-    .label-text { color: var(--text-muted); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; display: block; }
-    .value-text { 
-        font-size: 1rem; 
-        font-weight: 800; 
-        color: var(--text-main); 
-        word-break: break-all; 
-    }
-
-    @media (min-width: 768px) {
-        .value-text { font-size: 1.25rem; }
-        .label-text { font-size: 0.75rem; }
-    }
-
-    .order-row-light { background: #ffffff; border-radius: 12px; margin-bottom: 10px; padding: 12px; border: 1px solid #e2e8f0; border-left: 4px solid var(--success-green); }
-    .history-row { border-left-color: var(--text-muted); opacity: 0.8; }
-    
-    .fixed-action-bar-light { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #e2e8f0; z-index: 1000; }
-    
-    .avatar-placeholder-blue { background: var(--soft-blue); color: var(--brand-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid #fff; }
+    .label-text { color: var(--text-muted); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
+    .value-text { font-size: 1rem; font-weight: 800; }
+    .avatar-placeholder { background: var(--soft-blue); color: var(--brand-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 </style>
 
-<div class="container-fluid py-3 pb-5 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+<div class="container-fluid py-3">
+    <div class="d-flex align-items-center mb-4 px-2">
         <a href="javascript:history.back()" class="text-dark text-decoration-none fs-4"><i class="bi bi-chevron-left"></i></a>
-        <h6 class="fw-bold mb-0">Trader Profile</h6>
-        <div class="d-flex gap-3">
-            <i class="bi bi-star fs-5 text-muted" id="fav-btn" style="cursor: pointer;"></i>
-            <i class="bi bi-share fs-5 text-muted" id="share-btn" style="cursor: pointer;"></i>
-        </div>
+        <h6 class="fw-bold mb-0 mx-auto">Trader Profile</h6>
     </div>
 
     <div class="px-2 mb-4">
         <div class="d-flex align-items-center gap-3">
-            <div class="position-relative">
-                {% if trader.avatar %}
-                    <img src="{{ trader.avatar.url }}" class="rounded-circle shadow-sm border border-2 border-white" width="70" height="70" style="object-fit: cover;">
-                {% else %}
-                    <div class="avatar-placeholder-blue shadow-sm" style="width: 70px; height: 70px; font-size: 1.6rem;">{{ trader.name|first|upper }}</div>
-                {% endif %}
-                <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle shadow-sm" style="width: 16px; height: 16px;"></span>
-            </div>
+            {% if trader.avatar %}
+                <img src="{{ trader.avatar.url }}" class="rounded-circle border border-2 border-white shadow-sm" width="65" height="65" style="object-fit: cover;">
+            {% else %}
+                <div class="avatar-placeholder shadow-sm" style="width: 65px; height: 65px; font-size: 1.5rem;">{{ trader.name|first|upper }}</div>
+            {% endif %}
             <div>
-                <div class="d-flex align-items-center gap-2">
-                    <h4 class="fw-bold mb-0" style="font-size: 1.2rem;">{{ trader.name }}</h4>
-                    <span class="badge bg-primary rounded-pill" style="font-size: 0.6rem;">PRO</span>
-                </div>
-                <p class="text-muted small mt-1 mb-0">Real-time Trading Strategy</p>
+                <h4 class="fw-bold mb-0" style="font-size: 1.1rem;">{{ trader.name }}</h4>
+                <span class="badge bg-soft-blue text-primary p-1 px-2 mt-1" style="font-size: 0.6rem;">VERIFIED TRADER</span>
             </div>
         </div>
     </div>
@@ -82,180 +109,169 @@
     <div class="row g-2 px-1 mb-4 text-center">
         <div class="col-4">
             <div class="stats-card-light">
-                <span class="label-text">ROI (30D)</span>
-                <span class="value-text text-success">+{{ trader.roi_30d }}%</span>
+                <span class="label-text d-block">ROI (30D)</span>
+                <span id="detail-roi" class="value-text text-success">...</span>
             </div>
         </div>
         <div class="col-4">
             <div class="stats-card-light">
-                <span class="label-text">Win Rate</span>
+                <span class="label-text d-block">Win Rate</span>
                 <span class="value-text">{{ trader.win_rate }}%</span>
             </div>
         </div>
         <div class="col-4">
             <div class="stats-card-light">
-                <span class="label-text">Drawdown</span>
+                <span class="label-text d-block">Max DD</span>
                 <span class="value-text text-danger">{{ trader.max_drawdown }}%</span>
             </div>
         </div>
     </div>
 
-    <ul class="nav nav-tabs border-0 px-2 mb-3" id="traderTab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview-pane">Overview</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders-pane">Lead Orders</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#history-pane">History</button></li>
-    </ul>
-
-    <div class="tab-content px-2">
-        <div class="tab-pane fade show active" id="overview-pane">
-            <div class="bg-white p-3 rounded-4 border shadow-sm mb-4">
-                <h6 class="fw-bold small mb-3 text-muted">Equity Growth</h6>
-                <div id="big-chart" style="min-height: 280px;"></div>
-            </div>
-            
-            <div class="stats-card-light mb-3">
-                <h6 class="fw-bold mb-3 small">Risk Analysis</h6>
-                <div class="progress bg-light" style="height: 6px; border-radius: 10px;">
-                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ trader.risk_level }}0%"></div>
+    <div class="px-2 mb-4">
+        <div class="bg-white p-3 rounded-4 border shadow-sm">
+            <h6 class="fw-bold small mb-3 text-muted">Growth Curve</h6>
+            <div class="chart-clean-wrapper">
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                    {
+                      "symbol": "BINANCE:{% if trader.id|divisibleby:5 %}ADAUSDT{% elif trader.id|divisibleby:4 %}BNBUSDT{% elif trader.id|divisibleby:3 %}SOLUSDT{% elif trader.id|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}",
+                      "width": "100%",
+                      "height": "100%",
+                      "locale": "en",
+                      "dateRange": "1M",
+                      "colorTheme": "light",
+                      "trendLineColor": "#10b981",
+                      "underLineColor": "rgba(16, 185, 129, 0.05)",
+                      "isTransparent": true,
+                      "autosize": true,
+                      "chartOnly": true
+                    }
+                    </script>
                 </div>
-                <div class="d-flex justify-content-between mt-2">
-                    <span class="text-muted" style="font-size: 0.7rem;">Conservative</span>
-                    <span class="text-primary fw-bold" style="font-size: 0.7rem;">Level {{ trader.risk_level }}/10</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="orders-pane">
-            {% if open_orders %}
-                {% for order in open_orders %}
-                <div class="order-row-light">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="fw-bold d-block">{{ order.symbol }} <span class="text-primary">{{ order.leverage }}x</span></span>
-                            <small class="text-muted">Entry: {{ order.entry_price }}</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="fw-bold {% if order.pnl >= 0 %}text-success{% else %}text-danger{% endif %}">{{ order.pnl }}%</span>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-inbox fs-1 text-muted"></i>
-                    <p class="text-muted mt-2">No active lead orders currently.</p>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="tab-pane fade" id="history-pane">
-            <div class="order-row-light history-row border-start-0">
-                <div class="d-flex justify-content-between">
-                    <span class="text-muted small">Past 7 Days History</span>
-                    <span class="text-success small fw-bold">14 Wins / 2 Losses</span>
-                </div>
-            </div>
-            <div class="order-row-light border-success">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-bold">ETHUSDT Short</span>
-                    <span class="text-success fw-bold">+45.20%</span>
-                </div>
-                <small class="text-muted">Closed: 2026-02-01</small>
-            </div>
-            <div class="order-row-light border-danger">
-                <div class="d-flex justify-content-between">
-                    <span class="fw-bold">SOLUSDT Long</span>
-                    <span class="text-danger fw-bold">-10.15%</span>
-                </div>
-                <small class="text-muted">Closed: 2026-01-30</small>
+                <div class="chart-touch-shield"></div>
             </div>
         </div>
     </div>
 
-    <div class="fixed-action-bar-light p-3">
+    <div class="fixed-action-bar-light">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-5">
-                    <span class="label-text mb-0 d-block">Min. Copy</span>
-                    <span class="fw-bold fs-5 text-dark">$100.00</span>
+                    <span class="label-text mb-0 d-block">Min. Investment</span>
+                    <span class="fw-bold fs-5 text-dark">$10.00</span>
                 </div>
                 <div class="col-7 text-end">
-                    <a href="{% url 'trading:copy_action' trader.id %}" class="btn btn-primary w-100 fw-bold py-3 rounded-pill shadow-lg" style="background: var(--brand-blue); border: none;">
+                    <button type="button" class="btn btn-primary w-100 fw-bold py-3 rounded-pill" 
+                            style="background: var(--brand-blue); border: none; box-shadow: 0 4px 12px rgba(0,98,255,0.2);"
+                            onclick="openCopyFormDetail()">
                         Copy Now
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // ۱. منطق هوشمند دیتا برای چارت
-        let rawData = {{ trader.chart_history_json|safe|default:"[]" }};
+<div id="copyFormOverlay" class="simple-overlay-form shadow-lg">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="fw-bold text-dark" style="font-size: 0.95rem;">Copy Strategy</span>
+        <button type="button" class="btn-close" onclick="closeCopyFormDetail()"></button>
+    </div>
+    <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+                <label class="label-text" style="font-size: 0.65rem;">Investment Amount</label>
+                <span class="text-primary fw-bold" style="font-size: 0.65rem;">USDT</span>
+            </div>
+            <input type="number" name="amount" class="form-control form-control-custom" placeholder="0.00" min="10" step="0.01" required>
+        </div>
         
-        // اگر دیتا خالی بود یا آرایه نبود، دیتای دمو صعودی جایگزین شود
-        if (!Array.isArray(rawData) || rawData.length === 0) {
-            rawData = [15, 30, 25, 50, 45, 80, 75, 120, 110, 150, 190]; 
-        }
+        <div class="p-2 rounded-3 mb-3" style="background: #f8fafd; border: 1px dashed #e2e8f0;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted" style="font-size: 0.7rem;">Trading Pair:</span>
+                <span class="text-dark fw-bold" style="font-size: 0.7rem;">BTC/USDT Strategy</span>
+            </div>
+        </div>
 
-        var options = {
-            series: [{ name: 'Equity Growth', data: rawData }],
-            chart: { 
-                type: 'area', 
-                height: 280, 
-                toolbar: { show: false },
-                animations: { enabled: true, speed: 1000 }
-            },
-            colors: ['#0062ff'],
-            stroke: { curve: 'smooth', width: 3 },
-            fill: { 
-                type: 'gradient', 
-                gradient: { 
-                    shadeIntensity: 1, 
-                    opacityFrom: 0.45, 
-                    opacityTo: 0.05, 
-                    stops: [20, 100] 
-                } 
-            },
-            grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
-            xaxis: { 
-                labels: { show: false }, 
-                axisBorder: { show: false },
-                axisTicks: { show: false }
-            },
-            yaxis: { 
-                labels: { 
-                    style: { colors: '#94a3b8', fontWeight: 600 },
-                    formatter: function(val) { return val + "%"; }
-                } 
-            },
-            markers: { size: 0, hover: { size: 5 } },
-            tooltip: { 
-                theme: 'light',
-                x: { show: false },
-                y: { formatter: function(val) { return "+" + val + "%" } }
-            }
-        };
+        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm" style="background: var(--brand-blue); border: none;">
+            Confirm & Start
+        </button>
+    </form>
+</div>
 
-        const chart = new ApexCharts(document.querySelector("#big-chart"), options);
-        chart.render();
+<div id="formBackdrop" class="form-backdrop" onclick="closeCopyFormDetail()"></div>
 
-        // ۲. دکمه اشتراک‌گذاری
-        document.getElementById('share-btn').addEventListener('click', function() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Trader profile link copied!');
+<style>
+    .form-control-custom { 
+        background: #f1f5f9 !important; 
+        border: 2px solid transparent !important; 
+        border-radius: 14px !important; 
+        font-weight: 700 !important; 
+        padding: 12px 18px !important; 
+        font-size: 1.1rem;
+        transition: all 0.2s;
+    }
+    .form-control-custom:focus {
+        background: #fff !important;
+        border-color: var(--brand-blue) !important;
+        box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.1) !important;
+    }
+    .simple-overlay-form {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 320px;
+        background: #ffffff;
+        border-radius: 28px;
+        padding: 25px;
+        z-index: 2001;
+        border: 1px solid #e2e8f0;
+    }
+    .form-backdrop { 
+        display: none; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0, 0, 0, 0.4); 
+        backdrop-filter: blur(4px); 
+        z-index: 2000; 
+    }
+</style>
+<div id="formBackdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:2000;" onclick="closeCopyFormDetail()"></div>
+
+<script>
+    function openCopyFormDetail() {
+        document.getElementById('copyFormOverlay').style.display = 'block';
+        document.getElementById('formBackdrop').style.display = 'block';
+    }
+    function closeCopyFormDetail() {
+        document.getElementById('copyFormOverlay').style.display = 'none';
+        document.getElementById('formBackdrop').style.display = 'none';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const traderId = {{ trader.id }};
+        let sym = "BTCUSDT";
+        if (traderId % 5 === 0) sym = "ADAUSDT";
+        else if (traderId % 4 === 0) sym = "BNBUSDT";
+        else if (traderId % 3 === 0) sym = "SOLUSDT";
+        else if (traderId % 2 === 0) sym = "ETHUSDT";
+
+        fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`)
+            .then(r => r.json())
+            .then(d => {
+                const c = parseFloat(d.priceChangePercent).toFixed(2);
+                const el = document.getElementById('detail-roi');
+                if(el) {
+                    el.innerText = (c >= 0 ? '+' : '') + c + '%';
+                    el.style.color = c >= 0 ? '#10b981' : '#ef4444';
+                }
             });
-        });
-
-        // ۳. دکمه Favorite
-        document.getElementById('fav-btn').addEventListener('click', function() {
-            this.classList.toggle('bi-star');
-            this.classList.toggle('bi-star-fill');
-            this.classList.toggle('text-warning');
-        });
     });
 </script>
 {% endblock %}

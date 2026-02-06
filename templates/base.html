@@ -163,19 +163,32 @@
             
             <div class="ms-auto d-flex align-items-center gap-3">
                 {% if user.is_authenticated %}
-                    <div class="bg-light px-3 py-2 rounded-pill fw-bold border">
-                        <i class="bi bi-wallet2 text-primary me-2"></i>${{ user.balance|floatformat:2 }}
+                    <div class="d-none d-xl-flex gap-2">
+                        <a href="{% url 'transactions:deposit' %}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
+                            <i class="bi bi-arrow-down-left-circle me-1"></i> Deposit
+                        </a>
+                        <a href="{% url 'transactions:withdraw' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                            <i class="bi bi-arrow-up-right-circle me-1"></i> Withdraw
+                        </a>
                     </div>
+
+                    <div class="bg-light px-3 py-2 rounded-pill fw-bold border d-flex align-items-center">
+                        <i class="bi bi-wallet2 text-primary me-2"></i>
+                        <span class="text-dark">${{ user.balance|floatformat:2 }}</span>
+                    </div>
+                    
                     <div class="dropdown">
-                        <div class="d-flex align-items-center gap-2 cursor-pointer" data-bs-toggle="dropdown" style="cursor:pointer">
+                        <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" style="cursor:pointer">
                             <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0052FF&color=fff&bold=true" class="rounded-circle border" width="40" height="40">
                             <i class="bi bi-chevron-down small"></i>
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end animate__animated animate__fadeInUp border-0 shadow-lg mt-3 p-2">
-                            <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-person me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'accounts:dashboard' %}"><i class="bi bi-grid me-2 text-primary"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-person me-2 text-primary"></i>Settings</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'transactions:deposit' %}"><i class="bi bi-plus-circle me-2 text-success"></i>Deposit Funds</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'transactions:withdraw' %}"><i class="bi bi-dash-circle me-2 text-danger"></i>Withdraw Funds</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-power me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item text-danger py-2" href="{% url 'accounts:logout' %}"><i class="bi bi-power me-2"></i>Logout</a></li>
                         </ul>
                     </div>
                 {% else %}
@@ -206,21 +219,48 @@
         <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-        <div class="d-grid gap-2">
-            <a href="{% url 'home' %}" class="menu-link"><i class="bi bi-house"></i> Home Page</a>
-            <a href="{% url 'trading:market_list' %}" class="menu-link"><i class="bi bi-graph-up"></i> Live Markets</a>
-            <a href="{% url 'trading:copy_list' %}" class="menu-link"><i class="bi bi-people"></i> Experts & CopyTrade</a>
-            <hr class="my-3 opacity-50">
-            <a href="#" class="menu-link"><i class="bi bi-info-circle"></i> About SmartTrade</a>
-            <a href="#" class="menu-link"><i class="bi bi-headset"></i> Contact Support</a>
-            <a href="#" class="menu-link"><i class="bi bi-shield-check"></i> Terms & Privacy</a>
-            <hr class="my-3 opacity-50">
-            {% if user.is_authenticated %}
-                <a href="{% url 'accounts:logout' %}" class="menu-link text-danger"><i class="bi bi-power"></i> Logout Session</a>
-            {% else %}
-                <a href="{% url 'accounts:login' %}" class="btn btn-primary rounded-pill py-3 fw-bold">Login to Account</a>
-            {% endif %}
-        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div class="d-grid gap-2">
+                {% if user.is_authenticated %}
+                    <div class="user-card-mobile p-3 mb-3 rounded-4 bg-light border">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0052FF&color=fff&bold=true" class="rounded-circle border" width="45" height="45">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ user.username }}</h6>
+                                <small class="text-primary fw-bold">${{ user.balance|floatformat:2 }}</small>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{% url 'transactions:deposit' %}" class="btn btn-success w-100 py-2 rounded-3 shadow-sm fw-bold small">
+                                    <i class="bi bi-plus-lg"></i> Deposit
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{% url 'transactions:withdraw' %}" class="btn btn-success w-100 py-2 rounded-3 shadow-sm fw-bold small">
+                                    <i class="bi bi-box-arrow-up"></i> Withdraw
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'home' %}" class="menu-link"><i class="bi bi-house"></i> Home Page</a>
+                <a href="{% url 'trading:market_list' %}" class="menu-link"><i class="bi bi-graph-up"></i> Live Markets</a>
+                <a href="{% url 'trading:copy_list' %}" class="menu-link"><i class="bi bi-people"></i> Experts & CopyTrade</a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:dashboard' %}" class="menu-link"><i class="bi bi-grid"></i> Dashboard</a>
+                    <a href="{% url 'accounts:profile_dashboard' %}" class="menu-link"><i class="bi bi-person-gear"></i> Settings</a>
+                    <hr class="my-3 opacity-50">
+                    <a href="{% url 'accounts:logout' %}" class="menu-link text-danger"><i class="bi bi-power text-danger"></i> Logout</a>
+                {% else %}
+                    <hr class="my-3 opacity-50">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary py-3 rounded-4 fw-bold mb-2">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary py-3 rounded-4 fw-bold shadow-sm">Join Now</a>
+                {% endif %}
+            </div>
+        </div> 
     </div>
 </div>
 
@@ -262,6 +302,80 @@
     {% block content %}{% endblock %}
 </div>
 
+<style>
+    /* اصلاح عرض منوی همبرگری برای موبایل */
+.offcanvas {
+    max-width: 80% !important; /* به جای پر کردن کل صفحه، فقط ۸۰ درصد را می‌گیرد */
+    border-radius: 30px 0 0 30px !important;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.1) !important;
+}
+
+/* برای تبلت‌ها کمی باریک‌تر شود */
+@media (min-width: 768px) {
+    .offcanvas {
+        max-width: 400px !important;
+    }
+}
+
+.offcanvas-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.offcanvas-title {
+    font-size: 1.1rem;
+    color: #1a202c;
+}
+
+/* استایل لینک‌های منو */
+.menu-link {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #4a5568;
+    padding: 12px 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    text-decoration: none;
+    margin-bottom: 2px;
+}
+
+.menu-link i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    color: var(--deep-royal);
+    width: 25px; /* تراز کردن آیکون‌ها */
+    display: inline-block;
+}
+
+/* دکمه برداشت سبز (طبق درخواست) */
+.btn-success {
+    background-color: #00c853 !important;
+    border-color: #00c853 !important;
+}
+
+.btn-success:hover {
+    background-color: #00a844 !important;
+}
+
+/* کارت کاربر در موبایل */
+/* تبدیل دکمه واریز به آبی برند */
+.user-card-mobile .btn-success:first-child {
+    background-color: var(--deep-royal) !important;
+    border-color: var(--deep-royal) !important;
+}
+
+/* اطمینان از سبز ماندن دکمه برداشت */
+{% comment %} .user-card-mobile .btn-success:last-child {
+    background-color: #00c853 !important;
+    border-color: #00c853 !important;
+} {% endcomment %}
+
+.small {
+    font-size: 0.8rem !important;
+}
+</style>
 <script>
 function markNotificationAsRead(notificationId) {
     // ارسال درخواست به بک‌اِند برای تغییر وضعیت به "خوانده شده"
@@ -291,7 +405,7 @@ function markNotificationAsRead(notificationId) {
 
 <div class="mobile-bottom-nav d-lg-none">
     <a href="{% url 'home' %}" class="nav-item-mob active"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
-    <a href="{% url 'trading:market_list' %}" class="nav-item-mob"><i class="bi bi-activity"></i><span>Markets</span></a>
+    <a href="{% url 'trading:copy_list' %}" class="nav-item-mob"><i class="bi bi-activity"></i><span>Markets</span></a>
     <a href="{% url 'accounts:dashboard' %}" class="nav-item-mob"><i class="bi bi-grid-fill"></i><span>Panel</span></a>
     <a href="{% url 'accounts:profile_dashboard' %}" class="nav-item-mob"><i class="bi bi-person-circle"></i><span>Profile</span></a>
 </div>

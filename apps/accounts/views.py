@@ -91,24 +91,27 @@ def user_dashboard(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully!")
-            # ریدایرکت به همین صفحه برای دیدن تغییرات و پیام موفقیت
-            return redirect('accounts:profile_dashboard') 
+            # استفاده از request.path مطمئن‌ترین راه برای ریدایرکت به همین صفحه است
+            return redirect(request.path) 
     else:
         form = UserProfileForm(instance=request.user)
 
-    my_followed_traders = FollowedTrader.objects.filter(user=request.user).select_related('trader')
-    recent_transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')[:5]
+    # سایر محاسبات
     my_referrals = User.objects.filter(referred_by=request.user)
+    referral_bonus_per_user = 5
+    total_referral_earnings = my_referrals.count() * referral_bonus_per_user
+    referral_link = f"{request.build_absolute_uri('/accounts/register/')}?ref={request.user.referral_code}"
 
     context = {
         'form': form,
-        'followed_traders': my_followed_traders,
-        'recent_transactions': recent_transactions,
         'my_referrals': my_referrals,
-        'referral_link': f"{request.build_absolute_uri('/accounts/register/')}?ref={request.user.referral_code}",
+        'referral_count': my_referrals.count(),
+        'referral_earnings': total_referral_earnings,
+        'referral_link': referral_link,
         'page_title': 'Account Settings'
     }
     return render(request, 'users/profile.html', context)
+
 
 @login_required
 def profile_dashboard(request):

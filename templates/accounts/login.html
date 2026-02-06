@@ -3,7 +3,7 @@
 {% block content %}
 <style>
     body {
-        background: #f8faff; /* یک پس‌زمینه بسیار ملایم */
+        background: #f8faff;
     }
     .auth-card {
         border: none;
@@ -12,12 +12,17 @@
         backdrop-filter: blur(10px);
         box-shadow: 0 25px 50px -12px rgba(0, 82, 255, 0.15);
         overflow: hidden;
+        width: 100%; /* اطمینان از عدم خروج کارت از والد در موبایل */
     }
     .input-group-custom {
         background-color: #f3f6f9;
         border-radius: 16px;
         transition: all 0.3s ease;
         border: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        overflow: hidden; /* جلوگیری از بیرون زدگی محتوای داخل گروه */
     }
     .input-group-custom:focus-within {
         border-color: #0052ff;
@@ -29,6 +34,8 @@
         border: none;
         padding: 12px 15px;
         font-weight: 500;
+        width: 100%; /* عرض کامل */
+        flex-grow: 1; /* اشغال فضای باقی‌مانده */
     }
     .input-group-custom input:focus {
         box-shadow: none;
@@ -37,6 +44,7 @@
     .input-group-custom i {
         color: #94a3b8;
         padding-left: 15px;
+        flex-shrink: 0; /* جلوگیری از کوچک شدن آیکون */
     }
     .btn-login {
         background: linear-gradient(135deg, #0052ff 0%, #00a3ff 100%);
@@ -61,6 +69,14 @@
         0%, 100% { transform: translateY(0) rotate(0deg); }
         50% { transform: translateY(-20px) rotate(5deg); }
     }
+    
+    /* اصلاح برای نمایش بهتر در موبایل */
+    @media (max-width: 576px) {
+        .auth-card {
+            padding: 2rem !important;
+            border-radius: 25px;
+        }
+    }
 </style>
 
 <div class="container position-relative" style="min-height: 90vh; display: flex; align-items: center; justify-content: center;">
@@ -72,8 +88,7 @@
         </svg>
     </div>
 
-    <div class="row w-100 justify-content-center">
-        <div class="col-md-6 col-lg-5 col-xl-4">
+    <div class="row w-100 justify-content-center m-0"> <div class="col-11 col-sm-9 col-md-6 col-lg-5 col-xl-4">
             <div class="auth-card p-5">
                 <div class="text-center mb-5">
                     <div class="mb-3">
@@ -83,7 +98,7 @@
                         </svg>
                     </div>
                     <h2 class="fw-bold text-dark">Welcome Back</h2>
-                    <p class="text-muted">Securely login to your copy-trading account</p>
+                    <p class="text-muted small">Securely login to your copy-trading account</p>
                 </div>
 
                 <form method="post">
@@ -91,12 +106,13 @@
                     {% for field in form %}
                     <div class="mb-4">
                         <label class="form-label small fw-bold text-secondary mb-2">{{ field.label }}</label>
-                        <div class="input-group-custom d-flex align-items-center">
+                        <div class="input-group-custom">
                             {% if "user" in field.name %}
                                 <i class="bi bi-person-circle fs-5"></i>
                             {% else %}
                                 <i class="bi bi-shield-lock fs-5"></i>
                             {% endif %}
+                            {# اضافه کردن استایل مستقیم برای اطمینان از کنترل عرض #}
                             {{ field }}
                         </div>
                         {% if field.errors %}
@@ -110,7 +126,7 @@
                             <input class="form-check-input" type="checkbox" id="remember">
                             <label class="form-check-label text-muted" for="remember">Remember me</label>
                         </div>
-                        <a href="#" class="text-primary text-decoration-none fw-bold">Forgot Password?</a>
+                        <a href="#" class="text-primary text-decoration-none fw-bold">Forgot?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-login w-100 text-white shadow-lg">
@@ -120,7 +136,7 @@
 
                 <div class="mt-5 text-center">
                     <span class="text-muted small">New to SmartTrade?</span>
-                    <a href="{% url 'accounts:register' %}" class="ms-2 text-primary fw-bold text-decoration-none">Create Account</a>
+                    <br class="d-sm-none"> <a href="{% url 'accounts:register' %}" class="ms-sm-2 text-primary fw-bold text-decoration-none small">Create Account</a>
                 </div>
             </div>
         </div>

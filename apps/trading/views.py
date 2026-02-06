@@ -5,9 +5,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal, InvalidOperation
 from django.db import transaction 
+from django.db.models import Q 
 
 def copy_trading_dashboard(request):
-    traders = LeadTrader.objects.all()
+    query = request.GET.get('q') 
+    
+    if query:
+        traders = LeadTrader.objects.filter(
+            Q(name__icontains=query) | 
+            Q(aum__icontains=query) 
+        )
+    else:
+        traders = LeadTrader.objects.all()
+
     pairs = TradingPair.objects.filter(is_active=True)
     
     for pair in pairs:
@@ -25,13 +35,6 @@ def copy_trading_dashboard(request):
         'page_title': 'Copy Trading'
     })
 
-def trader_detail(request, trader_id):
-    trader = get_object_or_404(LeadTrader, id=trader_id)
-    return render(request, 'trading/trader_detail.html', {
-        'trader': trader,
-        'open_orders': []  
-    })
-
 @login_required
 def copy_action(request, trader_id):
     trader = get_object_or_404(LeadTrader, id=trader_id)
@@ -43,11 +46,13 @@ def copy_action(request, trader_id):
             copy_amount = Decimal(amount_str)
         except (TypeError, ValueError, InvalidOperation):
             messages.error(request, "Invalid amount entered.")
-            return redirect('trading:copy_trading_dashboard')
+            # تغییر نام ریدایرکت به copy_list
+            return redirect('trading:copy_list')
 
         if copy_amount < Decimal('1.00'):
             messages.error(request, "Minimum investment amount is $1.00")
-            return redirect('trading:copy_trading_dashboard')
+            # تغییر نام ریدایرکت به copy_list
+            return redirect('trading:copy_list')
 
         if user.balance < copy_amount:
             messages.error(request, f"Insufficient balance! You need ${copy_amount}.")
@@ -73,25 +78,57 @@ def copy_action(request, trader_id):
         messages.success(request, f"Successfully started copying {trader.name} with ${copy_amount}!")
         return redirect('accounts:dashboard')
     
-    return redirect('trading:copy_trading_dashboard')
+    # تغییر نام ریدایرکت به copy_list
+    return redirect('trading:copy_list')
 
 @login_required
 def stop_copy_action(request, follow_id):
+    # پیدا کردن رکورد کپی کردن
     followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
     with transaction.atomic():
         user = request.user
-        user.balance += followed_trader.investment_amount
+        trader = followed_trader.trader
+        initial_amount = followed_trader.investment_amount # مبلغی که اول گذاشته بود
+        
+        # ۱. پیدا کردن نماد ارز برای دریافت قیمت لحظه‌ای
+        traders_list = list(LeadTrader.objects.all().order_by('id'))
+        try:
+            index = traders_list.index(trader) + 1
+            if index % 5 == 0: symbol = "ADAUSDT"
+            elif index % 4 == 0: symbol = "BNBUSDT"
+            elif index % 3 == 0: symbol = "SOLUSDT"
+            elif index % 2 == 0: symbol = "ETHUSDT"
+            else: symbol = "BTCUSDT"
+        except ValueError:
+            symbol = "BTCUSDT"
+
+        # ۲. دریافت درصد تغییرات لحظه‌ای از سرویس قیمت
+        market_data = CryptoPriceService.fetch_market_data(symbol)
+        percent_change = Decimal(str(market_data.get('change', 0)))
+
+        # ۳. محاسبه سود/ضرر و مبلغ نهایی برای بازگشت به کیف پول
+        profit_loss = initial_amount * (percent_change / Decimal('100'))
+        final_return_amount = initial_amount + profit_loss
+
+        # ۴. آپدیت موجودی کاربر (مبلغ + سود یا ضرر)
+        user.balance = Decimal(user.balance) + final_return_amount
         user.save()
         
-        trader = followed_trader.trader
-        trader.aum = max(0, Decimal(trader.aum) - followed_trader.investment_amount)
+        # ۵. آپدیت AUM تریدر (فقط مبلغ اولیه کسر می‌شود تا محاسبات مدیریت سرمایه تریدر درست بماند)
+        trader.aum = max(Decimal('0'), Decimal(trader.aum) - initial_amount)
         trader.save()
         
+        
         trader_name = trader.name
-        followed_trader.delete()
+        followed_trader.delete() 
+        
+        messages.success(
+            request, 
+            f"Stopped copying {trader_name}. Final amount of ${final_return_amount:.2f} "
+            f"(including {percent_change}% PnL) returned to your balance."
+        )
     
-    messages.info(request, f"Stopped copying {trader_name}. Funds returned to your balance.")
     return redirect('accounts:dashboard')
 
 def market_list(request):
@@ -107,3 +144,10 @@ def market_list(request):
         })
         
     return render(request, 'trading/market.html', {'market_data': market_data})
+
+def trader_detail(request, trader_id):
+    trader = get_object_or_404(LeadTrader, id=trader_id)
+    return render(request, 'trading/trader_detail.html', {
+        'trader': trader,
+        'open_orders': []  
+    })

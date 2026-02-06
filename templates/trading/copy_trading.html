@@ -11,13 +11,87 @@
             <p class="text-muted small mb-0">Discover and copy the best performing strategies in real-time.</p>
         </div>
         <div class="search-wrapper">
-            <div class="input-group shadow-sm rounded-pill bg-white px-3 border">
-                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
-                <input type="text" class="form-control border-0 py-2 small" placeholder="Search strategy or trader...">
-            </div>
+            <form action="{% url 'trading:copy_list' %}" method="GET">
+                <div class="search-input-group">
+                    <input type="text" name="q" class="search-input" 
+                        placeholder="Search trader or strategy..." 
+                        value="{{ request.GET.q|default:'' }}">
+                    <button type="submit" class="search-btn">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+    <style>
+        /* استایل اختصاصی باکس جستجو */
+.search-wrapper {
+    max-width: 400px;
+    width: 100%;
+}
 
+.search-input-group {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px; /* کاملاً گرد */
+    padding: 5px 5px 5px 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.search-input-group:focus-within {
+    border-color: #0062ff;
+    box-shadow: 0 4px 15px rgba(0, 98, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.search-btn {
+    background: #0062ff;
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background: #0052d6;
+    transform: scale(1.05);
+}
+
+.search-btn i {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+/* افکت برای موبایل */
+@media (max-width: 768px) {
+    .search-wrapper {
+        max-width: 100%;
+    }
+}
+    </style>
     <div class="row g-3">
         {% for trader in traders %}
         <div class="col-12">
@@ -40,7 +114,7 @@
                                 <h6 class="fw-bold text-dark mb-1">{{ trader.name }}</h6>
                                 <span class="text-muted tiny-text"><i class="bi bi-people-fill"></i> {{ trader.copiers_count }}/{{ trader.capacity }} Copiers</span>
                                 <div class="mt-2 d-flex align-items-baseline gap-2">
-                                    <h4 class="roi-blue mb-0">+{{ trader.roi_30d }}%</h4>
+                                    <h4 id="roi-{{ forloop.counter }}" class="roi-blue mb-0">...</h4>
                                     <small class="text-muted x-small-label">30D ROI</small>
                                 </div>
                             </div>
@@ -48,24 +122,22 @@
                     </div>
 
                     <div class="col-lg-4 col-12 mb-3 mb-md-0 px-md-3">
-                        <div class="tradingview-widget-container position-relative" style="height: 75px; background: #fff; border-radius: 8px;">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 45px; background: #ffffff; z-index: 10; padding: 8px 12px; pointer-events: none;">
-                                <div class="d-flex align-items-center">
-                                    <div class="fw-bold" style="font-size: 0.9rem; color: #1e293b; letter-spacing: -0.2px;">
-                                        {{ trader.name }} <span class="text-muted fw-normal" style="font-size: 0.75rem;">/ USDT</span>
-                                    </div>
-                                </div>
+                        <div class="chart-clean-wrapper">
+                            <div class="tradingview-widget-container">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                                {
+                                "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}BINANCE:SOLUSDT{% elif forloop.counter|divisibleby:2 %}BINANCE:ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
+                                "width": "100%", "height": "100%", "locale": "en", "dateRange": "12M",
+                                "colorTheme": "light", 
+                                "trendLineColor": "{% if '-' in trader.roi_30d %}#ef4444{% else %}#10b981{% endif %}",
+                                "underLineColor": "rgba(255, 255, 255, 0)",
+                                "isTransparent": true, "autosize": true, 
+                                "chartOnly": true, "noTimeScale": true
+                                }
+                                </script>
                             </div>
-                            <div class="tradingview-widget-container__widget"></div>
-                            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                            {
-                            "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}BINANCE:SOLUSDT{% elif forloop.counter|divisibleby:2 %}BINANCE:ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
-                            "width": "100%", "height": "100%", "locale": "en", "dateRange": "12M",
-                            "colorTheme": "light", "trendLineColor": "{% if '-' in trader.roi_30d %}#ef4444{% else %}#10b981{% endif %}",
-                            "underLineColor": "{% if '-' in trader.roi_30d %}rgba(239, 68, 68, 0.05){% else %}rgba(16, 185, 129, 0.05){% endif %}",
-                            "isTransparent": true, "autosize": true, "chartOnly": false, "noTimeScale": false
-                            }
-                            </script>
+                            <div class="chart-touch-shield"></div>
                         </div>
                     </div>
 
@@ -109,7 +181,6 @@
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    
                     <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -117,17 +188,14 @@
                                 <label class="x-small-label text-muted">Investment Amount</label>
                                 <span class="text-primary fw-bold x-small-label">USDT</span>
                             </div>
-                            <input type="number" name="amount" class="form-control form-control-custom" 
-                                   placeholder="0.00" min="1" step="0.01" required>
+                            <input type="number" name="amount" class="form-control form-control-custom" placeholder="0.00" min="1" step="0.01" required>
                         </div>
-                        
                         <div class="info-box-mini mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Trader:</span>
                                 <span class="text-dark fw-bold">{{ trader.name }}</span>
                             </div>
                         </div>
-
                         <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" style="font-size: 0.85rem;">
                             Confirm & Start
                         </button>
@@ -144,20 +212,37 @@
 <style>
     body { background-color: #f8fafd; overflow-x: hidden; }
     
-    /* فرم ساده بدون لایه تیره */
-    .simple-overlay-form {
-        display: none;
+    /* استایل جدید برای باکس چارت - ارتفاع 110 پیکسل */
+    .chart-clean-wrapper {
+        position: relative;
+        height: 110px; 
+        background: transparent;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .tradingview-widget-container {
+        height: 100%;
+        width: 100%;
+    }
+
+    /* حذف نام و قیمت با استفاده از Clip-path و جابجایی */
+    .tradingview-widget-container iframe {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 300px;
-        background: white;
-        border: 2px solid #0062ff;
-        border-radius: 15px;
-        padding: 20px;
-        z-index: 1000;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        top: -10px !important; /* حذف هدر چارت */
+        height: 130px !important; /* بزرگتر کردن برای حذف فوتر */
+        clip-path: inset(5px 45px 5px 0); /* بریدن بخش قیمت از سمت راست */
+        pointer-events: none;
+    }
+
+    .chart-touch-shield {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background: transparent;
     }
 
     .nav-link-custom { text-decoration: none; font-weight: 700; font-size: 0.95rem; color: #64748b; padding-bottom: 8px; position: relative; }
@@ -184,56 +269,71 @@
         .border-start-custom { border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; border-left: none !important; }
     }
 
-    /* استایل فرم بازشونده شیک */
-    .simple-overlay-form {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 280px;
-        background: #ffffff;
-        border-radius: 20px;
-        padding: 20px;
-        z-index: 2000;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
-    }
+/* ۱. استایل کلی فرم */
+.simple-overlay-form {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 310px;        /* کمی پهن‌تر برای دسکتاپ */
+    min-height: 280px;   /* افزایش ارتفاع برای جلوگیری از فشرده شدن */
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 25px;
+    z-index: 9999;       /* مقدار بسیار بالا برای اولویت نمایش */
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+}
 
-    .form-control-custom {
-        background: #f1f5f9 !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        font-weight: 700 !important;
-        padding: 10px 15px !important;
-        font-size: 1rem;
-        color: #1e293b;
-    }
-    
-    .form-control-custom:focus {
-        border-color: #0062ff !important;
-        box-shadow: none !important;
-        background: #fff !important;
-    }
+/* ۲. حل مشکل افتادن زیر آیتم‌های بعدی */
+.trader-card-blue:has(.simple-overlay-form[style*="display: block"]) {
+    z-index: 1000 !important; /* وقتی فرم باز است، کل کارت بالاتر از بقیه قرار می‌گیرد */
+}
 
-    .info-box-mini {
-        background: #f8fafc;
-        border-radius: 10px;
-        padding: 8px 12px;
-        font-size: 0.75rem;
-        color: #64748b;
-    }
+/* ۳. بهبود ظاهر ورودی و دکمه برای پر کردن ارتفاع */
+.form-control-custom { 
+    height: 50px; 
+    margin-bottom: 15px;
+}
 
-    .btn-close-custom {
-        background: none;
-        border: none;
-        color: #94a3b8;
-        font-size: 1.1rem;
-        transition: 0.2s;
-        line-height: 1;
-        padding: 0;
-    }
-    
+.info-box-mini {
+    margin: 15px 0;
+    padding: 12px;
+}
+
+    .form-control-custom { background: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; font-weight: 700 !important; padding: 10px 15px !important; font-size: 1rem; color: #1e293b; }
+    .form-control-custom:focus { border-color: #0062ff !important; box-shadow: none !important; background: #fff !important; }
+    .info-box-mini { background: #f8fafc; border-radius: 10px; padding: 8px 12px; font-size: 0.75rem; color: #64748b; }
+    .btn-close-custom { background: none; border: none; color: #94a3b8; font-size: 1.1rem; transition: 0.2s; line-height: 1; padding: 0; }
     .btn-close-custom:hover { color: #ef4444; }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const symbols = [
+        {% for trader in traders %}
+            "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    symbols.forEach((symbol, index) => {
+        const roiElement = document.getElementById(`roi-${index + 1}`);
+        
+        // فراخوانی دیتای واقعی از API صرافی برای هماهنگی با چارت
+        fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
+            .then(response => response.json())
+            .then(data => {
+                const change = parseFloat(data.priceChangePercent).toFixed(2);
+                const isPositive = change >= 0;
+                
+                roiElement.innerText = (isPositive ? '+' : '') + change + '%';
+                roiElement.style.color = isPositive ? '#10b981' : '#ef4444';
+            })
+            .catch(() => {
+                roiElement.innerText = '+0.00%'; // مقدار پیش‌فرض در صورت خطا
+            });
+    });
+});
+</script>
 {% endblock %}

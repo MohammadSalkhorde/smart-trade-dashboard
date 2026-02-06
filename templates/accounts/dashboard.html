@@ -248,11 +248,20 @@
                                 </div>
                             </td>
                             <td data-label="Investment">
-                                <span class="fw-bold text-dark">${{ item.investment_amount }}</span>
+                                <div class="d-flex flex-column">
+                                    <span id="investment-{{ forloop.counter }}" class="fw-bold text-dark" data-base-amount="{{ item.investment_amount }}">
+                                        ${{ item.investment_amount }}
+                                    </span>
+                                    <span id="profit-{{ forloop.counter }}" class="small fw-bold" style="font-size: 0.75rem;">
+                                        Loading...
+                                    </span>
+                                </div>
                             </td>
                             <td data-label="30D ROI">
-                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-bolder">
-                                    <i class="bi bi-caret-up-fill me-1"></i>{{ item.trader.roi_30d }}%
+                                <span id="roi-badge-{{ forloop.counter }}" class="badge rounded-pill px-3 py-2 fw-bolder shadow-sm transition-all" 
+                                    style="background: rgba(16, 185, 129, 0.1); color: #10b981; min-width: 80px;">
+                                    <i id="icon-{{ forloop.counter }}" class="bi bi-caret-up-fill me-1"></i>
+                                    <span id="roi-val-{{ forloop.counter }}">{{ item.trader.roi_30d }}%</span>
                                 </span>
                             </td>
                             <td data-label="Start Date">
@@ -291,5 +300,83 @@
             }
         });
     });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // لیست ارزها دقیقا مطابق با ترتیبی که در صفحه قبل برای چارت‌ها ست کردیم
+    const symbols = [
+        {% for item in followed_traders %}
+            "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    symbols.forEach((symbol, index) => {
+        const investElem = document.getElementById(`investment-${index + 1}`);
+        const profitElem = document.getElementById(`profit-${index + 1}`);
+        const baseAmount = parseFloat(investElem.getAttribute('data-base-amount'));
+
+        fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
+            .then(response => response.json())
+            .then(data => {
+                const percentChange = parseFloat(data.priceChangePercent);
+                const currentVal = baseAmount + (baseAmount * (percentChange / 100));
+                
+                // آپدیت عدد اصلی سرمایه
+                investElem.innerText = `$${currentVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                
+                // آپدیت استایل سود و ضرر
+                if (percentChange >= 0) {
+                    profitElem.innerText = `+${percentChange.toFixed(2)}% (Profit)`;
+                    profitElem.style.color = "#10b981"; // سبز حرفه‌ای
+                    investElem.style.color = "#10b981";
+                } else {
+                    profitElem.innerText = `${percentChange.toFixed(2)}% (Loss)`;
+                    profitElem.style.color = "#ef4444"; // قرمز حرفه‌ای
+                    investElem.style.color = "#ef4444";
+                }
+            })
+            .catch(() => {
+                profitElem.innerText = "Live tracking...";
+            });
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const symbols = [
+        {% for item in followed_traders %}
+            "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    symbols.forEach((symbol, index) => {
+        const idx = index + 1;
+        fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
+            .then(res => res.json())
+            .then(data => {
+                const change = parseFloat(data.priceChangePercent);
+                const isPos = change >= 0;
+                
+                // ۱. آپدیت مبلغ سرمایه
+                const invElem = document.getElementById(`investment-${idx}`);
+                const base = parseFloat(invElem.getAttribute('data-base-amount'));
+                const current = base + (base * (change / 100));
+                invElem.innerText = `$${current.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                invElem.style.color = isPos ? "#10b981" : "#ef4444";
+
+                // ۲. آپدیت نشانگر سود/ضرر (ROI)
+                const roiBadge = document.getElementById(`roi-badge-${idx}`);
+                const roiVal = document.getElementById(`roi-val-${idx}`);
+                const icon = document.getElementById(`icon-${idx}`);
+
+                roiVal.innerText = `${isPos ? '+' : ''}${change.toFixed(2)}%`;
+                roiBadge.style.background = isPos ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)";
+                roiBadge.style.color = isPos ? "#10b981" : "#ef4444";
+                icon.className = isPos ? "bi bi-caret-up-fill me-1" : "bi bi-caret-down-fill me-1";
+            });
+    });
+});
 </script>
 {% endblock %}
