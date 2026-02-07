@@ -115,19 +115,23 @@ def user_dashboard(request):
 
 @login_required
 def profile_dashboard(request):
-    # --- بخش جدید: خوانده شده علامت زدن نوتیفیکیشن‌ها به محض ورود به داشبورد اصلی ---
-    request.user.notifications.filter(is_read=False).update(is_read=True)    # -----------------------------------------------------------------------
+    request.user.notifications.filter(is_read=False).update(is_read=True)
 
     followed_traders = FollowedTrader.objects.filter(user=request.user).select_related('trader')
     
-    # جلوگیری از خطا اگر مقدار roi_30d نال بود
-    total_pnl_percent = sum((item.trader.roi_30d or 0) for item in followed_traders)
+    # محاسبه میانگین سود کل پورتفوی (Total PnL)
+    # به جای جمع زدن، میانگین می‌گیریم تا عدد منطقی باشد
+    total_positions = followed_traders.count()
+    if total_positions > 0:
+        total_pnl_percent = sum((item.trader.roi_30d or 0) for item in followed_traders) / total_positions
+    else:
+        total_pnl_percent = 0
     
     recent_transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')[:5]
     
     context = {
         'followed_traders': followed_traders,
-        'total_pnl': total_pnl_percent,
+        'total_pnl': round(total_pnl_percent, 2),
         'recent_transactions': recent_transactions,
     }
     return render(request, 'accounts/dashboard.html', context)
@@ -153,3 +157,5 @@ def mark_notification_as_read(request, pk):
             notification.save()
             return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+

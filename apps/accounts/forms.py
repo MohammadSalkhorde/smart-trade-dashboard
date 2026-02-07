@@ -9,18 +9,19 @@ User = get_user_model()
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("email", "username")
+        # یوزرنیم از اینجا حذف شد
+        fields = ("email",) 
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # --- اصلاح لیبل‌های پسورد ---
+        # اصلاح لیبل‌های پسورد
         if 'password1' in self.fields:
             self.fields['password1'].label = "Password"
         if 'password2' in self.fields:
             self.fields['password2'].label = "Confirm Password"
         
-        # اعمال استایل و هندل کردن پلیس‌هولدرها
+        # اعمال استایل و پلیس‌هولدرها
         for field_name, field in self.fields.items():
             field.widget.attrs.update({
                 'class': 'form-control border-0 bg-light py-2 px-3',

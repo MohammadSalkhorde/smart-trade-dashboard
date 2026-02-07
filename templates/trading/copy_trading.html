@@ -35,7 +35,7 @@
     align-items: center;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 50px; /* کاملاً گرد */
+    border-radius: 50px; 
     padding: 5px 5px 5px 20px;
     transition: all 0.3s ease;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
@@ -85,7 +85,6 @@
     line-height: 1;
 }
 
-/* افکت برای موبایل */
 @media (max-width: 768px) {
     .search-wrapper {
         max-width: 100%;
@@ -127,13 +126,18 @@
                                 <div class="tradingview-widget-container__widget"></div>
                                 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
                                 {
-                                "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}BINANCE:SOLUSDT{% elif forloop.counter|divisibleby:2 %}BINANCE:ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
-                                "width": "100%", "height": "100%", "locale": "en", "dateRange": "12M",
-                                "colorTheme": "light", 
+                                "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
+                                "width": "100%",
+                                "height": "100%",
+                                "locale": "en",
+                                "dateRange": "30D",
+                                "colorTheme": "light",
                                 "trendLineColor": "{% if '-' in trader.roi_30d %}#ef4444{% else %}#10b981{% endif %}",
-                                "underLineColor": "rgba(255, 255, 255, 0)",
-                                "isTransparent": true, "autosize": true, 
-                                "chartOnly": true, "noTimeScale": true
+                                "underLineColor": "rgba(16, 185, 129, 0.05)",
+                                "isTransparent": true,
+                                "autosize": true,
+                                "chartOnly": true,
+                                "noTimeScale": true
                                 }
                                 </script>
                             </div>
@@ -212,26 +216,28 @@
 <style>
     body { background-color: #f8fafd; overflow-x: hidden; }
     
-    /* استایل جدید برای باکس چارت - ارتفاع 110 پیکسل */
+    /* بخش اصلاح شده چارت برای فضای بیشتر */
     .chart-clean-wrapper {
         position: relative;
-        height: 110px; 
+        height: 85px; /* ارتفاع باکس را کمی افزایش دادیم */
+        width: 100%;
         background: transparent;
         overflow: hidden;
-        border-radius: 12px;
+        margin: 5px 0;
     }
 
     .tradingview-widget-container {
-        height: 100%;
-        width: 100%;
+        position: absolute;
+        top: 0px; /* از حالت منفی خارج شد تا بالای چارت حذف نشود */
+        left: -10px; 
+        width: calc(100% + 55px) !important; 
+        height: 100px !important; /* ارتفاع ویجت داخلی تنظیم شد */
     }
 
-    /* حذف نام و قیمت با استفاده از Clip-path و جابجایی */
     .tradingview-widget-container iframe {
-        position: absolute;
-        top: -10px !important; /* حذف هدر چارت */
-        height: 130px !important; /* بزرگتر کردن برای حذف فوتر */
-        clip-path: inset(5px 45px 5px 0); /* بریدن بخش قیمت از سمت راست */
+        width: 100% !important;
+        height: 100% !important;
+        clip-path: inset(0px 45px 0px 0); /* فقط قیمت سمت راست را میبریم */
         pointer-events: none;
     }
 
@@ -255,7 +261,7 @@
     .avatar-placeholder-blue { width: 60px; height: 60px; border-radius: 50%; background: #e0eaff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0062ff; font-size: 1.3rem; }
     .v-badge { position: absolute; bottom: 0; right: 0; color: #0062ff; background: #fff; border-radius: 50%; font-size: 16px; line-height: 1; z-index: 2; border: 2px solid #fff; }
 
-    .roi-blue { color: #10b981; font-weight: 800; font-size: 1.6rem; }
+    .roi-blue { font-weight: 800; font-size: 1.6rem; }
     .x-small-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
     .badge-blue-soft { background: #f0f7ff; color: #0062ff; font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
 
@@ -269,29 +275,26 @@
         .border-start-custom { border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; border-left: none !important; }
     }
 
-/* ۱. استایل کلی فرم */
 .simple-overlay-form {
     display: none;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 310px;        /* کمی پهن‌تر برای دسکتاپ */
-    min-height: 280px;   /* افزایش ارتفاع برای جلوگیری از فشرده شدن */
+    width: 310px; 
+    min-height: 280px; 
     background: #ffffff;
     border-radius: 24px;
     padding: 25px;
-    z-index: 9999;       /* مقدار بسیار بالا برای اولویت نمایش */
+    z-index: 9999; 
     border: 1px solid #e2e8f0;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
 }
 
-/* ۲. حل مشکل افتادن زیر آیتم‌های بعدی */
 .trader-card-blue:has(.simple-overlay-form[style*="display: block"]) {
-    z-index: 1000 !important; /* وقتی فرم باز است، کل کارت بالاتر از بقیه قرار می‌گیرد */
+    z-index: 1000 !important; 
 }
 
-/* ۳. بهبود ظاهر ورودی و دکمه برای پر کردن ارتفاع */
 .form-control-custom { 
     height: 50px; 
     margin-bottom: 15px;
@@ -320,18 +323,20 @@ document.addEventListener('DOMContentLoaded', function() {
     symbols.forEach((symbol, index) => {
         const roiElement = document.getElementById(`roi-${index + 1}`);
         
-        // فراخوانی دیتای واقعی از API صرافی برای هماهنگی با چارت
-        fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
+        fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=30`)
             .then(response => response.json())
             .then(data => {
-                const change = parseFloat(data.priceChangePercent).toFixed(2);
+                const openPrice = parseFloat(data[0][1]); 
+                const closePrice = parseFloat(data[data.length - 1][4]); 
+                
+                const change = (((closePrice - openPrice) / openPrice) * 100).toFixed(2);
                 const isPositive = change >= 0;
                 
                 roiElement.innerText = (isPositive ? '+' : '') + change + '%';
                 roiElement.style.color = isPositive ? '#10b981' : '#ef4444';
             })
             .catch(() => {
-                roiElement.innerText = '+0.00%'; // مقدار پیش‌فرض در صورت خطا
+                roiElement.innerText = '+0.00%'; 
             });
     });
 });

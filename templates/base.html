@@ -187,6 +187,7 @@
                             <li><a class="dropdown-item py-2" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-person me-2 text-primary"></i>Settings</a></li>
                             <li><a class="dropdown-item py-2" href="{% url 'transactions:deposit' %}"><i class="bi bi-plus-circle me-2 text-success"></i>Deposit Funds</a></li>
                             <li><a class="dropdown-item py-2" href="{% url 'transactions:withdraw' %}"><i class="bi bi-dash-circle me-2 text-danger"></i>Withdraw Funds</a></li>
+                            <li><a class="dropdown-item py-2" href="{% url 'transactions:history' %}"><i class="bi bi-clock-history me-2 text-info"></i>Transactions</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger py-2" href="{% url 'accounts:logout' %}"><i class="bi bi-power me-2"></i>Logout</a></li>
                         </ul>
@@ -252,6 +253,7 @@
                 {% if user.is_authenticated %}
                     <a href="{% url 'accounts:dashboard' %}" class="menu-link"><i class="bi bi-grid"></i> Dashboard</a>
                     <a href="{% url 'accounts:profile_dashboard' %}" class="menu-link"><i class="bi bi-person-gear"></i> Settings</a>
+                    <a href="{% url 'transactions:history' %}" class="menu-link"><i class="bi bi-clock-history"></i> Transactions History</a>
                     <hr class="my-3 opacity-50">
                     <a href="{% url 'accounts:logout' %}" class="menu-link text-danger"><i class="bi bi-power text-danger"></i> Logout</a>
                 {% else %}
