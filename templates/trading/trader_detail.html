@@ -16,65 +16,9 @@
         background-color: var(--bg-light) !important; 
         color: var(--text-main); 
         font-family: 'Inter', sans-serif; 
-        overflow-x: hidden; 
-        padding-bottom: 180px !important; 
+        padding-bottom: 120px !important; 
     }
     
-    /* استایل چارت تمیز و محافظت شده */
-    .chart-clean-wrapper {
-        position: relative;
-        height: 170px; /* کوتاه‌تر و شیک‌تر مثل صفحه لیست */
-        background: transparent;
-        overflow: hidden;
-        border-radius: 12px;
-    }
-
-    .tradingview-widget-container iframe {
-        position: absolute;
-        top: -10px !important;
-        height: 180px !important;
-        width: 100% !important;
-        /* حذف حاشیه‌های اضافی و متن‌ها */
-        clip-path: inset(5px 0 5px 0);
-    }
-
-    /* لایه محافظ برای جلوگیری از کلیک و انتقال به تریدینگ‌ویو */
-    .chart-touch-shield {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 10;
-        background: transparent;
-        cursor: default;
-    }
-
-    /* دکمه ثابت پایین صفحه */
-    .fixed-action-bar-light { 
-        position: fixed; 
-        bottom: 0; 
-        left: 0; 
-        right: 0; 
-        background: rgba(255, 255, 255, 0.95); 
-        backdrop-filter: blur(10px); 
-        border-top: 1px solid #e2e8f0; 
-        z-index: 1000; 
-        padding: 15px;
-    }
-
-    /* تنظیم دکمه برای موبایل (بالای منوی گوشی) */
-    @media (max-width: 991.98px) {
-        .fixed-action-bar-light {
-            bottom: 90px; 
-            left: 15px;
-            right: 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-    }
-
     .stats-card-light { 
         background: #ffffff; 
         border-radius: 12px; 
@@ -83,34 +27,42 @@
     }
     .label-text { color: var(--text-muted); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
     .value-text { font-size: 1rem; font-weight: 800; }
-    .avatar-placeholder { background: var(--soft-blue); color: var(--brand-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    
+    .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
+    .admin-controls {
+        background: #fff3cd;
+        border: 1px dashed #ffeeba;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
 </style>
 
 <div class="container-fluid py-3">
     <div class="d-flex align-items-center mb-4 px-2">
         <a href="javascript:history.back()" class="text-dark text-decoration-none fs-4"><i class="bi bi-chevron-left"></i></a>
-        <h6 class="fw-bold mb-0 mx-auto">Trader Profile</h6>
+        <h6 class="fw-bold mb-0 mx-auto">Trader Profile {% if user.is_staff %}(Admin Mode){% endif %}</h6>
     </div>
 
-    <div class="px-2 mb-4">
-        <div class="d-flex align-items-center gap-3">
-            {% if trader.avatar %}
-                <img src="{{ trader.avatar.url }}" class="rounded-circle border border-2 border-white shadow-sm" width="65" height="65" style="object-fit: cover;">
-            {% else %}
-                <div class="avatar-placeholder shadow-sm" style="width: 65px; height: 65px; font-size: 1.5rem;">{{ trader.name|first|upper }}</div>
-            {% endif %}
-            <div>
-                <h4 class="fw-bold mb-0" style="font-size: 1.1rem;">{{ trader.name }}</h4>
-                <span class="badge bg-soft-blue text-primary p-1 px-2 mt-1" style="font-size: 0.6rem;">VERIFIED TRADER</span>
-            </div>
-        </div>
+    <div class="px-2 mb-4 text-center">
+        {% if trader.avatar %}
+            <img src="{{ trader.avatar.url }}" class="rounded-circle border border-2 border-white shadow-sm mb-2" width="80" height="80" style="object-fit: cover;">
+        {% else %}
+            <div class="avatar-placeholder shadow-sm mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem; background: var(--soft-blue); color: var(--brand-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center;">{{ trader.name|first|upper }}</div>
+        {% endif %}
+        <h4 class="fw-bold mb-0">{{ trader.name }}</h4>
+        <span class="badge bg-soft-blue text-primary p-1 px-2 mt-1">VERIFIED STRATEGY</span>
     </div>
 
     <div class="row g-2 px-1 mb-4 text-center">
         <div class="col-4">
             <div class="stats-card-light">
                 <span class="label-text d-block">ROI (30D)</span>
-                <span id="detail-roi" class="value-text text-success">...</span>
+                <span id="display-roi" class="value-text text-success">{{ trader.roi_30d }}%</span>
             </div>
         </div>
         <div class="col-4">
@@ -129,149 +81,157 @@
 
     <div class="px-2 mb-4">
         <div class="bg-white p-3 rounded-4 border shadow-sm">
-            <h6 class="fw-bold small mb-3 text-muted">Growth Curve</h6>
-            <div class="chart-clean-wrapper">
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                    {
-                      "symbol": "BINANCE:{% if trader.id|divisibleby:5 %}ADAUSDT{% elif trader.id|divisibleby:4 %}BNBUSDT{% elif trader.id|divisibleby:3 %}SOLUSDT{% elif trader.id|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}",
-                      "width": "100%",
-                      "height": "100%",
-                      "locale": "en",
-                      "dateRange": "1M",
-                      "colorTheme": "light",
-                      "trendLineColor": "#10b981",
-                      "underLineColor": "rgba(16, 185, 129, 0.05)",
-                      "isTransparent": true,
-                      "autosize": true,
-                      "chartOnly": true
-                    }
-                    </script>
-                </div>
-                <div class="chart-touch-shield"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold small mb-0 text-muted">Performance Curve (30D)</h6>
+                {% if user.is_staff %}
+                    <button id="saveChart" class="btn btn-sm btn-primary py-1 px-3 rounded-pill" style="font-size: 0.7rem;">Save Changes</button>
+                {% endif %}
             </div>
+
+            {% if user.is_staff %}
+                <div class="admin-controls small text-center mb-2">
+                    <i class="bi bi-info-circle"></i> <strong>Admin:</strong> Drag green points to adjust.
+                </div>
+                <div class="chart-container">
+                    <canvas id="traderChart"></canvas>
+                </div>
+            {% else %}
+                {% if trader.is_manual_mode %}
+                    <div class="chart-container">
+                        <canvas id="traderChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="real-chart-wrapper" style="height: 250px; border-radius: 12px; overflow: hidden;">
+                        <div id="tradingview_live" style="height: 100%;"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                        <script type="text/javascript">
+                            new TradingView.MediumWidget({
+                                "symbols": [["BINANCE:{% if trader.id|divisibleby:5 %}ADAUSDT{% elif trader.id|divisibleby:4 %}BNBUSDT{% elif trader.id|divisibleby:3 %}SOLUSDT{% elif trader.id|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}|1M"]],
+                                "chartOnly": true, "width": "100%", "height": "100%", "locale": "en", "colorTheme": "light",
+                                "gridLineColor": "rgba(240, 243, 250, 0)", "fontColor": "#787B86", "isTransparent": true,
+                                "autosize": true, "showFloatingTooltip": true, "container_id": "tradingview_live"
+                            });
+                        </script>
+                    </div>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 
-    <div class="fixed-action-bar-light">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-5">
-                    <span class="label-text mb-0 d-block">Min. Investment</span>
-                    <span class="fw-bold fs-5 text-dark">$10.00</span>
-                </div>
-                <div class="col-7 text-end">
-                    <button type="button" class="btn btn-primary w-100 fw-bold py-3 rounded-pill" 
-                            style="background: var(--brand-blue); border: none; box-shadow: 0 4px 12px rgba(0,98,255,0.2);"
-                            onclick="openCopyFormDetail()">
-                        Copy Now
-                    </button>
-                </div>
+    <div class="fixed-action-bar-light p-3 border-top bg-white fixed-bottom shadow-lg" style="border-radius: 20px 20px 0 0;">
+        <div class="row align-items-center">
+            <div class="col-5">
+                <span class="label-text mb-0 d-block">Min. Investment</span>
+                <span class="fw-bold fs-5 text-dark">$10.00</span>
+            </div>
+            <div class="col-7 text-end">
+                <button type="button" class="btn btn-primary w-100 fw-bold py-3 rounded-pill" onclick="openCopyFormDetail()">Copy Now</button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="copyFormOverlay" class="simple-overlay-form shadow-lg">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <span class="fw-bold text-dark" style="font-size: 0.95rem;">Copy Strategy</span>
-        <button type="button" class="btn-close" onclick="closeCopyFormDetail()"></button>
-    </div>
-    <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <div class="d-flex justify-content-between mb-1">
-                <label class="label-text" style="font-size: 0.65rem;">Investment Amount</label>
-                <span class="text-primary fw-bold" style="font-size: 0.65rem;">USDT</span>
-            </div>
-            <input type="number" name="amount" class="form-control form-control-custom" placeholder="0.00" min="10" step="0.01" required>
-        </div>
-        
-        <div class="p-2 rounded-3 mb-3" style="background: #f8fafd; border: 1px dashed #e2e8f0;">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted" style="font-size: 0.7rem;">Trading Pair:</span>
-                <span class="text-dark fw-bold" style="font-size: 0.7rem;">BTC/USDT Strategy</span>
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm" style="background: var(--brand-blue); border: none;">
-            Confirm & Start
-        </button>
-    </form>
-</div>
-
-<div id="formBackdrop" class="form-backdrop" onclick="closeCopyFormDetail()"></div>
-
-<style>
-    .form-control-custom { 
-        background: #f1f5f9 !important; 
-        border: 2px solid transparent !important; 
-        border-radius: 14px !important; 
-        font-weight: 700 !important; 
-        padding: 12px 18px !important; 
-        font-size: 1.1rem;
-        transition: all 0.2s;
-    }
-    .form-control-custom:focus {
-        background: #fff !important;
-        border-color: var(--brand-blue) !important;
-        box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.1) !important;
-    }
-    .simple-overlay-form {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 320px;
-        background: #ffffff;
-        border-radius: 28px;
-        padding: 25px;
-        z-index: 2001;
-        border: 1px solid #e2e8f0;
-    }
-    .form-backdrop { 
-        display: none; 
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%; 
-        background: rgba(0, 0, 0, 0.4); 
-        backdrop-filter: blur(4px); 
-        z-index: 2000; 
-    }
-</style>
-<div id="formBackdrop" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:2000;" onclick="closeCopyFormDetail()"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% if user.is_staff %}<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2.2.3/dist/chartjs-plugin-dragdata.min.js"></script>{% endif %}
 
 <script>
-    function openCopyFormDetail() {
-        document.getElementById('copyFormOverlay').style.display = 'block';
-        document.getElementById('formBackdrop').style.display = 'block';
-    }
-    function closeCopyFormDetail() {
-        document.getElementById('copyFormOverlay').style.display = 'none';
-        document.getElementById('formBackdrop').style.display = 'none';
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        const traderId = {{ trader.id }};
-        let sym = "BTCUSDT";
-        if (traderId % 5 === 0) sym = "ADAUSDT";
-        else if (traderId % 4 === 0) sym = "BNBUSDT";
-        else if (traderId % 3 === 0) sym = "SOLUSDT";
-        else if (traderId % 2 === 0) sym = "ETHUSDT";
+document.addEventListener('DOMContentLoaded', function() {
+    const isStaff = {{ user.is_staff|yesno:"true,false" }};
+    const isManual = {{ trader.is_manual_mode|yesno:"true,false" }};
+    const roiElement = document.getElementById('display-roi');
+    const symbol = "{% if trader.id|divisibleby:5 %}ADAUSDT{% elif trader.id|divisibleby:4 %}BNBUSDT{% elif trader.id|divisibleby:3 %}SOLUSDT{% elif trader.id|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}";
 
-        fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`)
-            .then(r => r.json())
-            .then(d => {
-                const c = parseFloat(d.priceChangePercent).toFixed(2);
-                const el = document.getElementById('detail-roi');
-                if(el) {
-                    el.innerText = (c >= 0 ? '+' : '') + c + '%';
-                    el.style.color = c >= 0 ? '#10b981' : '#ef4444';
+    if (isStaff || isManual) {
+        const ctx = document.getElementById('traderChart').getContext('2d');
+        let chartData = {{ trader.chart_history_json|safe|default:"[0, 5, 10, 8, 15]" }};
+        
+        const updateRoiDisplay = (value) => {
+            const numValue = parseFloat(value);
+            roiElement.innerText = (numValue >= 0 ? '+' : '') + numValue.toFixed(2) + '%';
+            roiElement.style.color = numValue >= 0 ? '#10b981' : '#ef4444';
+        };
+
+        updateRoiDisplay(chartData[chartData.length - 1]);
+
+        const traderChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.map((_, i) => i + 1),
+                datasets: [{
+                    data: chartData,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: isStaff ? 8 : 0,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    dragData: isStaff ? {
+                        round: 2,
+                        onDrag: function(e, datasetIndex, index, value) {
+                            if (index === chartData.length - 1) {
+                                updateRoiDisplay(value);
+                            }
+                        },
+                        onDragEnd: function(e, datasetIndex, index, value) {
+                            updateRoiDisplay(value);
+                        }
+                    } : false
+                },
+                scales: {
+                    x: { display: false },
+                    y: { 
+                        grid: { color: '#f1f5f9' },
+                        // اصلاح اصلی اینجاست:
+                        beginAtZero: false, 
+                        // تعیین حداقل و حداکثر برای اینکه فضا برای حرکت باشد
+                        suggestedMin: -20,
+                        suggestedMax: 20,
+                        ticks: {
+                            callback: function(value) { return value + '%'; }
+                        }
+                    }
                 }
+            }
+        });
+
+        if (isStaff) {
+            document.getElementById('saveChart')?.addEventListener('click', function() {
+                const updatedData = traderChart.data.datasets[0].data;
+                fetch("{% url 'trading:update_chart' trader.id %}", {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json", 
+                        "X-CSRFToken": "{{ csrf_token }}" 
+                    },
+                    body: JSON.stringify({ points: updatedData })
+                })
+                .then(res => res.json())
+                .then(data => { 
+                    if(data.status === 'ok') alert("Changes saved successfully!"); 
+                });
             });
-    });
+        }
+    }
+
+    if (!isStaff && !isManual) {
+        fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=30`)
+            .then(res => res.json())
+            .then(data => {
+                const open = parseFloat(data[0][1]);
+                const close = parseFloat(data[data.length - 1][4]);
+                const change = (((close - open) / open) * 100).toFixed(2);
+                roiElement.innerText = (change >= 0 ? '+' : '') + change + '%';
+                roiElement.style.color = change >= 0 ? '#10b981' : '#ef4444';
+            })
+            .catch(() => { roiElement.innerText = '0.00%'; });
+    }
+});
 </script>
 {% endblock %}

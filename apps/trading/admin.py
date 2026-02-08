@@ -17,26 +17,20 @@ class ActionValueForm(forms.Form):
 # --- LeadTrader Admin ---
 @admin.register(LeadTrader)
 class LeadTraderAdmin(admin.ModelAdmin):
-    # نمایش فیلدها در لیست اصلی
-    list_display = ('name', 'roi_30d', 'total_copiers', 'risk_level', 'target_profit_growth')
-    list_editable = ('target_profit_growth', 'risk_level')
-    actions = ['inject_custom_profit', 'apply_target_growth_step']
+    # اضافه کردن is_manual_mode به نمایش لیستی برای دسترسی سریع
+    list_display = ('name', 'is_manual_mode', 'roi_30d', 'total_copiers', 'risk_level')
+    list_editable = ('is_manual_mode', 'risk_level') # ادمین می‌تونه توی لیست سریع تیک بزنه
     
-    # فیلدهایی که نباید دستی تغییر کنند (چون سیستمی هستند)
+    actions = ['inject_custom_profit', 'apply_target_growth_step']
     readonly_fields = ('roi_30d', 'chart_history_json')
 
-    # دسته‌بندی فیلدها در صفحه ویرایش برای ظاهر حرفه‌ای‌تر
     fieldsets = (
-        ('Identity & Status', {
-            'fields': ('name', 'avatar', 'risk_level', 'capacity')
+        ('Identity & Mode', {
+            'fields': ('name', 'avatar', 'is_manual_mode', 'risk_level', 'capacity')
         }),
-        ('Marketing Stats (Fake for Attraction)', {
-            'fields': ('pnl_30d', 'aum', 'max_drawdown', 'win_rate', 'followers_count_manual'),
-            'classes': ('collapse',), # این بخش را می‌توان جمع کرد
-        }),
+        # سایر بخش‌ها بدون تغییر ...
         ('Algorithm & Performance', {
             'fields': ('roi_30d', 'chart_history_json', 'target_profit_growth'),
-            'description': 'Performance metrics are updated via "Inject Profit" actions.'
         }),
     )
 

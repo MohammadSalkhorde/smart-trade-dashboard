@@ -122,26 +122,45 @@
 
                     <div class="col-lg-4 col-12 mb-3 mb-md-0 px-md-3">
                         <div class="chart-clean-wrapper">
-                            <div class="tradingview-widget-container">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                                {
-                                "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
-                                "width": "100%",
-                                "height": "100%",
-                                "locale": "en",
-                                "dateRange": "30D",
-                                "colorTheme": "light",
-                                "trendLineColor": "{% if '-' in trader.roi_30d %}#ef4444{% else %}#10b981{% endif %}",
-                                "underLineColor": "rgba(16, 185, 129, 0.05)",
-                                "isTransparent": true,
-                                "autosize": true,
-                                "chartOnly": true,
-                                "noTimeScale": true
-                                }
+                            {% if trader.is_manual_mode %}
+                                <canvas id="miniChart{{ trader.id }}" style="width:100%; height:80px;"></canvas>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        new Chart(document.getElementById('miniChart{{ trader.id }}'), {
+                                            type: 'line',
+                                            data: {
+                                                labels: {{ trader.chart_history_json|safe|default:"[0]" }}.map((_,i)=>i),
+                                                datasets: [{
+                                                    data: {{ trader.chart_history_json|safe|default:"[0]" }},
+                                                    borderColor: '#10b981',
+                                                    borderWidth: 2,
+                                                    fill: true,
+                                                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                                                    pointRadius: 0,
+                                                    tension: 0.4
+                                                }]
+                                            },
+                                            options: { 
+                                                maintainAspectRatio: false,
+                                                plugins: { legend: {display: false} }, 
+                                                scales: { x:{display:false}, y:{display:false} } 
+                                            }
+                                        });
+                                    });
                                 </script>
-                            </div>
-                            <div class="chart-touch-shield"></div>
+                            {% else %}
+                                <div class="tradingview-widget-container">
+                                    <div class="tradingview-widget-container__widget"></div>
+                                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                                    {
+                                    "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
+                                    "width": "100%", "height": "100%", "locale": "en", "dateRange": "30D",
+                                    "colorTheme": "light", "isTransparent": true, "autosize": true, "chartOnly": true, "noTimeScale": true
+                                    }
+                                    </script>
+                                </div>
+                                <div class="chart-touch-shield"></div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -312,32 +331,41 @@
     .btn-close-custom:hover { color: #ef4444; }
 </style>
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const symbols = [
+    const tradersData = [
         {% for trader in traders %}
-            "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}"{% if not forloop.last %},{% endif %}
+        {
+            id: "{{ forloop.counter }}",
+            isManual: {{ trader.is_manual_mode|yesno:"true,false" }},
+            manualRoi: "{{ trader.roi_30d }}",
+            symbol: "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}"
+        }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
 
-    symbols.forEach((symbol, index) => {
-        const roiElement = document.getElementById(`roi-${index + 1}`);
+    tradersData.forEach((trader) => {
+        const roiElement = document.getElementById(`roi-${trader.id}`);
         
-        fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=30`)
-            .then(response => response.json())
-            .then(data => {
-                const openPrice = parseFloat(data[0][1]); 
-                const closePrice = parseFloat(data[data.length - 1][4]); 
-                
-                const change = (((closePrice - openPrice) / openPrice) * 100).toFixed(2);
-                const isPositive = change >= 0;
-                
-                roiElement.innerText = (isPositive ? '+' : '') + change + '%';
-                roiElement.style.color = isPositive ? '#10b981' : '#ef4444';
-            })
-            .catch(() => {
-                roiElement.innerText = '+0.00%'; 
-            });
+        if (trader.isManual) {
+            // استفاده از سود تعیین شده توسط ادمین
+            const val = parseFloat(trader.manualRoi).toFixed(2);
+            roiElement.innerText = (val >= 0 ? '+' : '') + val + '%';
+            roiElement.style.color = val >= 0 ? '#10b981' : '#ef4444';
+        } else {
+            // دریافت سود زنده از بایننس
+            fetch(`https://api.binance.com/api/v3/klines?symbol=${trader.symbol}&interval=1d&limit=30`)
+                .then(response => response.json())
+                .then(data => {
+                    const openPrice = parseFloat(data[0][1]); 
+                    const closePrice = parseFloat(data[data.length - 1][4]); 
+                    const change = (((closePrice - openPrice) / openPrice) * 100).toFixed(2);
+                    roiElement.innerText = (change >= 0 ? '+' : '') + change + '%';
+                    roiElement.style.color = change >= 0 ? '#10b981' : '#ef4444';
+                })
+                .catch(() => { roiElement.innerText = '+0.00%'; });
+        }
     });
 });
 </script>

@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-@csrf_exempt # برای اینکه در ارسال درخواست AJAX به مشکل نخورید
+@csrf_exempt 
 @login_required
 def update_pnl_ajax(request):
     """ذخیره خودکار سود/ضرر هر 5 ثانیه"""
@@ -173,4 +173,22 @@ def market_list(request):
 
 def trader_detail(request, trader_id):
     trader = get_object_or_404(LeadTrader, id=trader_id)
-    return render(request, 'trading/trader_detail.html', {'trader': trader})
+    # ادمین می‌تونه نقاط چارت رو ببینه و تغییر بده
+    context = {
+        'trader': trader,
+        'is_admin': request.user.is_staff, # تشخیص ادمین
+        'chart_data': trader.chart_history_json # لیست نقاط فعلی
+    }
+    return render(request, 'trading/trader_detail.html', context)
+
+
+def update_trader_chart(request, trader_id):
+    if request.user.is_staff and request.method == 'POST':
+        data = json.loads(request.body)
+        trader = LeadTrader.objects.get(id=trader_id)
+        trader.chart_history_json = data.get('points', [])
+        # می‌تونی آخرین نقطه رو هم به عنوان ROI کلی در نظر بگیری
+        if trader.chart_history_json:
+            trader.roi_30d = trader.chart_history_json[-1]
+        trader.save()
+        return JsonResponse({'status': 'ok'})

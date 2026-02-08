@@ -3,7 +3,7 @@
 
 {% block content %}
 <style>
-    /* 1. Glassmorphism & High-End UI Effects */
+    /* 1. UI Effects */
     .glass-card {
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(15px);
@@ -13,9 +13,8 @@
         transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
-    /* 2. Professional Neo-Exchange Balance Card */
     .premium-balance-card {
-        background: linear-gradient(135deg, var(--deep-royal) 0%, #003db3 100%);
+        background: linear-gradient(135deg, #001f54 0%, #003db3 100%);
         border-radius: 30px;
         color: white;
         padding: 35px;
@@ -37,7 +36,6 @@
         filter: blur(40px);
     }
 
-    /* 3. Stat Cards with Modern Hover */
     .stat-card-mini {
         padding: 22px;
         border-radius: 24px;
@@ -54,7 +52,7 @@
         width: 48px;
         height: 48px;
         background: rgba(0, 82, 255, 0.06);
-        color: var(--deep-royal);
+        color: #0052FF;
         border-radius: 14px;
         display: flex;
         align-items: center;
@@ -63,10 +61,8 @@
         font-size: 1.3rem;
     }
 
-    /* 4. Global Responsive Table (Mobile Optimized) */
     @media (max-width: 768px) {
         .custom-table-header { display: none !important; }
-        
         .table-responsive tbody tr {
             display: block;
             background: white;
@@ -74,9 +70,7 @@
             padding: 20px;
             border-radius: 25px;
             border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
         }
-
         .table-responsive td {
             display: flex;
             justify-content: space-between;
@@ -85,53 +79,30 @@
             border: none;
             font-size: 0.95rem;
         }
-
         .table-responsive td::before {
             content: attr(data-label);
             font-weight: 800;
             color: #94a3b8;
             font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-
         .action-cell {
             margin-top: 15px;
             padding-top: 18px !important;
             border-top: 1px dashed #e2e8f0 !important;
             justify-content: center !important;
         }
-        .action-cell::before { display: none !important; }
-        
-        .btn-stop-mobile {
-            width: 100%;
-            padding: 12px;
-            border-radius: 16px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-        }
     }
 
-    .fade-up-custom {
-        animation: fadeInUp 0.8s ease-out forwards;
-    }
+    .fade-up-custom { animation: fadeInUp 0.8s ease-out forwards; }
     @keyframes pulse-green {
         0% { transform: scale(1); opacity: 0.8; }
         70% { transform: scale(2.5); opacity: 0; }
         100% { transform: scale(1); opacity: 0; }
     }
-    
-    .tracking-widest { letter-spacing: 0.15em !important; }
-    
-    .hover-scale { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .hover-scale:hover { transform: scale(1.05); }
-
-    @media (max-width: 768px) {
-        .btn-primary { width: 100% !important; }
-    }
 </style>
 
-<div class="dashboard-container fade-up-custom">
+<div class="dashboard-container fade-up-custom px-3">
     <div class="row align-items-end mb-5 gy-4">
         <div class="col-md-8 col-12">
             <div class="d-flex align-items-center mb-2">
@@ -139,75 +110,48 @@
                     <div class="bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
                     <div class="position-absolute top-0 start-0 bg-success rounded-circle animate-ping" style="width: 10px; height: 10px; opacity: 0.5; animation: pulse-green 2s infinite;"></div>
                 </div>
-                <span class="text-uppercase fw-bold text-primary tracking-widest" style="font-size: 0.7rem; letter-spacing: 2px;">
-                    Account Overview
-                </span>
+                <span class="text-uppercase fw-bold text-primary" style="font-size: 0.7rem; letter-spacing: 2px;">Account Overview</span>
             </div>
-            
-            <h2 class="fw-bolder text-dark mb-1" style="font-size: calc(1.5rem + 0.5vw); letter-spacing: -0.5px;">
-                {{ user.username|upper }} <span class="fw-light text-muted">/ PORTFOLIO</span>
-            </h2>
-            <p class="text-muted small mb-0 fw-medium">
-                Global market access & institutional-grade performance tracking.
-            </p>
+            <h2 class="fw-bolder text-dark mb-1">{{ user.username|upper }} <span class="fw-light text-muted">/ PORTFOLIO</span></h2>
         </div>
-
-        <div class="col-md-4 col-12 text-md-end">
-            <a href="{% url 'transactions:deposit' %}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg d-inline-flex align-items-center justify-content-center transition-all hover-scale" style="min-width: 180px;">
-                <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                ADD FUNDS
-            </a>
+        <div class="col-md-4 col-12 text-md-end text-center">
+            <a href="{% url 'transactions:deposit' %}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg w-100" style="max-width: 250px;">ADD FUNDS</a>
         </div>
     </div>
-
 
     <div class="row g-4">
         <div class="col-lg-5">
             <div class="premium-balance-card shadow-lg">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <span class="opacity-75 fw-bold small text-uppercase tracking-wider">Estimated Balance</span>
+                    <span class="opacity-75 fw-bold small text-uppercase">Estimated Balance</span>
                     <i class="bi bi-shield-shaded fs-4 opacity-50"></i>
                 </div>
                 <div class="d-flex align-items-baseline mb-4">
                     <h1 class="display-5 fw-bolder mb-0">${{ user.balance|floatformat:2 }}</h1>
                     <span class="ms-2 opacity-75 fw-bold">USDT</span>
                 </div>
-                <div class="d-flex gap-2">
-                    <div class="badge bg-dark bg-opacity-25 rounded-pill px-3 py-2 fw-normal" style="backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">
-                        <i class="bi bi-lightning-fill me-1 text-warning"></i> 
-                        <span class="text-white">Real-time Tracking</span>
-                    </div>
+                <div class="badge bg-dark bg-opacity-25 rounded-pill px-3 py-2 fw-normal">
+                    <i class="bi bi-lightning-fill me-1 text-warning"></i> Real-time Tracking
                 </div>
             </div>
         </div>
 
         <div class="col-lg-7">
             <div class="row h-100 g-3">
-                <div class="col-6 col-md-4">
-                    <div class="stat-card-mini shadow-sm">
-                        <div class="stat-icon"><i class="bi bi-people"></i></div>
-                        <div class="small text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.65rem;">Active Traders</div>
-                        <div class="h4 fw-bolder text-dark mb-0">{{ followed_traders.count }}</div>
-                    </div>
-                </div>
-                <div class="col-6 col-md-4">
+                <div class="col-6">
                     <div class="stat-card-mini shadow-sm">
                         <div class="stat-icon text-success"><i class="bi bi-bar-chart-line"></i></div>
-                        <div class="small text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.65rem;">Total PnL</div>
-                        <div class="h4 fw-bolder {% if total_pnl >= 0 %}text-success{% else %}text-danger{% endif %} mb-0">
-                            {{ total_pnl }}%
-                        </div>
+                        <div class="small text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.65rem;">Live Portfolio PnL</div>
+                        <div id="total-pnl-display" class="h4 fw-bolder text-success mb-0">0.00%</div>
                     </div>
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-6">
                     <div class="stat-card-mini shadow-sm">
                         <div class="stat-icon text-primary"><i class="bi bi-shield-check"></i></div>
-                        <div class="small text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.65rem;">Verification</div>
-                        {% if user.is_verified %}
-                            <div class="text-success fw-bolder mb-0">Verified</div>
-                        {% else %}
-                            <div class="text-warning fw-bolder mb-0">Pending</div>
-                        {% endif %}
+                        <div class="small text-muted mb-1 fw-bold text-uppercase" style="font-size: 0.65rem;">Status</div>
+                        <div class="fw-bolder mb-0 {% if user.is_verified %}text-success{% else %}text-warning{% endif %}">
+                            {% if user.is_verified %}Verified{% else %}Pending{% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -227,7 +171,7 @@
                         <tr class="text-muted small text-uppercase">
                             <th class="ps-4 py-4 fw-bold">Lead Trader</th>
                             <th class="fw-bold">Investment</th>
-                            <th class="fw-bold">30D ROI</th>
+                            <th class="fw-bold">Performance</th>
                             <th class="fw-bold">Start Date</th>
                             <th class="text-end pe-4 fw-bold">Action</th>
                         </tr>
@@ -237,63 +181,45 @@
                         <tr>
                             <td class="ps-4" data-label="Lead Trader">
                                 <div class="d-flex align-items-center">
-                                    <div class="position-relative">
-                                        <img src="https://ui-avatars.com/api/?name={{ item.trader.name }}&background=0052FF&color=fff&bold=true" class="rounded-circle" width="42" height="42">
-                                        <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 10px; height: 10px;"></span>
-                                    </div>
+                                    <img src="https://ui-avatars.com/api/?name={{ item.trader.name }}&background=0052FF&color=fff&bold=true" class="rounded-circle" width="40" height="40">
                                     <div class="ms-3">
                                         <div class="fw-bolder text-dark">{{ item.trader.name }}</div>
-                                        <div class="text-muted" style="font-size: 0.7rem;">Verified Master</div>
+                                        <div class="text-muted" style="font-size: 0.65rem;">Master Trader</div>
                                     </div>
                                 </div>
                             </td>
                             <td data-label="Investment">
                                 <div class="d-flex flex-column">
                                     <span id="investment-{{ forloop.counter }}" 
-                                        class="fw-bold text-dark" 
-                                        data-base-amount="{{ item.investment_amount }}"
-                                        data-entry-price="{{ item.entry_price|default:0 }}"> ${{ item.investment_amount }}
+                                          class="fw-bold text-dark" 
+                                          data-base-amount="{{ item.investment_amount }}">
+                                          ${{ item.investment_amount }}
                                     </span>
-                                <span id="profit-{{ forloop.counter }}" class="small fw-bold" style="font-size: 0.75rem;">
-                                    {{ item.last_pnl|default:"0.00" }}%
-                                </span>
+                                    <span id="profit-{{ forloop.counter }}" class="small fw-bold" style="font-size: 0.75rem;">0.00%</span>
                                 </div>
                             </td>
-                            <td data-label="30D ROI">
-                                <span id="roi-badge-{{ forloop.counter }}" class="badge rounded-pill px-3 py-2 fw-bolder shadow-sm transition-all" 
-                                    style="background: rgba(16, 185, 129, 0.1); color: #10b981; min-width: 80px;">
-                                    <i id="icon-{{ forloop.counter }}" class="bi bi-caret-up-fill me-1"></i>
-                                    <span id="roi-val-{{ forloop.counter }}">{{ item.trader.roi_30d }}%</span>
+                            <td data-label="Performance">
+                                <span class="badge rounded-pill px-3 py-2 fw-bolder" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                    <i class="bi bi-graph-up me-1"></i> Active
                                 </span>
                             </td>
                             <td data-label="Start Date">
                                 <span class="text-muted small">{{ item.created_at|date:"M d, Y" }}</span>
                             </td>
-                            <td class="text-end pe-4 action-cell" data-label="Control">
+                            <td class="text-end pe-4 action-cell">
                                 <form action="{% url 'trading:stop_copy_action' item.id %}" method="POST" id="stop-form-{{ item.id }}">
                                     {% csrf_token %}
                                     <input type="hidden" name="live_pnl" id="live-pnl-input-{{ item.id }}" value="0">
-                                    
                                     <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold stop-copy-btn" data-id="{{ item.id }}">
-                                        Stop Copying
+                                        Stop
                                     </button>
                                 </form>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-5 border-0">
-                                <div class="py-5 d-flex flex-column align-items-center justify-content-center w-100">
-                                    <div class="mb-3">
-                                        <i class="bi bi-graph-up-arrow display-4 text-muted opacity-25"></i>
-                                    </div>
-                                    <p class="text-muted fw-bold mb-3">No active positions found.</p>
-                                    <div class="w-100 px-4" style="max-width: 300px;">
-                                        <a href="{% url 'trading:copy_list' %}" class="btn btn-primary rounded-pill w-100 py-3 fw-bold shadow-sm">
-                                            Explore Master Traders
-                                        </a>
-                                    </div>
-                                </div>
+                            <td colspan="5" class="text-center py-5">
+                                <p class="text-muted mb-0">No active positions.</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -304,132 +230,95 @@
     </div>
 </div>
 
-<style>
-    @media (max-width: 768px) {
-    .dashboard-container .text-md-end {
-        text-align: center !important; /* تراز کردن دکمه Add Funds در مرکز موبایل */
-        margin-top: 10px;
-    }
-    .btn-primary { 
-        width: 100% !important; 
-        max-width: 350px; /* جلوگیری از عریض شدن بیش از حد */
-    }
-}
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ۱. استخراج دیتای تریدرها از جنگو
+    // ۱. استخراج دیتای تریدرها
     const symbols = [
         {% for item in followed_traders %}
             { 
                 id: "{{ item.id }}", 
-                // اختصاص نمادها بر اساس منطق ویو
                 symbol: "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}",
                 entryPrice: parseFloat("{{ item.entry_price|default:0 }}"),
-                uiIdx: "{{ forloop.counter }}"
+                uiIdx: "{{ forloop.counter }}",
+                isManual: {{ item.trader.is_manual_mode|yesno:"true,false" }},
+                manualRoi: parseFloat("{{ item.trader.roi_30d|default:0 }}")
             }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
 
-    // حافظه موقت برای قیمت‌هایی که در دیتابیس صفر هستند (برای جلوگیری از سود ۳۰۰۰ درصدی)
-    const fallbackPrices = {};
-
-    // ۲. تابع آپدیت قیمت‌ها و محاسبات لایو
-    function updateLiveTrading() {
-        symbols.forEach((item) => {
-            const invElem = document.getElementById(`investment-${item.uiIdx}`);
-            const profitElem = document.getElementById(`profit-${item.uiIdx}`);
-            
-            if (!invElem || !profitElem) return;
-
-            const baseAmount = parseFloat(invElem.getAttribute('data-base-amount'));
-            
-            fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${item.symbol}`)
-                .then(res => res.json())
-                .then(data => {
-                    const currentPrice = parseFloat(data.price);
-                    
-                    // --- جلوگیری از خطای سود نجومی ---
-                    let referencePrice = item.entryPrice;
-                    if (referencePrice <= 0) {
-                        if (!fallbackPrices[item.id]) {
-                            fallbackPrices[item.id] = currentPrice;
-                        }
-                        referencePrice = fallbackPrices[item.id];
-                    }
-                    // -------------------------------
-
-                    const priceChangePercent = ((currentPrice - referencePrice) / referencePrice) * 100;
-                    if (!isFinite(priceChangePercent)) return;
-
-                    const profitAmount = baseAmount * (priceChangePercent / 100);
-                    const currentTotal = baseAmount + profitAmount;
-                    const isPos = priceChangePercent >= 0;
-
-                    // آپدیت UI
-                    invElem.innerText = `$${currentTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                    invElem.style.color = isPos ? "#10b981" : "#ef4444";
-
-                    const finalPnl = priceChangePercent.toFixed(4);
-                    profitElem.innerText = `${isPos ? '+' : ''}${finalPnl}% (Live)`;
-                    profitElem.style.color = isPos ? "#10b981" : "#ef4444";
-                    
-                    // ذخیره در اتریبیوت برای دکمه استاپ و سینک دیتابیس
-                    profitElem.setAttribute('data-last-pnl', finalPnl);
-                })
-                .catch(err => console.error("Fetch error"));
-        });
-    }
-
-    // ۳. تابع سینک با دیتابیس (هر ۵ ثانیه)
-    function syncDatabase() {
-        symbols.forEach((item) => {
-            const profitElem = document.getElementById(`profit-${item.uiIdx}`);
-            if (!profitElem) return;
-
-            const pnlToSave = profitElem.getAttribute('data-last-pnl');
-            
-            if (pnlToSave && pnlToSave !== "0.0000") {
-                fetch('{% url "trading:update_pnl_ajax" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({
-                        id: item.id,
-                        pnl: pnlToSave
-                    })
-                }).catch(e => console.log("Sync failed"));
+    // ۲. محاسبه معدل سود کل
+    function updateOverallStats() {
+        let totalPnlSum = 0;
+        let count = 0;
+        document.querySelectorAll('[id^="profit-"]').forEach(elem => {
+            const pnl = parseFloat(elem.getAttribute('data-last-pnl'));
+            if (!isNaN(pnl)) {
+                totalPnlSum += pnl;
+                count++;
             }
         });
+        const display = document.getElementById('total-pnl-display');
+        if (display && count > 0) {
+            const avg = (totalPnlSum / count).toFixed(2);
+            display.innerText = (avg >= 0 ? '+' : '') + avg + '%';
+            display.style.color = avg >= 0 ? "#10b981" : "#ef4444";
+        }
     }
 
-    // ۴. مدیریت دکمه Stop Copying (ارسال سود لحظه‌ای به سرور)
-    document.querySelectorAll('.stop-copy-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            const id = this.getAttribute('data-id');
-            // پیدا کردن ردیف مربوطه و مقدار PNL
-            const row = this.closest('tr');
-            const profitElem = row.querySelector('[id^="profit-"]');
-            const livePnlValue = profitElem ? profitElem.getAttribute('data-last-pnl') : "0.00";
+    // ۳. آپدیت هوشمند قیمت‌ها (لایو یا دستی)
+    function updatePositions() {
+            symbols.forEach((item) => {
+                const invElem = document.getElementById(`investment-${item.uiIdx}`);
+                const profitElem = document.getElementById(`profit-${item.uiIdx}`);
+                if (!invElem || !profitElem) return;
 
-            if (confirm(`Stop copying? Final PnL: ${livePnlValue}%`)) {
-                const hiddenInput = document.getElementById(`live-pnl-input-${id}`);
-                const form = document.getElementById(`stop-form-${id}`);
-                if (hiddenInput && form) {
-                    hiddenInput.value = livePnlValue;
-                    form.submit();
+                const baseAmount = parseFloat(invElem.getAttribute('data-base-amount'));
+
+                if (item.isManual) {
+                    // نمایش دیتای دستی دقیقاً با همان ظاهر لایو
+                    const pnl = item.manualRoi;
+                    const currentBalance = baseAmount + (baseAmount * (pnl / 100));
+                    
+                    invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    profitElem.innerText = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%';
+                    profitElem.style.color = pnl >= 0 ? "#10b981" : "#ef4444";
+                    profitElem.setAttribute('data-last-pnl', pnl);
+                } else {
+                    // نمایش دیتای لایو بدون برچسب اضافی
+                    fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${item.symbol}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const currentPrice = parseFloat(data.price);
+                            const refPrice = item.entryPrice || currentPrice;
+                            const pnl = ((currentPrice - refPrice) / refPrice) * 100;
+                            const currentBalance = baseAmount + (baseAmount * (pnl / 100));
+
+                            invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            profitElem.innerText = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%';
+                            profitElem.style.color = pnl >= 0 ? "#10b981" : "#ef4444";
+                            profitElem.setAttribute('data-last-pnl', pnl);
+                        }).catch(e => console.log("Network Error"));
                 }
-            }
-        });
-    });
+            });
+            setTimeout(updateOverallStats, 1000);
+        }
 
-    // شروع تایمرها
-    updateLiveTrading(); 
-    setInterval(updateLiveTrading, 3000); 
-    setInterval(syncDatabase, 5000);
-});
+        // ۴. دکمه توقف با مقدار لایو
+        document.querySelectorAll('.stop-copy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const profitElem = this.closest('tr').querySelector('[id^="profit-"]');
+                const finalPnl = profitElem ? profitElem.getAttribute('data-last-pnl') : "0";
+
+                if (confirm("Are you sure you want to stop copying?")) {
+                    document.getElementById(`live-pnl-input-${id}`).value = finalPnl;
+                    document.getElementById(`stop-form-${id}`).submit();
+                }
+            });
+        });
+
+        updatePositions();
+        setInterval(updatePositions, 5000);
+    });
 </script>
 {% endblock %}

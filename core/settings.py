@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # تنظیمات امنیتی (در حالت توسعه)
 SECRET_KEY = 'django-insecure-*xmm7ru+t1&@nrc3+piqq^26qlwku7mmp*a^tprjm7^jb)!b8k'
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*','localhost','127.0.0.1']
 
 # تعریف اپلیکیشن‌ها
 INSTALLED_APPS = [

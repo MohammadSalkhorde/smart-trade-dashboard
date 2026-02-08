@@ -68,6 +68,11 @@ class LeadTrader(models.Model):
     chart_history_json = models.JSONField(default=list, help_text="تاریخچه سودها برای رسم نمودار")
     target_profit_growth = models.FloatField(default=0.0, help_text="عددی که طی ۷ روز به چارت اضافه می‌شود")
 
+    is_manual_mode = models.BooleanField(
+        default=False, 
+        help_text="If checked, the chart will use Admin's points instead of Binance live data."
+    )
+    
     @property
     def total_copiers(self):
         return self.followed_traders.count() + self.followers_count_manual
