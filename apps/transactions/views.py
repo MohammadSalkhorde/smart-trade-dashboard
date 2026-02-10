@@ -7,7 +7,7 @@ from django.conf import settings
 
 @login_required
 def deposit_view(request):
-    # Anti-Spam: Limit pending requests to 3 per user
+
     pending_count = Transaction.objects.filter(user=request.user, status='pending', tx_type='deposit').count()
     if pending_count >= 3:
         messages.error(request, "You have too many pending requests. Please wait for admin approval.")
@@ -35,7 +35,7 @@ def deposit_view(request):
 @login_required
 def withdraw_view(request):
     if request.method == 'POST':
-        # پاس دادن کاربر به فرم برای چک کردن موجودی در clean_amount
+
         form = WithdrawForm(request.POST, user=request.user)
         if form.is_valid():
             withdraw = form.save(commit=False)
@@ -43,7 +43,6 @@ def withdraw_view(request):
             withdraw.tx_type = 'withdraw'
             withdraw.status = 'pending'
             
-            # کسر موقت از موجودی (Lock balance)
             request.user.balance -= withdraw.amount
             request.user.save()
             

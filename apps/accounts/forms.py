@@ -9,19 +9,16 @@ User = get_user_model()
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
-        # یوزرنیم از اینجا حذف شد
         fields = ("email",) 
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # اصلاح لیبل‌های پسورد
         if 'password1' in self.fields:
             self.fields['password1'].label = "Password"
         if 'password2' in self.fields:
             self.fields['password2'].label = "Confirm Password"
         
-        # اعمال استایل و پلیس‌هولدرها
         for field_name, field in self.fields.items():
             field.widget.attrs.update({
                 'class': 'form-control border-0 bg-light py-2 px-3',
@@ -32,12 +29,10 @@ class RegisterForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email').lower()
         
-        # چک کردن فرمت کلی
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         if not re.match(email_regex, email):
             raise ValidationError("Please enter a valid professional email address.")
 
-        # لیست سفید سرویس‌دهنده‌ها
         valid_domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com', 'protonmail.com']
         domain = email.split('@')[-1]
         if domain not in valid_domains:
@@ -66,10 +61,8 @@ class UserProfileForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # اعمال استایل یکپارچه به تمام فیلدها
         for field_name in self.fields:
             self.fields[field_name].widget.attrs.update({
                 'class': 'form-control',
             })
-        # غیرقابل ویرایش کردن ایمیل
         self.fields['email'].widget.attrs['readonly'] = True

@@ -12,7 +12,6 @@ from .models import *
 User = get_user_model()
 
 def register_view(request):
-    # ۱. ذخیره کد معرف در سشن
     ref_code_from_url = request.GET.get('ref')
     if ref_code_from_url:
         request.session['referrer_code'] = ref_code_from_url
@@ -22,27 +21,21 @@ def register_view(request):
         if form.is_valid():
             user = form.save(commit=False)
             
-            # --- حل مشکل UNIQUE constraint failed: username ---
-            # چون USERNAME_FIELD شما ایمیل است، یوزرنیم را هم برابر ایمیل می‌گذاریم
             user.username = form.cleaned_data.get('email')
             user.is_verified = True  
             
-            # ۲. بررسی معرف
             ref_code = request.session.get('referrer_code')
             if ref_code:
                 try:
                     referrer = User.objects.get(referral_code=ref_code)
                     user.referred_by = referrer
                     
-                    # ۳. ایجاد اعلان برای معرف (بعد از ذخیره کاربر ایجاد می‌شود)
-                    # فعلا معرف را ست می‌کنیم، اعلان را بعد از save می‌سازیم
+
                 except User.DoesNotExist:
                     pass
             
-            # ذخیره نهایی
             user.save()
 
-            # ایجاد اعلان برای معرف (حالا که کاربر ID دارد)
             if user.referred_by:
                 Notification.objects.create(
                     user=user.referred_by,
@@ -50,11 +43,9 @@ def register_view(request):
                 )
                 messages.info(request, f"You have been referred by {user.referred_by.username}.")
 
-            # پاک کردن سشن
             if 'referrer_code' in request.session:
                 del request.session['referrer_code']
 
-            # ورود خودکار
             login(request, user)
             messages.success(request, "Your account has been created successfully!")
             return redirect('trading:copy_list')
@@ -65,12 +56,12 @@ def register_view(request):
     
     return render(request, 'accounts/register.html', {'form': form})
     
-from django.views.decorators.csrf import csrf_exempt # اضافه کردن این خط در بالا
+from django.views.decorators.csrf import csrf_exempt 
 
 @csrf_exempt
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('trading:copy_list') # اگر لاگین بود نگذار دوباره لاگین کند
+        return redirect('trading:copy_list') 
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -78,7 +69,6 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             
-            # --- خط کلیدی: اجبار به ذخیره سشن ---
             request.session.modified = True
             request.session.save() 
             
@@ -109,7 +99,6 @@ def user_dashboard(request):
     else:
         form = UserProfileForm(instance=request.user)
 
-    # اصلاح این بخش: استفاده از Property مدل User که قبلاً خودت نوشتی
     referral_earnings = request.user.referral_earnings 
     my_referrals = User.objects.filter(referred_by=request.user)
     referral_link = f"{request.build_absolute_uri('/accounts/register/')}?ref={request.user.referral_code}"
@@ -118,7 +107,7 @@ def user_dashboard(request):
         'form': form,
         'my_referrals': my_referrals,
         'referral_count': my_referrals.count(),
-        'referral_earnings': referral_earnings, # سود واقعی (۵٪) نه ۵ دلار ثابت!
+        'referral_earnings': referral_earnings, 
         'referral_link': referral_link,
         'page_title': 'Account Settings'
     }
@@ -131,8 +120,6 @@ def profile_dashboard(request):
 
     followed_traders = FollowedTrader.objects.filter(user=request.user).select_related('trader')
     
-    # محاسبه میانگین سود کل پورتفوی (Total PnL)
-    # به جای جمع زدن، میانگین می‌گیریم تا عدد منطقی باشد
     total_positions = followed_traders.count()
     if total_positions > 0:
         total_pnl_percent = sum((item.trader.roi_30d or 0) for item in followed_traders) / total_positions

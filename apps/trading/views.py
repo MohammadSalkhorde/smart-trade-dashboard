@@ -18,7 +18,7 @@ def update_pnl_ajax(request):
         try:
             data = json.loads(request.body)
             follow_id = data.get('id')
-            pnl_value = data.get('pnl') # این مقداری است که کاربر واقعا سود کرده
+            pnl_value = data.get('pnl') 
             
             item = FollowedTrader.objects.filter(id=follow_id, user=request.user).first()
             if item:
@@ -53,10 +53,8 @@ def copy_action(request, trader_id):
             return redirect('transactions:deposit')
 
         with transaction.atomic():
-            # ۱. ذخیره ROI فعلی تریدر به عنوان نقطه مبدا برای این کاربر
             current_trader_roi = trader.roi_30d 
 
-            # ۲. تعیین سمبل برای محاسبات قیمت (اختیاری بر اساس منطق شما)
             traders_list = list(LeadTrader.objects.all().order_by('id'))
             try:
                 index = traders_list.index(trader) + 1
@@ -68,27 +66,25 @@ def copy_action(request, trader_id):
             current_data = CryptoPriceService.fetch_market_data(symbol)
             current_entry_price = Decimal(str(current_data.get('price', 0)))
 
-            # ۳. کسر از موجودی کاربر و افزودن به AUM
             user.balance -= copy_amount
             user.save()
             
             trader.aum = Decimal(trader.aum) + copy_amount
             trader.save()
             
-            # ۴. ایجاد رکورد فالو با ذخیره entry_roi
             follow, created = FollowedTrader.objects.get_or_create(
                 user=user, 
                 trader=trader,
                 defaults={
                     'investment_amount': copy_amount,
                     'entry_price': current_entry_price,
-                    'entry_roi': current_trader_roi, # نقطه ورود کاربر به چارت
+                    'entry_roi': current_trader_roi, 
                     'last_pnl': 0
                 }
             )
             
             if not created:
-                # اگر کاربر قبلاً کپی می‌کرده، نقطه ورود جدید جایگزین می‌شود
+
                 follow.investment_amount += copy_amount
                 follow.entry_roi = current_trader_roi 
                 follow.save()
@@ -115,7 +111,6 @@ def stop_copy_action(request, follow_id):
             trader = followed_trader.trader
             initial_amount = followed_trader.investment_amount
             
-            # محاسبه مبلغ نهایی بر اساس سود/ضرر واقعی کاربر
             profit_loss = initial_amount * (percent_change / Decimal('100'))
             final_return_amount = initial_amount + profit_loss
 
@@ -183,7 +178,7 @@ def update_trader_chart(request, trader_id):
             trader.chart_history_json = points
             
             if points:
-                # آخرین نقطه چارت به عنوان ROI کلی تریدر ذخیره می‌شود
+
                 new_roi = Decimal(str(points[-1]))
                 trader.roi_30d = new_roi
             
@@ -199,7 +194,7 @@ def get_latest_pnl(request, follow_id):
     try:
         item = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
         return JsonResponse({
-            'trader_roi': float(item.trader.roi_30d), # سود فعلی کل تریدر
+            'trader_roi': float(item.trader.roi_30d), 
             'is_manual': getattr(item.trader, 'is_manual_mode', False),
         })
     except Exception as e:

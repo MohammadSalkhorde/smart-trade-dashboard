@@ -31,23 +31,22 @@ class Transaction(models.Model):
             old_status = Transaction.objects.filter(pk=self.pk).values_list('status', flat=True).first()
             
             if old_status == 'pending':
-                # ۱. تایید واریز (Deposit Approved)
+
                 if self.status == 'approved' and self.tx_type == 'deposit':
                     user = self.user
                     user.balance += self.amount
                     user.save()
                     
-                    # واریز سود ۱۰ درصدی به معرف
                     if user.referred_by:
                         referrer = user.referred_by
-                        # تغییر از 0.05 به 0.10 برای واریز واقعی پول
+
                         referral_bonus = self.amount * Decimal('0.10')
                         referrer.balance += referral_bonus
                         referrer.save()
                         
                         try:
                             from apps.accounts.models import Notification
-                            # اصلاح فرمت نمایش (:.2f) برای حذف صفرهای اضافی
+
                             Notification.objects.create(
                                 user=referrer,
                                 message=f"You earned ${referral_bonus:.2f} referral bonus from {user.email}'s deposit!"
@@ -55,7 +54,7 @@ class Transaction(models.Model):
                         except ImportError:
                             pass
 
-                # ۲. رد کردن برداشت (Withdraw Rejected)
+
                 elif self.status == 'rejected' and self.tx_type == 'withdraw':
                     user = self.user
                     user.balance += self.amount

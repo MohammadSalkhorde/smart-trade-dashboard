@@ -22,10 +22,8 @@ class TradingPair(models.Model):
     display_name = models.CharField(max_length=50, help_text="The random name (e.g., Alpha Strategy)")
     real_price = models.DecimalField(max_digits=20, decimal_places=8, default=0.0)
     
-    # ضریب دستکاری لحظه‌ای (درصد)
     manipulation_percent = models.FloatField(default=0.0, help_text="Manual offset percentage") 
     
-    # رشد روزانه هدف
     daily_growth_percent = models.FloatField(default=0.0, help_text="Admin's target daily growth")
     
     is_active = models.BooleanField(default=True)
@@ -53,7 +51,6 @@ class LeadTrader(models.Model):
     name = models.CharField(max_length=100)
     avatar = models.ImageField(upload_to='traders/', blank=True, null=True)
     
-    # آمارهای نمایشی و واقعی
     roi_30d = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     pnl_30d = models.DecimalField(max_digits=20, decimal_places=2, default=0.0)
     aum = models.DecimalField(max_digits=20, decimal_places=2, default=0.0)
@@ -64,7 +61,6 @@ class LeadTrader(models.Model):
     followers_count_manual = models.IntegerField(default=0, help_text="فالوورهای فیک برای جذابیت")
     capacity = models.IntegerField(default=100)
     
-    # مدیریت چارت
     chart_history_json = models.JSONField(default=list, help_text="تاریخچه سودها برای رسم نمودار")
     target_profit_growth = models.FloatField(default=0.0, help_text="عددی که طی ۷ روز به چارت اضافه می‌شود")
 
@@ -85,16 +81,15 @@ class LeadTrader(models.Model):
         new_point = round(float(history[-1]) + float(percentage), 2)
         history.append(new_point)
         
-        self.chart_history_json = history[-30:] # فقط ۳۰ روز آخر
+        self.chart_history_json = history[-30:] 
         self.roi_30d = new_point
         self.save()
         
-    # Trading App - models.py - کلاس LeadTrader
 
     def update_chart_by_profit(self):
         """هماهنگ سازی چارت با درصد سود ادمین"""
         history = list(self.chart_history_json)
-        # اگر ادمین عدد سود را دستی تغییر داد، چارت را آپدیت کن
+
         if history:
             history[-1] = float(self.roi_30d)
             self.chart_history_json = history
@@ -109,7 +104,6 @@ class FollowedTrader(models.Model):
     trader = models.ForeignKey(LeadTrader, on_delete=models.CASCADE, related_name='followed_traders')
     investment_amount = models.DecimalField(max_digits=20, decimal_places=2)
     
-    # --- فیلد جدید برای حل مشکل رفرش ---
     entry_price = models.DecimalField(max_digits=20, decimal_places=8, null=True, blank=True)
     last_pnl = models.DecimalField(max_digits=10, decimal_places=4, default=0.0)
     is_active = models.BooleanField(default=True)

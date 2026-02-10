@@ -17,9 +17,8 @@ class ActionValueForm(forms.Form):
 # --- LeadTrader Admin ---
 @admin.register(LeadTrader)
 class LeadTraderAdmin(admin.ModelAdmin):
-    # اضافه کردن is_manual_mode به نمایش لیستی برای دسترسی سریع
     list_display = ('name', 'is_manual_mode', 'roi_30d', 'total_copiers', 'risk_level')
-    list_editable = ('is_manual_mode', 'risk_level') # ادمین می‌تونه توی لیست سریع تیک بزنه
+    list_editable = ('is_manual_mode', 'risk_level') 
     
     actions = ['inject_custom_profit', 'apply_target_growth_step']
     readonly_fields = ('roi_30d', 'chart_history_json')
@@ -28,13 +27,11 @@ class LeadTraderAdmin(admin.ModelAdmin):
         ('Identity & Mode', {
             'fields': ('name', 'avatar', 'is_manual_mode', 'risk_level', 'capacity')
         }),
-        # سایر بخش‌ها بدون تغییر ...
         ('Algorithm & Performance', {
             'fields': ('roi_30d', 'chart_history_json', 'target_profit_growth'),
         }),
     )
 
-    # اکشن تزریق سود با فرم اختصاصی
     def inject_custom_profit(self, request, queryset):
         form = None
         action_checkbox_name = helpers.ACTION_CHECKBOX_NAME
@@ -82,7 +79,7 @@ class SystemSettingsAdmin(admin.ModelAdmin):
     list_display = ('site_name', 'tron_wallet_address', 'min_deposit_amount')
     
     def has_add_permission(self, request):
-        # جلوگیری از ساخت بیش از یک تنظیمات کلان
+
         return not SystemSettings.objects.exists()
 
 # --- FollowedTrader Admin ---

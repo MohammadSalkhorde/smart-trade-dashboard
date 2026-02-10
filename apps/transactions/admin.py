@@ -4,21 +4,20 @@ from .models import Transaction
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    # 'status' حتماً باید در list_display باشد تا list_editable کار کند
+
     list_display = ('user', 'tx_type', 'amount', 'currency', 'status', 'status_colored', 'created_at')
     list_filter = ('status', 'tx_type', 'created_at')
     search_fields = ('user__username', 'tx_hash')
     
-    # اجازه ویرایش سریع وضعیت در لیست اصلی
     list_editable = ('status',)
     
     actions = ['approve_transactions', 'reject_transactions']
 
     def status_colored(self, obj):
         colors = {
-            'pending': '#f39c12',  # Orange
-            'approved': '#2ecc71', # Green
-            'rejected': '#e74c3c', # Red
+            'pending': '#f39c12',  
+            'approved': '#2ecc71', 
+            'rejected': '#e74c3c', 
         }
         return format_html(
             '<span style="color: {}; font-weight: bold;">{}</span>',
@@ -33,7 +32,7 @@ class TransactionAdmin(admin.ModelAdmin):
         for tx in queryset:
             if tx.status == 'pending':
                 tx.status = 'approved'
-                tx.save() # متد save مدل، موجودی کاربر را آپدیت می‌کند
+                tx.save() 
                 count += 1
         self.message_user(request, f"Successfully approved {count} transactions.")
 
@@ -43,6 +42,6 @@ class TransactionAdmin(admin.ModelAdmin):
         for tx in queryset:
             if tx.status == 'pending':
                 tx.status = 'rejected'
-                tx.save() # مت1 save مدل، در صورت برداشت، پول را برمی‌گرداند
+                tx.save() 
                 count += 1
         self.message_user(request, f"Successfully rejected {count} transactions.")

@@ -66,7 +66,6 @@ class User(AbstractUser):
             status='approved'
         ).aggregate(models.Sum('amount'))['amount__sum'] or 0
         
-        # تغییر از 0.05 به 0.10 برای هماهنگی با واریز واقعی
         return round(float(total_deposited) * 0.10, 2)
 
 class Notification(models.Model):

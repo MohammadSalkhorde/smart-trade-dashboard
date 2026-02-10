@@ -5,7 +5,6 @@ class PriceService:
     def get_binance_price(symbol):
         """گرفتن قیمت واقعی از بایننس"""
         try:
-            # تبدیل نماد به فرمت بایننس (مثلا BTC/USDT -> BTCUSDT)
             clean_symbol = symbol.replace('/', '')
             url = f"https://api.binance.com/api/v3/ticker/price?symbol={clean_symbol}"
             response = requests.get(url, timeout=5)

@@ -32,15 +32,15 @@ class DepositForm(forms.ModelForm):
     def clean_tx_hash(self):
         tx_hash = self.cleaned_data.get('tx_hash').strip()
         
-        # Security Filter: Block script/shell injection characters
+
         if re.search(r'[<>{}[\]\(\);|&]', tx_hash):
             raise ValidationError("Invalid characters detected in transaction hash.")
 
-        # Format Filter: TRON TXID must be exactly 64 hex characters
+
         if not re.match(r'^[a-fA-F0-9]{64}$', tx_hash):
             raise ValidationError("Invalid TXID format. Must be a 64-character hex string.")
 
-        # Anti-Spam: Prevent duplicate TXID entry
+
         if Transaction.objects.filter(tx_hash=tx_hash).exists():
             raise ValidationError("This transaction hash has already been submitted.")
             
@@ -63,23 +63,20 @@ class WithdrawForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # دریافت کاربر برای بررسی موجودی در متد clean
+
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
         
-        # ۱. بررسی مثبت بودن مبلغ
         if amount is not None and amount <= 0:
             raise forms.ValidationError("Amount must be greater than zero.")
             
-        # ۲. بررسی موجودی کاربر
         if self.user and amount is not None:
             if amount > self.user.balance:
                 raise forms.ValidationError(f"Insufficient balance! Your current balance is ${self.user.balance}")
         
-        # ۳. حداقل مبلغ برداشت (اختیاری - مثال: ۱۰ دلار)
         if amount is not None and amount < 10:
             raise forms.ValidationError("Minimum withdrawal amount is 10 USDT.")
             
