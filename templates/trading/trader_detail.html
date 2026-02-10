@@ -40,6 +40,21 @@
         padding: 10px;
         margin-bottom: 15px;
     }
+    
+    /* اصلاح جایگاه دکمه کپی روی موبایل */
+    .fixed-action-bar-light {
+        bottom: 70px !important; /* این عدد را بر اساس ارتفاع منوی پایینی‌ت تنظیم کن */
+        left: 0;
+        right: 0;
+        z-index: 1040; /* برای اینکه روی بقیه المان‌ها باشد */
+        border-top: 1px solid #eee;
+        padding-bottom: 35px !important; /* فاصله از پایین برای ظاهر بهتر */
+    }
+    
+    /* فاصله دادن به انتهای صفحه که محتوا زیر دکمه نماند */
+    .container-fluid {
+        padding-bottom: 180px !important; 
+    }
 </style>
 
 <div class="container-fluid py-3">
@@ -128,6 +143,28 @@
                 <button type="button" class="btn btn-primary w-100 fw-bold py-3 rounded-pill" onclick="openCopyFormDetail()">Copy Now</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="copyModalContainer" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+    <div class="bg-white p-4 rounded-4 shadow-lg mx-3 w-100" style="max-width:400px;">
+        <h5 class="fw-bold mb-3">Copy {{ trader.name }}</h5>
+        <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="small fw-bold text-muted">Investment Amount (USDT)</label>
+                <input type="number" name="amount" class="form-control rounded-pill py-2" placeholder="Min. $10" min="10" step="0.01" required>
+                <small class="text-muted" style="font-size: 0.7rem;">Your Balance: ${{ user.balance|floatformat:2 }}</small>
+            </div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <button type="button" class="btn btn-light w-100 rounded-pill fw-bold" onclick="closeCopyFormDetail()">Cancel</button>
+                </div>
+                <div class="col-6">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">Confirm</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -233,5 +270,23 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(() => { roiElement.innerText = '0.00%'; });
     }
 });
+
+function openCopyFormDetail() {
+    document.getElementById('copyModalContainer').style.display = 'flex';
+}
+
+function closeCopyFormDetail() {
+    document.getElementById('copyModalContainer').style.display = 'none';
+}
+
+// بستن فرم با کلیک خارج از باکس
+window.onclick = function(event) {
+    let modal = document.getElementById('copyModalContainer');
+    if (event.target == modal) {
+        closeCopyFormDetail();
+    }
+}
 </script>
+
+
 {% endblock %}

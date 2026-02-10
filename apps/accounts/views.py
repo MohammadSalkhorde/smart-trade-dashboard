@@ -12,8 +12,7 @@ from .models import *
 User = get_user_model()
 
 def register_view(request):
-    # ۱. بررسی وجود کد معرف در URL و ذخیره در سشن (Session)
-    # این باعث می‌شود حتی اگر کاربر بعد از کلیک روی لینک، چند صفحه دیگر را ببیند و بعد ثبت‌نام کند، کد گم نشود.
+    # ۱. ذخیره کد معرف در سشن
     ref_code_from_url = request.GET.get('ref')
     if ref_code_from_url:
         request.session['referrer_code'] = ref_code_from_url
@@ -21,62 +20,77 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # ایجاد شیء کاربر بدون ذخیره نهایی در دیتابیس
             user = form.save(commit=False)
-            user.is_verified = True  # تایید خودکار اکانت
             
-            # ۲. بررسی سشن برای پیدا کردن معرف و اتصال به کاربر جدید
+            # --- حل مشکل UNIQUE constraint failed: username ---
+            # چون USERNAME_FIELD شما ایمیل است، یوزرنیم را هم برابر ایمیل می‌گذاریم
+            user.username = form.cleaned_data.get('email')
+            user.is_verified = True  
+            
+            # ۲. بررسی معرف
             ref_code = request.session.get('referrer_code')
             if ref_code:
                 try:
                     referrer = User.objects.get(referral_code=ref_code)
                     user.referred_by = referrer
                     
-                    # ۳. ایجاد یک اعلان دائمی برای شخص معرف
-                    # این پیام در دیتابیس می‌ماند تا معرف هر زمان وارد شد آن را ببیند
-                    Notification.objects.create(
-                        user=referrer,
-                        message=f"Success! A new user ({user.username}) joined using your referral link."
-                    )
-                    
-                    # یک پیام خوش‌آمدگویی برای خود کاربر جدید
-                    messages.info(request, f"You have been referred by {referrer.username}.")
-                
+                    # ۳. ایجاد اعلان برای معرف (بعد از ذخیره کاربر ایجاد می‌شود)
+                    # فعلا معرف را ست می‌کنیم، اعلان را بعد از save می‌سازیم
                 except User.DoesNotExist:
-                    # اگر کد معرف نامعتبر بود، اتفاقی نمی‌افتد و ثبت‌نام عادی انجام می‌شود
                     pass
             
-            # ذخیره نهایی کاربر در دیتابیس
+            # ذخیره نهایی
             user.save()
-            
-            # پاک کردن کد معرف از سشن بعد از ثبت‌نام موفق
+
+            # ایجاد اعلان برای معرف (حالا که کاربر ID دارد)
+            if user.referred_by:
+                Notification.objects.create(
+                    user=user.referred_by,
+                    message=f"Success! A new user ({user.email}) joined using your referral link."
+                )
+                messages.info(request, f"You have been referred by {user.referred_by.username}.")
+
+            # پاک کردن سشن
             if 'referrer_code' in request.session:
                 del request.session['referrer_code']
 
-            # ۴. ورود خودکار کاربر و هدایت به پنل
+            # ورود خودکار
             login(request, user)
             messages.success(request, "Your account has been created successfully!")
             return redirect('trading:copy_list')
         else:
-            # نمایش خطاهای فرم (مثل تکراری بودن ایمیل و ...)
             messages.error(request, "Registration failed. Please check the errors below.")
     else:
         form = RegisterForm()
     
     return render(request, 'accounts/register.html', {'form': form})
+    
+from django.views.decorators.csrf import csrf_exempt # اضافه کردن این خط در بالا
+
+@csrf_exempt
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('trading:copy_list') # اگر لاگین بود نگذار دوباره لاگین کند
+
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, f"Welcome back, {user.username}!")
+            
+            # --- خط کلیدی: اجبار به ذخیره سشن ---
+            request.session.modified = True
+            request.session.save() 
+            
+            messages.success(request, f"Welcome back!")
             return redirect('trading:copy_list')
         else:
             messages.error(request, "Invalid email or password.")
     else:
         form = AuthenticationForm()
-        form.fields['username'].label = "Email"
+        if 'username' in form.fields:
+            form.fields['username'].label = "Email"
+            
     return render(request, 'accounts/login.html', {'form': form})
 
 def logout_view(request):
@@ -91,22 +105,20 @@ def user_dashboard(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully!")
-            # استفاده از request.path مطمئن‌ترین راه برای ریدایرکت به همین صفحه است
             return redirect(request.path) 
     else:
         form = UserProfileForm(instance=request.user)
 
-    # سایر محاسبات
+    # اصلاح این بخش: استفاده از Property مدل User که قبلاً خودت نوشتی
+    referral_earnings = request.user.referral_earnings 
     my_referrals = User.objects.filter(referred_by=request.user)
-    referral_bonus_per_user = 5
-    total_referral_earnings = my_referrals.count() * referral_bonus_per_user
     referral_link = f"{request.build_absolute_uri('/accounts/register/')}?ref={request.user.referral_code}"
 
     context = {
         'form': form,
         'my_referrals': my_referrals,
         'referral_count': my_referrals.count(),
-        'referral_earnings': total_referral_earnings,
+        'referral_earnings': referral_earnings, # سود واقعی (۵٪) نه ۵ دلار ثابت!
         'referral_link': referral_link,
         'page_title': 'Account Settings'
     }

@@ -3,7 +3,6 @@ from django.db import models
 import uuid
 
 class User(AbstractUser):
-    # اجباری و یکتا کردن ایمیل برای جایگزینی با یوزرنیم
     email = models.EmailField(unique=True, verbose_name="Email Address")
     
     balance = models.DecimalField(
@@ -25,15 +24,15 @@ class User(AbstractUser):
     referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     referral_code = models.CharField(max_length=10, unique=True, blank=True)
 
-    # تنظیم ایمیل به عنوان فیلد اصلی برای لاگین
     USERNAME_FIELD = 'email'
-    # فیلدهایی که موقع createsuperuser پرسیده می‌شوند (یوزرنیم اینجا اجباری می‌ماند)
     REQUIRED_FIELDS = ['username']
 
-
     def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email
+            
         if not self.referral_code:
-            self.referral_code = str(uuid.uuid4())[:8] # تولید کد دعوت یکتا
+            self.referral_code = str(uuid.uuid4())[:8]
         super().save(*args, **kwargs)
         
     class Meta:
@@ -52,8 +51,24 @@ class User(AbstractUser):
     def total_deposits(self):
         return self.transaction_set.filter(tx_type='deposit', status='approved').aggregate(
             models.Sum('amount'))['amount__sum'] or 0
+    
+    @property
+    def referral_earnings(self):
+        """
+        نمایش ۱۰ درصد از تمام واریزی‌های تایید شده زیرمجموعه‌ها در داشبورد
+        """
+        from apps.transactions.models import Transaction
+        my_referrals = User.objects.filter(referred_by=self)
         
+        total_deposited = Transaction.objects.filter(
+            user__in=my_referrals,
+            tx_type='deposit',
+            status='approved'
+        ).aggregate(models.Sum('amount'))['amount__sum'] or 0
         
+        # تغییر از 0.05 به 0.10 برای هماهنگی با واریز واقعی
+        return round(float(total_deposited) * 0.10, 2)
+
 class Notification(models.Model):
     user = models.ForeignKey(User, related_name='notifications', on_delete=models.CASCADE) 
     message = models.TextField()

@@ -13,28 +13,26 @@ import json
 @csrf_exempt 
 @login_required
 def update_pnl_ajax(request):
-    """ذخیره خودکار سود/ضرر هر 5 ثانیه"""
+    """ذخیره خودکار سود/ضرر نهایی کاربر (محاسبه شده در کلاینت)"""
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             follow_id = data.get('id')
-            pnl_value = data.get('pnl')
+            pnl_value = data.get('pnl') # این مقداری است که کاربر واقعا سود کرده
             
-            # پیدا کردن پوزیشن کپی‌تریدینگ
             item = FollowedTrader.objects.filter(id=follow_id, user=request.user).first()
             if item:
-                # ذخیره مقدار سود/ضرر لایو در دیتابیس
                 item.last_pnl = Decimal(str(pnl_value))
                 item.save()
                 return JsonResponse({'status': 'success'})
+            return JsonResponse({'status': 'error', 'message': 'Position not found'}, status=404)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-            
     return JsonResponse({'status': 'fail'}, status=400)
 
 @login_required
 def copy_action(request, trader_id):
-    """شروع کپی کردن یک تریدر"""
+    """شروع کپی کردن یک تریدر با ثبت نقطه ورود چارت (Entry ROI)"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
     user = request.user
     
@@ -55,55 +53,54 @@ def copy_action(request, trader_id):
             return redirect('transactions:deposit')
 
         with transaction.atomic():
-            # تعیین سمبل ارز (BTC, ETH, etc) بر اساس ایندکس تریدر
+            # ۱. ذخیره ROI فعلی تریدر به عنوان نقطه مبدا برای این کاربر
+            current_trader_roi = trader.roi_30d 
+
+            # ۲. تعیین سمبل برای محاسبات قیمت (اختیاری بر اساس منطق شما)
             traders_list = list(LeadTrader.objects.all().order_by('id'))
             try:
                 index = traders_list.index(trader) + 1
-                if index % 5 == 0: symbol = "ADAUSDT"
-                elif index % 4 == 0: symbol = "BNBUSDT"
-                elif index % 3 == 0: symbol = "SOLUSDT"
-                elif index % 2 == 0: symbol = "ETHUSDT"
-                else: symbol = "BTCUSDT"
+                symbols = {0:"ADAUSDT", 4:"BNBUSDT", 3:"SOLUSDT", 2:"ETHUSDT"}
+                symbol = symbols.get(index % 5, "BTCUSDT")
             except:
                 symbol = "BTCUSDT"
 
-            # گرفتن قیمت واقعی لحظه ورود از سرویس قیمت
             current_data = CryptoPriceService.fetch_market_data(symbol)
             current_entry_price = Decimal(str(current_data.get('price', 0)))
 
-            # کسر از موجودی کاربر
+            # ۳. کسر از موجودی کاربر و افزودن به AUM
             user.balance -= copy_amount
             user.save()
             
-            # اضافه کردن به AUM تریدر
             trader.aum = Decimal(trader.aum) + copy_amount
             trader.save()
             
-            # ایجاد یا آپدیت رکورد فالو
+            # ۴. ایجاد رکورد فالو با ذخیره entry_roi
             follow, created = FollowedTrader.objects.get_or_create(
                 user=user, 
                 trader=trader,
                 defaults={
                     'investment_amount': copy_amount,
                     'entry_price': current_entry_price,
+                    'entry_roi': current_trader_roi, # نقطه ورود کاربر به چارت
                     'last_pnl': 0
                 }
             )
             
             if not created:
-                # اگر از قبل کپی می‌کرده، مبلغ جدید اضافه شود و قیمت ورود جدید فیکس شود
+                # اگر کاربر قبلاً کپی می‌کرده، نقطه ورود جدید جایگزین می‌شود
                 follow.investment_amount += copy_amount
-                follow.entry_price = current_entry_price
+                follow.entry_roi = current_trader_roi 
                 follow.save()
 
-        messages.success(request, f"Successfully started copying {trader.name} with ${copy_amount}!")
+        messages.success(request, f"Successfully started copying {trader.name}!")
         return redirect('accounts:dashboard')
     
     return redirect('trading:copy_list')
 
 @login_required
 def stop_copy_action(request, follow_id):
-    """توقف کپی و بازگشت سرمایه + سود/ضرر به موجودی"""
+    """توقف کپی و محاسبه بازگشت وجه بر اساس سود لحظه خروج"""
     followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
     if request.method == 'POST':
@@ -118,15 +115,13 @@ def stop_copy_action(request, follow_id):
             trader = followed_trader.trader
             initial_amount = followed_trader.investment_amount
             
-            # محاسبه سود یا ضرر نهایی
+            # محاسبه مبلغ نهایی بر اساس سود/ضرر واقعی کاربر
             profit_loss = initial_amount * (percent_change / Decimal('100'))
             final_return_amount = initial_amount + profit_loss
 
-            # بازگشت پول به کیف پول کاربر
             user.balance = Decimal(user.balance) + final_return_amount
             user.save()
             
-            # کسر از AUM تریدر
             trader.aum = max(Decimal('0'), Decimal(trader.aum) - initial_amount)
             trader.save()
             
@@ -136,12 +131,10 @@ def stop_copy_action(request, follow_id):
             messages.success(
                 request, 
                 f"Stopped copying {trader_name}. Final amount of ${final_return_amount:.2f} "
-                f"({percent_change}% PnL) returned to your balance."
+                f"({percent_change}% PnL) returned to balance."
             )
     
     return redirect('accounts:dashboard')
-
-# --- توابع کمکی دیگر (بدون تغییرات خاص) ---
 
 def copy_trading_dashboard(request):
     query = request.GET.get('q') 
@@ -173,22 +166,41 @@ def market_list(request):
 
 def trader_detail(request, trader_id):
     trader = get_object_or_404(LeadTrader, id=trader_id)
-    # ادمین می‌تونه نقاط چارت رو ببینه و تغییر بده
     context = {
         'trader': trader,
-        'is_admin': request.user.is_staff, # تشخیص ادمین
-        'chart_data': trader.chart_history_json # لیست نقاط فعلی
+        'is_admin': request.user.is_staff,
+        'chart_data': trader.chart_history_json
     }
     return render(request, 'trading/trader_detail.html', context)
 
-
 def update_trader_chart(request, trader_id):
+    """آپدیت چارت توسط ادمین و همگام‌سازی PNL تریدر"""
     if request.user.is_staff and request.method == 'POST':
-        data = json.loads(request.body)
-        trader = LeadTrader.objects.get(id=trader_id)
-        trader.chart_history_json = data.get('points', [])
-        # می‌تونی آخرین نقطه رو هم به عنوان ROI کلی در نظر بگیری
-        if trader.chart_history_json:
-            trader.roi_30d = trader.chart_history_json[-1]
-        trader.save()
-        return JsonResponse({'status': 'ok'})
+        try:
+            data = json.loads(request.body)
+            trader = LeadTrader.objects.get(id=trader_id)
+            points = data.get('points', [])
+            trader.chart_history_json = points
+            
+            if points:
+                # آخرین نقطه چارت به عنوان ROI کلی تریدر ذخیره می‌شود
+                new_roi = Decimal(str(points[-1]))
+                trader.roi_30d = new_roi
+            
+            trader.save()
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'forbidden'}, status=403)
+
+@login_required
+def get_latest_pnl(request, follow_id):
+    """ارسال اطلاعات لحظه‌ای تریدر برای محاسبه در کلاینت"""
+    try:
+        item = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
+        return JsonResponse({
+            'trader_roi': float(item.trader.roi_30d), # سود فعلی کل تریدر
+            'is_manual': getattr(item.trader, 'is_manual_mode', False),
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

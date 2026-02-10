@@ -190,12 +190,12 @@
                             </td>
                             <td data-label="Investment">
                                 <div class="d-flex flex-column">
-                                    <span id="investment-{{ forloop.counter }}" 
-                                          class="fw-bold text-dark" 
-                                          data-base-amount="{{ item.investment_amount }}">
-                                          ${{ item.investment_amount }}
+                                    <span id="investment-val-{{ item.id }}" class="fw-bold text-dark">
+                                        ${{ item.investment_amount }}
                                     </span>
-                                    <span id="profit-{{ forloop.counter }}" class="small fw-bold" style="font-size: 0.75rem;">0.00%</span>
+                                    <span id="profit-val-{{ item.id }}" class="small fw-bold">
+                                        {{ item.last_pnl|default:"0.00" }}%
+                                    </span>
                                 </div>
                             </td>
                             <td data-label="Performance">
@@ -232,93 +232,125 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ۱. استخراج دیتای تریدرها
-    const symbols = [
+    // ۱. استخراج دیتای اولیه از جنگو
+    const traderState = [
         {% for item in followed_traders %}
             { 
                 id: "{{ item.id }}", 
-                symbol: "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}",
-                entryPrice: parseFloat("{{ item.entry_price|default:0 }}"),
-                uiIdx: "{{ forloop.counter }}",
-                isManual: {{ item.trader.is_manual_mode|yesno:"true,false" }},
-                manualRoi: parseFloat("{{ item.trader.roi_30d|default:0 }}")
+                // ذخیره نقطه ورود کاربر به چارت (بسیار مهم)
+                entryRoi: parseFloat("{{ item.entry_roi|default:0 }}"),
+                symbol: "{% if forloop.counter|add:0|divisibleby:5 %}ADAUSDT{% elif forloop.counter|add:0|divisibleby:4 %}BNBUSDT{% elif forloop.counter|add:0|divisibleby:3 %}SOLUSDT{% elif forloop.counter|add:0|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}",
+                currentPnl: parseFloat("{{ item.last_pnl|default:0 }}"),
+                investment: parseFloat("{{ item.investment_amount }}"),
+                isManual: false,
+                lastPrice: 0 
             }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
 
-    // ۲. محاسبه معدل سود کل
-    function updateOverallStats() {
-        let totalPnlSum = 0;
-        let count = 0;
-        document.querySelectorAll('[id^="profit-"]').forEach(elem => {
-            const pnl = parseFloat(elem.getAttribute('data-last-pnl'));
-            if (!isNaN(pnl)) {
-                totalPnlSum += pnl;
-                count++;
-            }
-        });
-        const display = document.getElementById('total-pnl-display');
-        if (display && count > 0) {
-            const avg = (totalPnlSum / count).toFixed(2);
-            display.innerText = (avg >= 0 ? '+' : '') + avg + '%';
-            display.style.color = avg >= 0 ? "#10b981" : "#ef4444";
+    // ۲. آپدیت ظاهر داشبورد
+    function updateUI(item) {
+        const invElem = document.getElementById(`investment-val-${item.id}`);
+        const profitElem = document.getElementById(`profit-val-${item.id}`);
+        if (!invElem || !profitElem) return;
+
+        // محاسبه موجودی فعلی بر اساس سود/ضرر واقعی کاربر
+        const currentBalance = item.investment * (1 + (item.currentPnl / 100));
+        
+        invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        profitElem.innerText = (item.currentPnl >= 0 ? '+' : '') + item.currentPnl.toFixed(2) + '%';
+        profitElem.style.color = item.currentPnl >= 0 ? "#10b981" : "#ef4444";
+        
+        // ذخیره آخرین PNL برای ارسال به فرم STOP
+        profitElem.setAttribute('data-last-pnl', item.currentPnl.toFixed(4));
+        updateTotalPortfolio();
+    }
+
+    // ۳. محاسبه کل سود سبد دارایی
+    function updateTotalPortfolio() {
+        if (traderState.length === 0) return;
+        let sum = 0;
+        traderState.forEach(t => sum += t.currentPnl);
+        const avg = sum / traderState.length;
+        const totalDisplay = document.getElementById('total-pnl-display');
+        if (totalDisplay) {
+            totalDisplay.innerText = (avg >= 0 ? '+' : '') + avg.toFixed(2) + '%';
+            totalDisplay.style.color = avg >= 0 ? "#10b981" : "#ef4444";
         }
     }
 
-    // ۳. آپدیت هوشمند قیمت‌ها (لایو یا دستی)
-    function updatePositions() {
-            symbols.forEach((item) => {
-                const invElem = document.getElementById(`investment-${item.uiIdx}`);
-                const profitElem = document.getElementById(`profit-${item.uiIdx}`);
-                if (!invElem || !profitElem) return;
-
-                const baseAmount = parseFloat(invElem.getAttribute('data-base-amount'));
-
-                if (item.isManual) {
-                    // نمایش دیتای دستی دقیقاً با همان ظاهر لایو
-                    const pnl = item.manualRoi;
-                    const currentBalance = baseAmount + (baseAmount * (pnl / 100));
-                    
-                    invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                    profitElem.innerText = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%';
-                    profitElem.style.color = pnl >= 0 ? "#10b981" : "#ef4444";
-                    profitElem.setAttribute('data-last-pnl', pnl);
-                } else {
-                    // نمایش دیتای لایو بدون برچسب اضافی
-                    fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${item.symbol}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            const currentPrice = parseFloat(data.price);
-                            const refPrice = item.entryPrice || currentPrice;
-                            const pnl = ((currentPrice - refPrice) / refPrice) * 100;
-                            const currentBalance = baseAmount + (baseAmount * (pnl / 100));
-
-                            invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                            profitElem.innerText = (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%';
-                            profitElem.style.color = pnl >= 0 ? "#10b981" : "#ef4444";
-                            profitElem.setAttribute('data-last-pnl', pnl);
-                        }).catch(e => console.log("Network Error"));
-                }
+    // ۴. همگام‌سازی مقدار سود نهایی با دیتابیس (برای رفرش صفحه)
+    async function syncToServer(id, pnl) {
+        try {
+            await fetch('{% url "trading:update_pnl_ajax" %}', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ id: id, pnl: pnl.toFixed(4) })
             });
-            setTimeout(updateOverallStats, 1000);
+        } catch (e) { console.error("Sync error"); }
+    }
+
+    // ۵. قلب تپنده اسکریپت (محاسبه سود لحظه‌ای)
+    async function tick() {
+        for (let item of traderState) {
+            try {
+                // الف) گرفتن آخرین وضعیت چارت تریدر از سرور
+                const responseSync = await fetch(`/trading/get-latest-pnl/${item.id}/`);
+                const serverData = await responseSync.json();
+                
+                // مقدار فعلی چارت تریدر (مثلاً ۲۸.۰۰)
+                const currentTraderRoi = serverData.trader_roi; 
+                item.isManual = serverData.is_manual;
+
+                // ب) محاسبه تفاوت (سود کاربر = چارت فعلی - چارت زمان ورود)
+                // مثال: ۲۸ - ۴۷ = ۱۹- (ضرر)
+                let calculatedUserPnl = currentTraderRoi - item.entryRoi;
+
+                // ج) اگر تریدر در حالت خودکار است، نوسان بایننس را هم به این تفاوت اضافه کن
+                if (!item.isManual) {
+                    const resBinance = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${item.symbol}`);
+                    const dataBinance = await resBinance.json();
+                    const freshPrice = parseFloat(dataBinance.price);
+
+                    if (item.lastPrice > 0) {
+                        const marketMove = ((freshPrice - item.lastPrice) / item.lastPrice) * 100;
+                        // نوسان بازار به سود/ضرر پایه اضافه می‌شود
+                        calculatedUserPnl += marketMove;
+                    }
+                    item.lastPrice = freshPrice;
+                }
+
+                // د) ثبت و نمایش
+                item.currentPnl = calculatedUserPnl;
+                updateUI(item);
+                syncToServer(item.id, item.currentPnl);
+
+            } catch (e) { console.error("Tick error for " + item.id, e); }
         }
+    }
 
-        // ۴. دکمه توقف با مقدار لایو
-        document.querySelectorAll('.stop-copy-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const profitElem = this.closest('tr').querySelector('[id^="profit-"]');
-                const finalPnl = profitElem ? profitElem.getAttribute('data-last-pnl') : "0";
+    // شروع چرخه
+    traderState.forEach(item => updateUI(item));
+    tick(); 
+    setInterval(tick, 3000); // هر ۳ ثانیه به‌روزرسانی
 
-                if (confirm("Are you sure you want to stop copying?")) {
-                    document.getElementById(`live-pnl-input-${id}`).value = finalPnl;
-                    document.getElementById(`stop-form-${id}`).submit();
+    // ۶. مدیریت دکمه STOP (ارسال سود نهایی به سرور برای تسویه حساب)
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('stop-copy-btn')) {
+            const id = e.target.getAttribute('data-id');
+            const profitElem = document.getElementById(`profit-val-${id}`);
+            const finalPnl = profitElem ? profitElem.getAttribute('data-last-pnl') : "0";
+            
+            if (confirm("Are you sure you want to stop copying? Your final PnL will be settled.")) {
+                const input = document.getElementById(`live-pnl-input-${id}`);
+                const form = document.getElementById(`stop-form-${id}`);
+                if (input && form) { 
+                    input.value = finalPnl; 
+                    form.submit(); 
                 }
-            });
-        });
-
-        updatePositions();
-        setInterval(updatePositions, 5000);
+            }
+        }
     });
+});
 </script>
 {% endblock %}
