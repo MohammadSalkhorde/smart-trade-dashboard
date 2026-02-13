@@ -57,6 +57,31 @@
         50% { transform: translateY(-20px); }
         100% { transform: translateY(0px); }
     }
+
+    /* --- بخش اصلاحی برای موبایل --- */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 40px 0 20px 0; /* کم کردن فاصله بالا برای بالا رفتن محتوا */
+        }
+        .hero-title {
+            font-size: 2.2rem; /* کوچیک کردن سایز تیتر اصلی */
+        }
+        .hero-section .lead {
+            font-size: 1.1rem !important; /* کوچیک کردن متن زیر تیتر */
+            margin-bottom: 25px !important; /* کم کردن فاصله زیر متن */
+        }
+        .stat-number {
+            font-size: 2rem; /* کوچیک کردن اعداد آمار */
+        }
+        .btn-hero-primary, .btn-hero-outline {
+            padding: 12px 25px; /* کوچیک کردن دکمه‌ها */
+            font-size: 0.9rem;
+        }
+        .container.my-5 {
+            margin-top: 2rem !important;
+            margin-bottom: 2rem !important;
+        }
+    }
 </style>
 
 <div class="hero-section">
