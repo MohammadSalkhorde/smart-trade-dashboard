@@ -9,11 +9,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*xmm7ru+t1&@nr
 # در حالت پروداکشن حتما False باشد
 DEBUG = False
 
-# اصلاح آی‌پی سرور جدید برای رفع ارور 400
 ALLOWED_HOSTS = [
+    'smartcopytraders.com', 
+    'www.smartcopytraders.com',
     'smartcopytrader.com', 
     'www.smartcopytrader.com', 
-    '91.107.154.232',  # آی‌پی جدید سرور شما
+    '91.107.154.232', 
     'localhost', 
     '127.0.0.1'
 ]
@@ -101,11 +102,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # تنظیمات امنیتی برای دامنه و آی‌پی
 CSRF_TRUSTED_ORIGINS = [
-    'https://smartcopytrader.com',
-    'https://www.smartcopytrader.com',
-    'http://91.107.154.232' # اصلاح آی‌پی
+    'http://smartcopytraders.com',
+    'http://www.smartcopytraders.com',
+    'http://smartcopytrader.com',
+    'http://www.smartcopytrader.com',
+    'http://91.107.154.232'
 ]
-
 # اگر از HTTPS استفاده نمی‌کنید این دو مورد را فعلا False بگذارید تا لاگین به مشکل نخورد
 SESSION_COOKIE_SECURE = False 
 CSRF_COOKIE_SECURE = False
