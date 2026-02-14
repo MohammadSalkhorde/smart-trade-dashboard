@@ -3,11 +3,20 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# امنیت: در محیط سرور بهتر است از Environment Variable استفاده شود
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*xmm7ru+t1&@nrc3+piqq^26qlwku7mmp*a^tprjm7^jb)!b8k')
 
+# در حالت پروداکشن حتما False باشد
 DEBUG = False
 
-ALLOWED_HOSTS = ['smartcopytrader.com', 'www.smartcopytrader.com', '188.214.144.114', 'localhost', '127.0.0.1']
+# اصلاح آی‌پی سرور جدید برای رفع ارور 400
+ALLOWED_HOSTS = [
+    'smartcopytrader.com', 
+    'www.smartcopytrader.com', 
+    '91.107.154.232',  # آی‌پی جدید سرور شما
+    'localhost', 
+    '127.0.0.1'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,7 +35,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # برای مدیریت فایل‌های استاتیک در حالت DEBUG=False
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,23 +84,32 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# تنظیمات فایل‌های استاتیک
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# نکته: اگر پوشه static در پروژه نداری، این خط را کامنت کن تا ارور ندهد
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# تنظیمات فایل‌های رسانه‌ای (آپلودها)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# تنظیمات امنیتی برای دامنه و آی‌پی
 CSRF_TRUSTED_ORIGINS = [
     'https://smartcopytrader.com',
     'https://www.smartcopytrader.com',
-    'http://188.214.144.114'
+    'http://91.107.154.232' # اصلاح آی‌پی
 ]
+
+# اگر از HTTPS استفاده نمی‌کنید این دو مورد را فعلا False بگذارید تا لاگین به مشکل نخورد
+SESSION_COOKIE_SECURE = False 
+CSRF_COOKIE_SECURE = False
+
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
