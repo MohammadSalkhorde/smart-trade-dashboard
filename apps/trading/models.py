@@ -64,6 +64,9 @@ class LeadTrader(models.Model):
     chart_history_json = models.JSONField(default=list, help_text="تاریخچه سودها برای رسم نمودار")
     target_profit_growth = models.FloatField(default=0.0, help_text="عددی که طی ۷ روز به چارت اضافه می‌شود")
 
+    win_rate = models.IntegerField(default=85, help_text="درصد پیروزی (عدد بین 0 تا 100)")
+    max_drawdown = models.DecimalField(max_digits=5, decimal_places=2, default=0.0, help_text="حداکثر افت سرمایه")
+    
     is_manual_mode = models.BooleanField(
         default=False, 
         help_text="If checked, the chart will use Admin's points instead of Binance live data."

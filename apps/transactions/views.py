@@ -4,10 +4,11 @@ from django.contrib import messages
 from .forms import DepositForm, WithdrawForm
 from .models import Transaction
 from django.conf import settings
+from .models import Transaction
+from apps.trading.models import SystemSettings
 
 @login_required
 def deposit_view(request):
-
     pending_count = Transaction.objects.filter(user=request.user, status='pending', tx_type='deposit').count()
     if pending_count >= 3:
         messages.error(request, "You have too many pending requests. Please wait for admin approval.")
@@ -26,10 +27,17 @@ def deposit_view(request):
     else:
         form = DepositForm()
     
-    wallet_address = getattr(settings, 'TRON_WALLET_ADDRESS', "TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim")
+    system_settings = SystemSettings.objects.first()
+    
+    if system_settings:
+        wallet_address = system_settings.tron_wallet_address
+    else:
+        wallet_address = getattr(settings, 'TRON_WALLET_ADDRESS', "TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim")
+
     return render(request, 'transactions/deposit.html', {
         'form': form,
-        'wallet_address': wallet_address,
+        'settings': system_settings, 
+        'wallet_address': wallet_address, 
     })
 
 @login_required

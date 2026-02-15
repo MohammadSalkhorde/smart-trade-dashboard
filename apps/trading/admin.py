@@ -17,8 +17,9 @@ class ActionValueForm(forms.Form):
 # --- LeadTrader Admin ---
 @admin.register(LeadTrader)
 class LeadTraderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_manual_mode', 'roi_30d', 'total_copiers', 'risk_level')
-    list_editable = ('is_manual_mode', 'risk_level') 
+    list_display = ('name', 'is_manual_mode', 'roi_30d', 'win_rate', 'max_drawdown', 'total_copiers', 'risk_level')
+    
+    list_editable = ('is_manual_mode', 'risk_level', 'win_rate', 'max_drawdown') 
     
     actions = ['inject_custom_profit', 'apply_target_growth_step']
     readonly_fields = ('roi_30d', 'chart_history_json')
@@ -28,7 +29,7 @@ class LeadTraderAdmin(admin.ModelAdmin):
             'fields': ('name', 'avatar', 'is_manual_mode', 'risk_level', 'capacity')
         }),
         ('Algorithm & Performance', {
-            'fields': ('roi_30d', 'chart_history_json', 'target_profit_growth'),
+            'fields': ('roi_30d', 'win_rate', 'max_drawdown', 'chart_history_json', 'target_profit_growth'),
         }),
     )
 
