@@ -62,7 +62,7 @@ def register_view(request):
     
 from django.views.decorators.csrf import csrf_exempt 
 
-@csrf_exempt
+# @csrf_exempt
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('trading:copy_list') 
