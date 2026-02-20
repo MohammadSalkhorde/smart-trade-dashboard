@@ -8,14 +8,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*xmm7ru+t1&@nr
 
 DEBUG = False
 
+# فقط اجازه ورود با دامنه‌های اصلی داده می‌شود (آی‌پی سرور حذف شد)
 ALLOWED_HOSTS = [
     'smartcopytraders.com', 
-    'www.smartcopytraders.com', 
-    'smartcopytrader.com', 
-    'www.smartcopytrader.com', 
-    '91.107.154.232',
-    '127.0.0.1',
-    'localhost'
+    'www.smartcopytraders.com'
 ]
 
 # --- Apps & Models ---
@@ -99,27 +95,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- PRODUCTION SECURITY SETTINGS (Cloudflare Optimized) ---
+# --- PRODUCTION SECURITY (Hardened for Cloudflare) ---
 
-# این خط به جنگو می‌گوید که پشت یک پروکسی (کلودفلر) است و باید HTTPS را تشخیص دهد
+# تشخیص HTTPS از هدر کلودفلر
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# لیست دامنه‌های معتبر برای جلوگیری از ارور CSRF
+# دامنه‌های مورد اعتماد برای CSRF (اینجا پروتکل الزامی است)
 CSRF_TRUSTED_ORIGINS = [
     'https://smartcopytraders.com',
-    'https://www.smartcopytraders.com',
-    'https://smartcopytrader.com',
-    'https://www.smartcopytrader.com'
+    'https://www.smartcopytraders.com'
 ]
 
-# اجباری کردن ریدایرکت به HTTPS
+# اجباری کردن HTTPS در سطح جنگو
 SECURE_SSL_REDIRECT = True
-
-# امنیت کوکی‌ها (وقتی روی HTTPS هستیم باید True باشند)
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-# تنظیمات هدرهای امنیتی
+# محافظت از کوکی‌ها و جلوگیری از حملات XSS
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # معمولا برای درخواست‌های AJAX در جنگو False می‌گذاریم
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
