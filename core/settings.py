@@ -11,7 +11,9 @@ DEBUG = False
 # فقط اجازه ورود با دامنه‌های اصلی داده می‌شود (آی‌پی سرور حذف شد)
 ALLOWED_HOSTS = [
     'smartcopytraders.com', 
-    'www.smartcopytraders.com'
+    'www.smartcopytraders.com',
+    '127.0.0.1',
+    'localhost'
 ]
 
 # --- Apps & Models ---
