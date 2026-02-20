@@ -12,6 +12,10 @@ from .models import *
 User = get_user_model()
 
 def register_view(request):
+    
+    if request.user.is_authenticated:
+        return redirect('trading:copy_list')
+    
     ref_code_from_url = request.GET.get('ref')
     if ref_code_from_url:
         request.session['referrer_code'] = ref_code_from_url
