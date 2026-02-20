@@ -109,9 +109,9 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # اجباری کردن HTTPS در سطح جنگو
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 # محافظت از کوکی‌ها و جلوگیری از حملات XSS
 SESSION_COOKIE_HTTPONLY = True
