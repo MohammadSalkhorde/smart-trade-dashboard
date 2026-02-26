@@ -162,3 +162,20 @@ def mark_notification_as_read(request, pk):
     return JsonResponse({'status': 'error'}, status=400)
 
 
+from django.shortcuts import render
+
+# در views.py برای تست
+def about_us(request):
+    try:
+        return render(request, 'pages/about_us.html')
+    except Exception as e:
+        from django.http import HttpResponse
+        return HttpResponse(f"Error: {e}")
+    
+def contact_us(request):
+    """صفحه تماس با ما"""
+    return render(request, 'pages/contact_us.html', {'title': 'تماس با ما'})
+
+def terms_conditions(request):
+    """صفحه قوانین و مقررات"""
+    return render(request, 'pages/terms.html', {'title': 'قوانین و مقررات'})

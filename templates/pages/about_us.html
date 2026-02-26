@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .about-hero {
+        padding: 100px 0;
+        background: radial-gradient(circle at bottom left, #f8faff, #ffffff);
+        border-bottom: 1px solid #f0f3f9;
+    }
+    .text-gradient {
+        background: linear-gradient(135deg, #0052ff, #00a3ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .section-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #1e2329;
+        letter-spacing: -0.5px;
+    }
+    .glass-card {
+        border: 1px solid #f0f0f0;
+        border-radius: 32px;
+        background: #ffffff;
+        padding: 40px;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+    .glass-card:hover {
+        border-color: #0052ff20;
+        box-shadow: 0 20px 40px rgba(0, 82, 255, 0.05);
+    }
+    .vision-box {
+        background: #0052ff;
+        border-radius: 40px;
+        padding: 60px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+    .vision-box::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+    .core-value-icon {
+        width: 64px;
+        height: 64px;
+        background: #f0f5ff;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0052ff;
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 768px) {
+        .about-hero { padding: 60px 0; }
+        .section-title { font-size: 2rem; }
+        .vision-box { padding: 30px; }
+    }
+</style>
+
+<div class="about-hero">
+    <div class="container text-center">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">Our Story</span>
+        <h1 class="section-title mb-4">Driving the Future of <br><span class="text-gradient">Financial Autonomy</span></h1>
+        <p class="lead text-muted mx-auto" style="max-width: 700px;">SmartTrade was founded with a singular mission: to democratize high-performance trading through collective intelligence and neural-driven automation.</p>
+    </div>
+</div>
+
+<div class="container py-5 my-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">The Bridge Between Data <br>and Execution</h2>
+            <p class="text-muted mb-4 fs-5">In an era of market noise, SmartTrade filters the chaos. We've built an infrastructure that connects ambitious investors with elite trading minds, powered by a core engine that prioritizes speed, security, and absolute transparency.</p>
+            <div class="row g-4">
+                <div class="col-6">
+                    <h3 class="stat-number mb-0">99.9%</h3>
+                    <p class="text-muted small fw-bold">UPTIME SLA</p>
+                </div>
+                <div class="col-6">
+                    <h3 class="stat-number mb-0">500TB+</h3>
+                    <p class="text-muted small fw-bold">MARKET DATA PROCESSED</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="vision-box shadow-lg">
+                <h3 class="fw-bold mb-3">Our Core Vision</h3>
+                <p class="opacity-75 fs-5">To create a borderless ecosystem where sophisticated trading strategies are not limited to institutional boardrooms, but are available to every digital asset holder globally.</p>
+                <hr class="my-4 border-white opacity-25">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 fw-bold fs-4">2026</div>
+                    <div class="ms-3 small opacity-75">Global leader in AI-integrated copy trading solutions.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Our Philosophical Pillars</h2>
+        <p class="text-muted">Built on trust, fueled by innovation.</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="core-value-icon"><i class="bi bi-cpu"></i></div>
+                <h4 class="fw-bold mb-3">Intelligence First</h4>
+                <p class="text-muted">We leverage machine learning to verify trader performance history, ensuring that luck is distinguished from true strategic skill.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="core-value-icon"><i class="bi bi-intersect"></i></div>
+                <h4 class="fw-bold mb-3">Radical Clarity</h4>
+                <p class="text-muted">Every trade, every fee, and every drawdown is visible. We believe that trust is earned through unalterable on-chain data reporting.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card">
+                <div class="core-value-icon"><i class="bi bi-lightning-charge"></i></div>
+                <h4 class="fw-bold mb-3">Frictionless Flow</h4>
+                <p class="text-muted">Our proprietary synchronization engine mirrors trades across global exchanges with sub-millisecond latency to eliminate slippage.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 my-5 text-center">
+    <div class="py-5 px-4 rounded-5" style="background: #f8faff; border: 1px solid #eef2f7;">
+        <h2 class="fw-bold mb-3">Ready to Join the Revolution?</h2>
+        <p class="text-muted mb-4">Start your journey with the world's most advanced social trading community.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-hero-primary text-white">Open Account</a>
+            <a href="{% url 'accounts:contact_us' %}" class="btn btn-hero-outline text-dark">Contact Support</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

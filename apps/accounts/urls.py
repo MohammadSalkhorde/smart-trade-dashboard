@@ -10,4 +10,7 @@ urlpatterns = [
     path('profile/', user_dashboard, name='profile_dashboard'),
     path('dashboard/', profile_dashboard, name='dashboard'),
     path('notifications/read/<int:pk>/', mark_notification_as_read, name='mark_notification_read'),
+    path('about/', about_us, name='about_us'),
+    path('contact/', contact_us, name='contact_us'), 
+    path('terms/', terms_conditions, name='terms_conditions'),
 ]

@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-glow: radial-gradient(circle, rgba(0, 82, 255, 0.15) 0%, rgba(0, 82, 255, 0) 70%);
+        --accent-color: #0052ff;
+    }
+
+    .contact-wrapper {
+        min-height: 100vh;
+        background: #ffffff;
+        position: relative;
+        overflow: hidden;
+        padding: 100px 0;
+    }
+
+    /* افکت گرادینت متحرک در پس‌زمینه */
+    .contact-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 600px;
+        height: 600px;
+        background: var(--primary-glow);
+        z-index: 0;
+    }
+
+    .contact-wrapper::after {
+        content: '';
+        position: absolute;
+        bottom: -10%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: var(--primary-glow);
+        z-index: 0;
+    }
+
+    .glass-container {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(238, 242, 247, 0.8);
+        border-radius: 40px;
+        box-shadow: 0 40px 100px rgba(0, 82, 255, 0.08);
+        overflow: hidden;
+    }
+
+    .info-panel {
+        background: linear-gradient(160deg, #0052ff 0%, #003db3 100%);
+        color: #ffffff;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .form-panel {
+        padding: 60px;
+    }
+
+    .modern-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #929aa5;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .minimal-input {
+        width: 100%;
+        background: #f8faff;
+        border: 2px solid transparent;
+        border-radius: 20px;
+        padding: 18px 24px;
+        font-weight: 500;
+        color: #1e2329;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .minimal-input:focus {
+        background: #ffffff;
+        border-color: #0052ff;
+        box-shadow: 0 10px 30px rgba(0, 82, 255, 0.05);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    .contact-method {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .contact-method:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(10px);
+        color: white;
+    }
+
+    .submit-btn {
+        background: #0052ff;
+        color: white;
+        border: none;
+        padding: 20px 40px;
+        border-radius: 20px;
+        font-weight: 700;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.4s ease;
+        box-shadow: 0 15px 35px rgba(0, 82, 255, 0.2);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 45px rgba(0, 82, 255, 0.3);
+        background: #0046d6;
+    }
+
+    .section-tag {
+        background: #eef4ff;
+        color: #0052ff;
+        padding: 8px 20px;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+        display: inline-block;
+    }
+
+    @media (max-width: 992px) {
+        .info-panel, .form-panel { padding: 40px; }
+        .contact-wrapper { padding: 40px 0; }
+    }
+</style>
+
+<div class="contact-wrapper">
+    <div class="container">
+        <div class="glass-container">
+            <div class="row g-0">
+                <div class="col-lg-5">
+                    <div class="info-panel">
+                        <div>
+                            <h2 class="display-5 fw-bold mb-4">Let's build the <br>future of trading.</h2>
+                            <p class="opacity-75 fs-5 mb-5">Have a technical question or want to explore partnership opportunities? We're here to help.</p>
+                            
+                            <a href="mailto:support@smarttrade.io" class="contact-method">
+                                <i class="bi bi-envelope-at fs-3"></i>
+                                <div>
+                                    <div class="small opacity-50">Email us</div>
+                                    <div class="fw-bold">support@smartcopytraders.com</div>
+                                </div>
+                            </a>
+
+                            {% comment %} <a href="https://t.me/smarttrade" class="contact-method">
+                                <i class="bi bi-telegram fs-3"></i>
+                                <div>
+                                    <div class="small opacity-50">Telegram Support</div>
+                                    <div class="fw-bold">@SmartTrade_Sync</div>
+                                </div>
+                            </a> {% endcomment %}
+                        </div>
+
+                        <div class="pt-5 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center">
+                            <span class="small opacity-50">Active 24/7 for VIP users</span>
+                            {% comment %} <div class="d-flex gap-3">
+                                <i class="bi bi-twitter-x fs-5"></i>
+                                <i class="bi bi-discord fs-5"></i>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="form-panel">
+                        <span class="section-tag">Direct Inquiry</span>
+                        <h3 class="fw-bold mb-5 text-dark">Send us a message</h3>
+                        
+                        <form action="#" method="POST">
+                            {% csrf_token %}
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <span class="modern-label">Full Name</span>
+                                    <input type="text" class="minimal-input shadow-none" placeholder="Enter your name">
+                                </div>
+                                <div class="col-md-6">
+                                    <span class="modern-label">Email Address</span>
+                                    <input type="email" class="minimal-input shadow-none" placeholder="name@company.com">
+                                </div>
+                                <div class="col-12">
+                                    <span class="modern-label">Subject</span>
+                                    <select class="minimal-input shadow-none" style="appearance: none;">
+                                        <option>Technical Support</option>
+                                        <option>Investment Inquiry</option>
+                                        <option>Account Issues</option>
+                                        <option>Feedback</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <span class="modern-label">Message</span>
+                                    <textarea class="minimal-input shadow-none" rows="5" placeholder="Tell us how we can help..."></textarea>
+                                </div>
+                                <div class="col-12 pt-4">
+                                    <button type="submit" class="submit-btn">
+                                        Submit Request
+                                        <i class="bi bi-arrow-right-short fs-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <p class="text-muted small">SmartTrade Algorithm Intelligence © 2026. Global Execution Network.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
