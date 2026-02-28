@@ -186,6 +186,18 @@
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end animate__animated animate__fadeInUp border-0 shadow-lg mt-3 p-2">
                             <li><a class="dropdown-item py-2" href="{% url 'accounts:dashboard' %}"><i class="bi bi-grid me-2 text-primary"></i>Dashboard</a></li>
+                            {% if user.is_staff %}
+                                <li><a class="dropdown-item py-2 fw-bold text-primary" href="{% url 'accounts:admin_ticket_list' %}">
+                                    <i class="bi bi-shield-lock me-2"></i>Admin Support 
+                                </a></li>
+                                <li><a class="dropdown-item py-2" href="{% url 'accounts:ticket_list' %}">
+                                    <i class="bi bi-headset me-2 text-primary"></i>Support Tickets
+                                </a></li>
+                            {% else %}
+                                <li><a class="dropdown-item py-2" href="{% url 'accounts:ticket_list' %}">
+                                    <i class="bi bi-headset me-2 text-primary"></i>Support Tickets
+                                </a></li>
+                            {% endif %}
                             <li><a class="dropdown-item py-2" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-person me-2 text-primary"></i>Settings</a></li>
                             <li><a class="dropdown-item py-2" href="{% url 'transactions:deposit' %}"><i class="bi bi-plus-circle me-2 text-success"></i>Deposit Funds</a></li>
                             <li><a class="dropdown-item py-2" href="{% url 'transactions:withdraw' %}"><i class="bi bi-dash-circle me-2 text-danger"></i>Withdraw Funds</a></li>
@@ -251,7 +263,22 @@
                     <a href="{% url 'home' %}" class="menu-link"><i class="bi bi-house"></i> Home Page</a>
                     <a href="{% url 'trading:market_list' %}" class="menu-link"><i class="bi bi-graph-up"></i> Live Markets</a>
                     <a href="{% url 'trading:copy_list' %}" class="menu-link"><i class="bi bi-people"></i> Experts & CopyTrade</a>
-
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <a href="{% url 'accounts:admin_ticket_list' %}" class="menu-link text-primary" style="background: rgba(0, 82, 255, 0.05);">
+                                <i class="bi bi-shield-check"></i> <strong>Admin Support Center</strong>
+                            </a>
+                            <a href="{% url 'accounts:ticket_list' %}" class="menu-link">
+                                <i class="bi bi-headset"></i> My Support Tickets
+                            </a>
+                        {% else %}
+                            <a href="{% url 'accounts:ticket_list' %}" class="menu-link">
+                                <i class="bi bi-headset"></i> My Support Tickets
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'accounts:contact_us' %}" class="menu-link"><i class="bi bi-headset"></i> Contact Us</a>
+                    {% endif %}
                     <hr class="my-2 opacity-25">
                     <a href="{% url 'accounts:about_us' %}" class="menu-link"><i class="bi bi-info-circle"></i> About SmartTrade</a>
                     <a href="{% url 'accounts:contact_us' %}" class="menu-link"><i class="bi bi-headset"></i> Support Center</a>

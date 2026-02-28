@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    body { background-color: #f8f9fa; }
+
+    /* هدر جذاب صفحه */
+    .admin-header {
+        background: var(--primary-gradient);
+        padding: 40px 0 80px 0;
+        color: white;
+        border-radius: 0 0 40px 40px;
+        margin-bottom: -60px;
+    }
+
+    .stats-card {
+        background: var(--glass-bg);
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+
+    /* استایل تیکت‌ها در موبایل (تبدیل جدول به کارت) */
+    @media (max-width: 767.98px) {
+        .hide-on-mobile { display: none !important; }
+        .ticket-table thead { display: none; }
+        .ticket-table, .ticket-table tbody, .ticket-table tr, .ticket-table td {
+            display: block;
+            width: 100%;
+        }
+        .ticket-table tr {
+            background: white;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+        .ticket-table td {
+            padding: 8px 0;
+            border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ticket-table td:last-child {
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: block;
+            text-align: center;
+        }
+        .mobile-label {
+            font-weight: 700;
+            color: #6b7280;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .btn-mobile-full { width: 100%; padding: 10px; border-radius: 12px; }
+    }
+
+    /* نشان‌های وضعیت نرم */
+    .badge-soft {
+        padding: 6px 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+    .bg-danger-soft { background: #fff1f2; color: #e11d48; }
+    .bg-warning-soft { background: #fffbeb; color: #d97706; }
+    .bg-info-soft { background: #f0f9ff; color: #0284c7; }
+    .bg-success-soft { background: #f0fdf4; color: #16a34a; }
+    .bg-secondary-soft { background: #f4f4f5; color: #71717a; }
+
+    .ticket-row:hover { background-color: #fcfcfd; }
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #475569;
+    }
+</style>
+
+<div class="admin-header">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-2">Support Center</h2>
+        <p class="opacity-75">Welcome back, Admin. You have {{ open_count }} tickets to answer.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row g-3 mb-4">
+        <div class="col-4 col-md-4">
+            <div class="stats-card text-center p-3">
+                <div class="text-muted small mb-1">Total</div>
+                <div class="h4 fw-bold text-primary mb-0">{{ total_count }}</div>
+            </div>
+        </div>
+        <div class="col-4 col-md-4">
+            <div class="stats-card text-center p-3">
+                <div class="text-muted small mb-1">Open</div>
+                <div class="h4 fw-bold text-success mb-0">{{ open_count }}</div>
+            </div>
+        </div>
+        <div class="col-4 col-md-4">
+            <div class="stats-card text-center p-3">
+                <div class="text-muted small mb-1">Closed</div>
+                <div class="h4 fw-bold text-secondary mb-0">{{ closed_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-list-stars me-2 text-primary"></i>Tickets List</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table ticket-table align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Ticket</th>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Urgency</th>
+                        <th>Status</th>
+                        <th class="hide-on-mobile">Last Update</th>
+                        <th class="text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr class="ticket-row">
+                        <td class="ps-4">
+                            <span class="mobile-label">Ticket ID</span>
+                            <span class="fw-bold text-dark">#{{ ticket.id }}</span>
+                        </td>
+                        <td>
+                            <span class="mobile-label">User</span>
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar me-2 hide-on-mobile">
+                                    {{ ticket.user.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold" style="font-size: 0.9rem;">{{ ticket.user.username }}</div>
+                                    <div class="text-muted hide-on-mobile" style="font-size: 0.75rem;">{{ ticket.user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="mobile-label">Subject</span>
+                            <span class="fw-medium">{{ ticket.subject }}</span>
+                        </td>
+                        <td>
+                            <span class="mobile-label">Urgency</span>
+                            {% if ticket.urgency == 'high' %}
+                                <span class="badge-soft bg-danger-soft text-danger">High</span>
+                            {% elif ticket.urgency == 'medium' %}
+                                <span class="badge-soft bg-warning-soft text-warning">Medium</span>
+                            {% else %}
+                                <span class="badge-soft bg-info-soft text-info">Low</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="mobile-label">Status</span>
+                            {% if ticket.status == 'open' %}
+                                <span class="badge-soft bg-success-soft text-success"><i class="bi bi-patch-check-fill me-1"></i> Open</span>
+                            {% else %}
+                                <span class="badge-soft bg-secondary-soft text-secondary">Closed</span>
+                            {% endif %}
+                        </td>
+                        <td class="hide-on-mobile text-muted small">
+                            {{ ticket.updated_at|date:"M d, H:i" }}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'accounts:admin_ticket_detail' ticket.id %}" class="btn btn-primary btn-mobile-full shadow-sm rounded-pill px-4">
+                                <i class="bi bi-chat-left-dots-fill me-1"></i> Answer
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" style="width: 80px; opacity: 0.5;" class="mb-3">
+                            <p class="text-muted">No tickets found in the database.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

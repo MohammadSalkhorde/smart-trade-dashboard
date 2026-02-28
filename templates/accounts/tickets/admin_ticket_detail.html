@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if request.user.is_staff or request.user.is_superuser %}
+
+<style>
+    /* مخفی کردن نوتیفیکیشن‌های عمومی جنگو برای خلوت شدن صفحه چت */
+    .alert:not(.chat-alert), .toast, #messages, .messages {
+        display: none !important;
+    }
+
+    :root {
+        --tg-outer-bg: #f3f6f9;
+        --tg-chat-bg: #e5ddd5;
+        --admin-bubble: #effdde; /* پیام‌های شما (ادمین) - سبز روشن */
+        --user-bubble: #ffffff;  /* پیام‌های کاربر - سفید */
+        --accent-blue: #3390ec;
+        --text-dark: #0f0f0f;
+        --text-muted: #707579;
+    }
+
+    .telegram-wrapper {
+        background-color: var(--tg-outer-bg);
+        min-height: calc(100vh - 70px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .tg-card {
+        background-color: var(--tg-chat-bg);
+        background-image: url("https://www.transparenttextures.com/patterns/subtle-grey.png");
+        width: 100%;
+        max-width: 950px;
+        height: 80vh;
+        min-height: 600px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .tg-header {
+        background: #ffffff;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        z-index: 10;
+        height: 70px;
+    }
+
+    .tg-back-btn {
+        color: var(--text-muted);
+        font-size: 1.6rem;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .tg-back-btn:hover { color: var(--accent-blue); }
+
+    .tg-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f5a623, #f76b1c);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    .tg-header-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .tg-header-info h5 { margin: 0; font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
+    .tg-header-info span { font-size: 0.85rem; }
+
+    .tg-body {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        scrollbar-width: thin;
+        scroll-behavior: smooth;
+    }
+
+    .tg-body::-webkit-scrollbar { width: 6px; }
+    .tg-body::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
+
+    /* استایل حباب‌ها */
+    .msg-box {
+        max-width: 75%;
+        padding: 8px 14px;
+        border-radius: 16px;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        word-wrap: break-word;
+    }
+
+    /* پیام‌های شما (ادمین) - سمت راست */
+    .msg-admin-reply {
+        align-self: flex-end;
+        background-color: var(--admin-bubble);
+        border-bottom-right-radius: 4px;
+        color: var(--text-dark);
+    }
+
+    /* پیام‌های کاربر - سمت چپ */
+    .msg-user-send {
+        align-self: flex-start;
+        background-color: var(--user-bubble);
+        border-bottom-left-radius: 4px;
+        color: var(--text-dark);
+    }
+
+    .msg-time {
+        float: right;
+        font-size: 0.7rem;
+        margin-left: 10px;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        color: var(--text-muted);
+    }
+    
+    .msg-admin-reply .msg-time { color: #55b27f; }
+
+    .tg-footer {
+        background: #ffffff;
+        padding: 12px 20px;
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .tg-input-wrapper {
+        flex: 1;
+        background: #f4f4f5;
+        border-radius: 24px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+    }
+
+    .tg-input-wrapper textarea {
+        border: none;
+        background: transparent;
+        resize: none;
+        width: 100%;
+        padding: 4px 0;
+        max-height: 120px;
+        outline: none;
+        font-size: 1rem;
+    }
+
+    .tg-send-btn {
+        background: transparent;
+        border: none;
+        color: var(--accent-blue);
+        font-size: 1.8rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+    }
+    .tg-send-btn:hover { transform: scale(1.1); }
+
+    @media (max-width: 768px) {
+        .tg-card { height: calc(100vh - 80px); border-radius: 15px; }
+        .msg-box { max-width: 90%; }
+    }
+</style>
+
+<div class="telegram-wrapper">
+    <div class="tg-card">
+        
+        <div class="tg-header">
+            <a href="{% url 'accounts:admin_ticket_list' %}" class="tg-back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div class="tg-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="tg-header-info">
+                <h5>{{ ticket.user.get_full_name|default:ticket.user.username }}</h5>
+                <span class="{% if ticket.status == 'open' %}text-success{% else %}text-muted{% endif %}">
+                    Status: {{ ticket.status|capfirst }}
+                </span>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                {% if ticket.status != 'closed' %}
+                <form action="{% url 'accounts:admin_close_ticket' ticket.id %}" method="POST" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Close Ticket</button>
+                </form>
+                {% endif %}
+                <span class="badge bg-light text-muted border rounded-pill px-3 py-2">#{{ ticket.id }}</span>
+            </div>
+        </div>
+
+        <div class="tg-body" id="chatWindow">
+            <div class="text-center mb-4">
+                <span class="badge bg-dark bg-opacity-25 rounded-pill px-3 py-1 fw-normal" style="font-size: 0.75rem;">
+                    Created: {{ ticket.created_at|date:"F d, Y" }}
+                </span>
+            </div>
+
+            {% for msg in messages %}
+                <div class="msg-box {% if msg.is_admin_reply %}msg-admin-reply{% else %}msg-user-send{% endif %}">
+                    {{ msg.text|linebreaksbr }}
+                    
+                    <span class="msg-time">
+                        {{ msg.created_at|time:"H:i" }}
+                        {% if msg.is_admin_reply %}
+                            <i class="bi bi-check2-all"></i>
+                        {% endif %}
+                    </span>
+                    <div class="clearfix"></div>
+                </div>
+            {% endfor %}
+            <div id="scrollAnchor"></div>
+        </div>
+
+        <div class="tg-footer">
+            {% if ticket.status != 'closed' %}
+                <form method="POST" class="w-100 d-flex gap-2 align-items-end" id="chatForm">
+                    {% csrf_token %}
+                    <div class="tg-input-wrapper">
+                        <textarea name="message" id="messageInput" rows="1" placeholder="Type your reply..." required></textarea>
+                    </div>
+                    <button type="submit" class="tg-send-btn">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+            {% else %}
+                <div class="chat-alert alert alert-secondary text-center w-100 py-2 mb-0 rounded-pill small">
+                    <i class="bi bi-lock-fill"></i> This ticket is closed.
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const chatWindow = document.getElementById('chatWindow');
+    const messageInput = document.getElementById('messageInput');
+    const chatForm = document.getElementById('chatForm');
+    const scrollAnchor = document.getElementById('scrollAnchor');
+
+    const scrollToBottom = () => {
+        if(scrollAnchor) scrollAnchor.scrollIntoView({ behavior: 'auto', block: 'end' });
+    };
+
+    window.onload = scrollToBottom;
+
+    if(messageInput) {
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.value.trim() !== "") chatForm.submit();
+            }
+        });
+    }
+
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
+
+{% else %}
+<div class="container text-center mt-5">
+    <div class="alert alert-danger d-inline-block px-5 shadow-sm rounded-4">
+        <h4 class="fw-bold">Access Denied</h4>
+        <p>Staff only area.</p>
+        <a href="/" class="btn btn-outline-danger mt-2 rounded-pill">Home</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

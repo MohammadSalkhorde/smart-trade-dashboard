@@ -172,10 +172,153 @@ def about_us(request):
         from django.http import HttpResponse
         return HttpResponse(f"Error: {e}")
     
+
 def contact_us(request):
-    """صفحه تماس با ما"""
-    return render(request, 'pages/contact_us.html', {'title': 'تماس با ما'})
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        ContactMessage.objects.create(
+            full_name=full_name,
+            email=email,
+            subject=subject,
+            message=message
+        )
+        
+        messages.success(request, "Your message has been sent successfully. We will contact you soon.")
+        return redirect('accounts:contact_us') 
+
+    return render(request, 'pages/contact_us.html', {'title': 'Contact Us'})
 
 def terms_conditions(request):
     """صفحه قوانین و مقررات"""
     return render(request, 'pages/terms.html', {'title': 'قوانین و مقررات'})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Ticket, TicketMessage
+
+@login_required
+def ticket_list(request):
+    # دریافت تمام تیکت‌های کاربر
+    tickets = Ticket.objects.filter(user=request.user).order_by('-updated_at')
+    
+    # محاسبه تعداد تیکت‌های باز در ویو (برای جلوگیری از ارور در تمپلیت)
+    open_tickets_count = tickets.filter(status='open').count()
+    
+    context = {
+        'tickets': tickets,
+        'open_count': open_tickets_count,
+    }
+    return render(request, 'accounts/tickets/ticket_list.html', context)
+
+@login_required
+def ticket_detail(request, ticket_id):
+    """نمایش چت تیکت و ارسال پاسخ جدید"""
+    ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
+    
+    if request.method == 'POST':
+        message_text = request.POST.get('message')
+        if message_text:
+            TicketMessage.objects.create(
+                ticket=ticket,
+                sender=request.user,
+                text=message_text,
+                is_admin_reply=False
+            )
+            ticket.status = 'open' # اگر بسته بود دوباره باز شود یا آپدیت شود
+            ticket.save()
+            return redirect('accounts:ticket_detail', ticket_id=ticket.id)
+
+    messages = ticket.messages.all()
+    return render(request, 'accounts/tickets/ticket_detail.html', {
+        'ticket': ticket,
+        'messages': messages
+    })
+
+@login_required
+def create_ticket(request):
+    """ایجاد تیکت جدید"""
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        urgency = request.POST.get('urgency')
+        initial_message = request.POST.get('message')
+        
+        if subject and initial_message:
+            ticket = Ticket.objects.create(
+                user=request.user,
+                subject=subject,
+                urgency=urgency
+            )
+            TicketMessage.objects.create(
+                ticket=ticket,
+                sender=request.user,
+                text=initial_message
+            )
+            return redirect('accounts:ticket_list')
+            
+    return render(request, 'accounts/tickets/create_ticket.html')
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import user_passes_test
+from .models import Ticket, TicketMessage
+
+# تابع کمکی برای بررسی اینکه کاربر ادمین است یا خیر
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@user_passes_test(is_admin)
+def admin_ticket_detail(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    messages = ticket.messages.all().order_by('created_at')
+
+    if request.method == 'POST':
+        text = request.POST.get('message')
+        if text:
+            TicketMessage.objects.create(
+                ticket=ticket,
+                sender=request.user,
+                text=text,
+                is_admin_reply=True  # اینجا مشخص می‌کنیم پیام از طرف ادمین است
+            )
+            # وضعیت تیکت را اگر بسته است دوباره باز می‌کنیم یا در حالت "پاسخ داده شده" قرار می‌دهیم
+            ticket.status = 'open' 
+            ticket.save()
+            return redirect('accounts:admin_ticket_detail', ticket_id=ticket.id)
+
+    context = {
+        'ticket': ticket,
+        'messages': messages,
+    }
+    return render(request, 'accounts/tickets/admin_ticket_detail.html', context)
+
+@user_passes_test(is_admin)
+def admin_close_ticket(request, ticket_id):
+    if request.method == 'POST':
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        ticket.status = 'closed'
+        ticket.save()
+    return redirect('accounts:admin_ticket_detail', ticket_id=ticket_id)
+
+@user_passes_test(is_admin)
+def admin_ticket_list(request):
+    """لیست تمامی تیکت‌ها برای مدیریت ادمین"""
+    # نمایش تیکت‌های باز در ابتدا و بر اساس آخرین تغییرات
+    tickets = Ticket.objects.all().order_by('-updated_at')
+    
+    # آمار کوچک برای بالای صفحه
+    total_count = tickets.count()
+    open_count = tickets.filter(status='open').count()
+    closed_count = tickets.filter(status='closed').count()
+
+    context = {
+        'tickets': tickets,
+        'total_count': total_count,
+        'open_count': open_count,
+        'closed_count': closed_count,
+    }
+    return render(request, 'accounts/tickets/admin_ticket_list.html', context)

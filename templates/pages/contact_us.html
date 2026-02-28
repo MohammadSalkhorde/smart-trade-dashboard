@@ -144,6 +144,15 @@
         display: inline-block;
     }
 
+    .django-messages .alert {
+        border-radius: 20px;
+        border: none;
+        padding: 15px 25px;
+        margin-bottom: 30px;
+        font-weight: 600;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
     @media (max-width: 992px) {
         .info-panel, .form-panel { padding: 40px; }
         .contact-wrapper { padding: 40px 0; }
@@ -152,6 +161,19 @@
 
 <div class="contact-wrapper">
     <div class="container">
+        {% if messages %}
+        <div class="row justify-content-center django-messages">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="glass-container">
             <div class="row g-0">
                 <div class="col-lg-5">
@@ -160,7 +182,7 @@
                             <h2 class="display-5 fw-bold mb-4">Let's build the <br>future of trading.</h2>
                             <p class="opacity-75 fs-5 mb-5">Have a technical question or want to explore partnership opportunities? We're here to help.</p>
                             
-                            <a href="mailto:support@smarttrade.io" class="contact-method">
+                            <a href="mailto:support@smartcopytraders.com" class="contact-method">
                                 <i class="bi bi-envelope-at fs-3"></i>
                                 <div>
                                     <div class="small opacity-50">Email us</div>
@@ -168,7 +190,7 @@
                                 </div>
                             </a>
 
-                            {% comment %} <a href="https://t.me/smarttrade" class="contact-method">
+                            {% comment %} <a href="https://t.me/SmartTrade_Sync" target="_blank" class="contact-method">
                                 <i class="bi bi-telegram fs-3"></i>
                                 <div>
                                     <div class="small opacity-50">Telegram Support</div>
@@ -179,10 +201,10 @@
 
                         <div class="pt-5 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center">
                             <span class="small opacity-50">Active 24/7 for VIP users</span>
-                            {% comment %} <div class="d-flex gap-3">
-                                <i class="bi bi-twitter-x fs-5"></i>
-                                <i class="bi bi-discord fs-5"></i>
-                            </div> {% endcomment %}
+                            <div class="d-flex gap-3">
+                                <i class="bi bi-shield-check fs-5"></i>
+                                <i class="bi bi-cpu fs-5"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,29 +214,29 @@
                         <span class="section-tag">Direct Inquiry</span>
                         <h3 class="fw-bold mb-5 text-dark">Send us a message</h3>
                         
-                        <form action="#" method="POST">
+                        <form action="{% url 'accounts:contact_us' %}" method="POST">
                             {% csrf_token %}
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <span class="modern-label">Full Name</span>
-                                    <input type="text" class="minimal-input shadow-none" placeholder="Enter your name">
+                                    <input type="text" name="full_name" required class="minimal-input shadow-none" placeholder="Enter your name">
                                 </div>
                                 <div class="col-md-6">
                                     <span class="modern-label">Email Address</span>
-                                    <input type="email" class="minimal-input shadow-none" placeholder="name@company.com">
+                                    <input type="email" name="email" required class="minimal-input shadow-none" placeholder="name@company.com">
                                 </div>
                                 <div class="col-12">
                                     <span class="modern-label">Subject</span>
-                                    <select class="minimal-input shadow-none" style="appearance: none;">
-                                        <option>Technical Support</option>
-                                        <option>Investment Inquiry</option>
-                                        <option>Account Issues</option>
-                                        <option>Feedback</option>
+                                    <select name="subject" class="minimal-input shadow-none" style="appearance: none; cursor: pointer;">
+                                        <option value="Technical Support">Technical Support</option>
+                                        <option value="Investment Inquiry">Investment Inquiry</option>
+                                        <option value="Account Issues">Account Issues</option>
+                                        <option value="Feedback">Feedback</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <span class="modern-label">Message</span>
-                                    <textarea class="minimal-input shadow-none" rows="5" placeholder="Tell us how we can help..."></textarea>
+                                    <textarea name="message" required class="minimal-input shadow-none" rows="5" placeholder="Tell us how we can help..."></textarea>
                                 </div>
                                 <div class="col-12 pt-4">
                                     <button type="submit" class="submit-btn">
@@ -227,10 +249,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="text-center mt-5">
-            <p class="text-muted small">SmartTrade Algorithm Intelligence © 2026. Global Execution Network.</p>
         </div>
     </div>
 </div>

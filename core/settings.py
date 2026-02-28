@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*xmm7ru+t1&@nrc3+piqq^26qlwku7mmp*a^tprjm7^jb)!b8k')
 
-DEBUG = False
+DEBUG = True
 
 # فقط اجازه ورود با دامنه‌های اصلی داده می‌شود (آی‌پی سرور حذف شد)
 ALLOWED_HOSTS = [
