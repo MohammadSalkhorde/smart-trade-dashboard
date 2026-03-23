@@ -127,7 +127,11 @@
                     <i class="bi bi-shield-shaded fs-4 opacity-50"></i>
                 </div>
                 <div class="d-flex align-items-baseline mb-4">
-                    <h1 class="display-5 fw-bolder mb-0">${{ user.balance|floatformat:2 }}</h1>
+                    <h1 class="display-5 fw-bolder mb-0" 
+                        id="total-balance-display" 
+                        data-initial-balance="{{ user.balance }}">
+                        ${{ user.balance|floatformat:2 }}
+                    </h1>
                     <span class="ms-2 opacity-75 fw-bold">USDT</span>
                 </div>
                 <div class="badge bg-dark bg-opacity-25 rounded-pill px-3 py-2 fw-normal">
@@ -249,36 +253,66 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     // ۲. آپدیت ظاهر داشبورد
+    // ۳. آپدیت ظاهر داشبورد
     function updateUI(item) {
         const invElem = document.getElementById(`investment-val-${item.id}`);
         const profitElem = document.getElementById(`profit-val-${item.id}`);
         if (!invElem || !profitElem) return;
 
-        // محاسبه موجودی فعلی بر اساس سود/ضرر واقعی کاربر
-        const currentBalance = item.investment * (1 + (item.currentPnl / 100));
+        // --- اصلاح این بخش ---
+        // محاسبه درصد سود/ضرر (حداقل -100 درصد)
+        const displayPnl = Math.max(item.currentPnl, -100);
+        
+        // محاسبه موجودی فعلی (حداقل 0 دلار)
+        const rawBalance = item.investment * (1 + (displayPnl / 100));
+        const currentBalance = Math.max(0, rawBalance);
+        // ----------------------
         
         invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        profitElem.innerText = (item.currentPnl >= 0 ? '+' : '') + item.currentPnl.toFixed(2) + '%';
-        profitElem.style.color = item.currentPnl >= 0 ? "#10b981" : "#ef4444";
         
-        // ذخیره آخرین PNL برای ارسال به فرم STOP
-        profitElem.setAttribute('data-last-pnl', item.currentPnl.toFixed(4));
+        // نمایش درصد سود (اگر از ۱۰۰ درصد ضرر بیشتر بود، همان ۱۰۰- را نشان دهد)
+        profitElem.innerText = (displayPnl >= 0 ? '+' : '') + displayPnl.toFixed(2) + '%';
+        profitElem.style.color = displayPnl >= 0 ? "#10b981" : "#ef4444";
+        
+        profitElem.setAttribute('data-last-pnl', displayPnl.toFixed(4));
         updateTotalPortfolio();
     }
 
     // ۳. محاسبه کل سود سبد دارایی
+// ۳. محاسبه کل سود سبد دارایی و موجودی کل
     function updateTotalPortfolio() {
         if (traderState.length === 0) return;
-        let sum = 0;
-        traderState.forEach(t => sum += t.currentPnl);
-        const avg = sum / traderState.length;
+
+        let totalProfitDollar = 0;
+        let sumPnlPercent = 0;
+
+        traderState.forEach(t => {
+            // محاسبه سود/ضرر هر پوزیشن به دلار
+            const positionProfit = t.investment * (t.currentPnl / 100);
+            totalProfitDollar += positionProfit;
+            sumPnlPercent += t.currentPnl;
+        });
+
+        // ۱. آپدیت درصد میانگین PnL (باکس کوچک سمت راست)
+        const avg = sumPnlPercent / traderState.length;
         const totalDisplay = document.getElementById('total-pnl-display');
         if (totalDisplay) {
             totalDisplay.innerText = (avg >= 0 ? '+' : '') + avg.toFixed(2) + '%';
             totalDisplay.style.color = avg >= 0 ? "#10b981" : "#ef4444";
         }
-    }
 
+        // ۲. آپدیت موجودی کل در کارت اصلی (Estimated Balance)
+        const balanceElem = document.getElementById('total-balance-display');
+        if (balanceElem) {
+            const initialBalance = parseFloat(balanceElem.getAttribute('data-initial-balance'));
+            const liveBalance = initialBalance + totalProfitDollar;
+            
+            balanceElem.innerText = `$${liveBalance.toLocaleString(undefined, {
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2
+            })}`;
+        }
+    }
     // ۴. همگام‌سازی مقدار سود نهایی با دیتابیس (برای رفرش صفحه)
     async function syncToServer(id, pnl) {
         try {

@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from apps.accounts.models import User
 
 @csrf_exempt 
 @login_required
@@ -32,7 +33,7 @@ def update_pnl_ajax(request):
 
 @login_required
 def copy_action(request, trader_id):
-    """شروع کپی کردن یک تریدر با ثبت نقطه ورود چارت (Entry ROI)"""
+    """شروع کپی کردن یک تریدر یا افزایش موجودی پوزیشن قبلی"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
     user = request.user
     
@@ -48,55 +49,71 @@ def copy_action(request, trader_id):
             messages.error(request, "Minimum investment amount is $1.00")
             return redirect('trading:copy_list')
 
+        # چک کردن موجودی قبل از ورود به تراکنش برای سرعت بیشتر
         if user.balance < copy_amount:
             messages.error(request, f"Insufficient balance! You need ${copy_amount}.")
             return redirect('transactions:deposit')
 
-        with transaction.atomic():
-            current_trader_roi = trader.roi_30d 
+        try:
+            with transaction.atomic():
+                # ۱. استخراج دیتای بازار
+                try:
+                    traders_list = list(LeadTrader.objects.all().order_by('id'))
+                    index = traders_list.index(trader) + 1
+                    symbols = {0:"ADAUSDT", 4:"BNBUSDT", 3:"SOLUSDT", 2:"ETHUSDT"}
+                    symbol = symbols.get(index % 5, "BTCUSDT")
+                except:
+                    symbol = "BTCUSDT"
 
-            traders_list = list(LeadTrader.objects.all().order_by('id'))
-            try:
-                index = traders_list.index(trader) + 1
-                symbols = {0:"ADAUSDT", 4:"BNBUSDT", 3:"SOLUSDT", 2:"ETHUSDT"}
-                symbol = symbols.get(index % 5, "BTCUSDT")
-            except:
-                symbol = "BTCUSDT"
+                current_data = CryptoPriceService.fetch_market_data(symbol)
+                current_entry_price = Decimal(str(current_data.get('price', 0)))
+                current_trader_roi = trader.roi_30d 
 
-            current_data = CryptoPriceService.fetch_market_data(symbol)
-            current_entry_price = Decimal(str(current_data.get('price', 0)))
+                # ۲. کسر موجودی کاربر و آپدیت AUM تریدر
+                user.balance -= copy_amount
+                user.save()
+                
+                trader.aum = Decimal(trader.aum) + copy_amount
+                trader.save()
+                
+                # ۳. مدیریت پوزیشن کپی (به جای get_or_create از filter استفاده می‌کنیم که امن‌تر است)
+                follow = FollowedTrader.objects.filter(user=user, trader=trader, is_active=True).first()
+                
+                if follow:
+                    # آپدیت پوزیشن موجود
+                    follow.investment_amount += copy_amount
+                    follow.entry_roi = current_trader_roi 
+                    follow.save()
+                    messages.success(request, f"Added ${copy_amount} to your position with {trader.name}.")
+                else:
+                    # ایجاد پوزیشن جدید
+                    FollowedTrader.objects.create(
+                        user=user, 
+                        trader=trader,
+                        investment_amount=copy_amount,
+                        entry_price=current_entry_price,
+                        entry_roi=current_trader_roi, 
+                        last_pnl=0,
+                        is_active=True
+                    )
+                    messages.success(request, f"Successfully started copying {trader.name}!")
 
-            user.balance -= copy_amount
-            user.save()
-            
-            trader.aum = Decimal(trader.aum) + copy_amount
-            trader.save()
-            
-            follow, created = FollowedTrader.objects.get_or_create(
-                user=user, 
-                trader=trader,
-                defaults={
-                    'investment_amount': copy_amount,
-                    'entry_price': current_entry_price,
-                    'entry_roi': current_trader_roi, 
-                    'last_pnl': 0
-                }
-            )
-            
-            if not created:
+            return redirect('accounts:dashboard')
 
-                follow.investment_amount += copy_amount
-                follow.entry_roi = current_trader_roi 
-                follow.save()
-
-        messages.success(request, f"Successfully started copying {trader.name}!")
-        return redirect('accounts:dashboard')
+        except Exception as e:
+            # این خط خیلی مهم است؛ در ترمینال نگاه کنید ببینید دقیقا چه اروری می‌نویسد
+            print("--- CRITICAL ERROR IN COPY_ACTION ---")
+            print(f"Error Type: {type(e).__name__}")
+            print(f"Error Message: {e}")
+            messages.error(request, "Database is busy. Please try again in a few seconds.")
+            return redirect('trading:copy_list')
     
     return redirect('trading:copy_list')
-
 @login_required
 def stop_copy_action(request, follow_id):
-    """توقف کپی و محاسبه بازگشت وجه بر اساس سود لحظه خروج"""
+    """توقف کپی و محاسبه بازگشت وجه بر اساس سود لحظه خروج با حفظ کف موجودی (صفر)"""
+    
+    # پیدا کردن پوزیشن کپی (اطمینان از اینکه متعلق به همین کاربر است)
     followed_trader = get_object_or_404(FollowedTrader, id=follow_id, user=request.user)
     
     if request.method == 'POST':
@@ -106,31 +123,51 @@ def stop_copy_action(request, follow_id):
         except (InvalidOperation, TypeError):
             percent_change = Decimal('0')
 
-        with transaction.atomic():
-            user = request.user
-            trader = followed_trader.trader
-            initial_amount = followed_trader.investment_amount
-            
-            profit_loss = initial_amount * (percent_change / Decimal('100'))
-            final_return_amount = initial_amount + profit_loss
+        # ۱. جلوگیری از ضرر بیش از ۱۰۰ درصد (صفر شدن موجودی به جای منفی شدن)
+        if percent_change < Decimal('-100'):
+            percent_change = Decimal('-100')
 
-            user.balance = Decimal(user.balance) + final_return_amount
-            user.save()
+        try:
+            with transaction.atomic():
+                # ۲. استفاده از select_for_update برای جلوگیری از ارور Database is Locked
+                # این کار رکورد کاربر را در دیتابیس رزرو می‌کند تا محاسبات دقیق انجام شود
+                user = User.objects.select_for_update().get(id=request.user.id)
+                trader = followed_trader.trader
+                initial_amount = followed_trader.investment_amount
+                
+                # ۳. محاسبه سود/ضرر و مبلغ نهایی برگشتی
+                # فرمول: سرمایه اولیه + (سرمایه اولیه * درصد سود/ضرر)
+                profit_loss = initial_amount * (percent_change / Decimal('100'))
+                final_return_amount = initial_amount + profit_loss
+                
+                # اطمینان نهایی که مبلغ برگشتی هرگز زیر صفر نرود
+                if final_return_amount < 0:
+                    final_return_amount = Decimal('0.00')
+
+                # ۴. آپدیت موجودی کاربر
+                user.balance = Decimal(user.balance) + final_return_amount
+                user.save()
+                
+                # ۵. کسر سرمایه از AUM تریدر
+                trader.aum = max(Decimal('0'), Decimal(trader.aum) - initial_amount)
+                trader.save()
+                
+                trader_name = trader.name
+                
+                # ۶. حذف پوزیشن کپی (یا می‌توانید is_active=False کنید)
+                followed_trader.delete() 
+                
+                messages.success(
+                    request, 
+                    f"Stopped copying {trader_name}. Final amount of ${final_return_amount:.2f} "
+                    f"({percent_change}% PnL) returned to your balance."
+                )
+        except Exception as e:
+            # مدیریت خطاهای احتمالی دیتابیس
+            print(f"Error in stop_copy_action: {e}")
+            messages.error(request, "An error occurred while settling the trade. Please try again.")
             
-            trader.aum = max(Decimal('0'), Decimal(trader.aum) - initial_amount)
-            trader.save()
-            
-            trader_name = trader.name
-            followed_trader.delete() 
-            
-            messages.success(
-                request, 
-                f"Stopped copying {trader_name}. Final amount of ${final_return_amount:.2f} "
-                f"({percent_change}% PnL) returned to balance."
-            )
-    
     return redirect('accounts:dashboard')
-
 def copy_trading_dashboard(request):
     query = request.GET.get('q') 
     traders = LeadTrader.objects.filter(Q(name__icontains=query) | Q(aum__icontains=query)) if query else LeadTrader.objects.all()

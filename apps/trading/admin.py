@@ -9,7 +9,7 @@ from .models import SystemSettings, TradingPair, LeadTrader, FollowedTrader
 class ActionValueForm(forms.Form):
     _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
     value = forms.FloatField(
-        label="Profit Percentage (%)", 
+        label="Profit Percentage (%%)", 
         help_text="Enter the amount to add to the current ROI (e.g., 5.2 or -2.1)",
         widget=forms.NumberInput(attrs={'step': '0.01', 'style': 'width: 100%;'})
     )
@@ -39,7 +39,7 @@ class LeadTraderAdmin(admin.ModelAdmin):
                 value = form.cleaned_data['value']
                 for trader in queryset:
                     trader.add_profit_point(value)
-                self.message_user(request, f"Successfully injected {value}% profit to {queryset.count()} traders.")
+                self.message_user(request, f"Successfully injected {value}%% profit to {queryset.count()} traders.")
                 return HttpResponseRedirect(request.get_full_path())
         else:
             form = ActionValueForm(initial={
@@ -51,7 +51,7 @@ class LeadTraderAdmin(admin.ModelAdmin):
             'form': form, 
             'title': 'Execute Profit Injection'
         })
-    inject_custom_profit.short_description = "Inject Custom Profit (%)"
+    inject_custom_profit.short_description = "Inject Custom Profit (%%)"
 
     @admin.action(description='Apply one step of Target Growth (1/7)')
     def apply_target_growth_step(self, request, queryset):
@@ -68,13 +68,11 @@ class TradingPairAdmin(admin.ModelAdmin):
     search_fields = ('symbol', 'display_name')
     list_filter = ('is_active',)
 
-# --- SystemSettings Admin (اصلاح شده) ---
+# --- SystemSettings Admin ---
 @admin.register(SystemSettings)
 class SystemSettingsAdmin(admin.ModelAdmin):
-    # اضافه کردن هر دو آدرس به لیست نمایش
     list_display = ('site_name', 'tron_wallet_address', 'bsc_wallet_address', 'min_deposit_amount')
     
-    # چیدمان فیلدها در صفحه ویرایش تنظیمات
     fieldsets = (
         ('General Settings', {
             'fields': ('site_name', 'min_deposit_amount')
