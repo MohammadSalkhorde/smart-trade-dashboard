@@ -3,78 +3,139 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
-            <div class="deposit-card border-0 shadow-lg position-relative overflow-hidden">
-                <div class="position-absolute top-0 end-0 opacity-10" style="margin-top: -30px; margin-right: -30px;">
-                    <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="100" cy="100" r="100" fill="#0062ff"/>
+        <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6">
+            <div class="deposit-card border-0 shadow-lg position-relative overflow-hidden animate-fade-in">
+                
+                <div class="bg-decoration">
+                    <svg width="300" height="300" viewBox="0 0 200 200" fill="none" class="pos-1">
+                        <circle cx="100" cy="100" r="100" fill="url(#grad1)" fill-opacity="0.15"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0062ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00d1b2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
                     </svg>
                 </div>
 
                 <div class="card-body p-4 p-md-5 position-relative">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="icon-shape bg-primary text-white rounded-3 me-3 shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                        </div>
-                        <h3 class="fw-bold mb-0 text-dark">Deposit USDT</h3>
-                    </div>
-
-                    <div class="instruction-box p-3 mb-4 d-flex align-items-start shadow-sm">
-                        <div class="flex-shrink-0">
-                            <svg class="text-primary" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="2"/>
-                                <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <div class="text-center mb-5">
+                        <div class="icon-circle mb-3 mx-auto shadow-blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                         </div>
-                        <div class="ms-3">
-                            <p class="small mb-0 text-dark fw-medium">Send <span class="badge bg-success-soft text-success">USDT</span> via <span class="badge bg-primary-soft text-primary">TRC20 Network</span></p>
-                            <span class="text-muted" style="font-size: 11px;">Deposits on other networks will be lost.</span>
-                        </div>
+                        <h2 class="fw-bold text-dark">Add Funds</h2>
+                        <p class="text-muted small">Top up your balance via USDT Secure Gateway</p>
                     </div>
 
-                    <div class="wallet-display p-4 text-center mb-4 bg-light rounded-4 border">
-                        <div class="mb-3 d-inline-block p-2 bg-white rounded-circle shadow-sm">
-                            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 14C4 12.8954 4.89543 12 6 12H42C43.1046 12 44 12.8954 44 14V34C44 35.1046 43.1046 36 42 36H6C4.89543 36 4 35.1046 4 34V14Z" fill="none" stroke="#0062ff" stroke-width="4" stroke-linejoin="round"/><path d="M11 20H17" stroke="#0062ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 28H25" stroke="#0062ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </div>
-                        <span class="text-muted d-block small mb-2 text-uppercase fw-bold tracking-wider">TRC20 Wallet Address</span>
-                        <div class="d-flex align-items-center justify-content-center bg-white border rounded-pill px-3 py-2">
-                            <code id="walletAddr" class="text-primary fw-bold text-break me-2" style="font-size: 0.9rem;">{{ wallet_address }}</code>
-                            <button onclick="copyToClipboard()" class="btn btn-link p-0 text-primary hover-scale">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <form method="post" class="needs-validation">
+                    <form method="post" id="depositForm" class="needs-validation">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">Amount (USDT)</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0 text-muted">$</span>
-                                {{ form.amount }}
+
+                        <div class="mb-5">
+                            <label class="form-label d-block text-center small fw-bold text-secondary text-uppercase tracking-widest mb-3">
+                                Select Deposit Network
+                            </label>
+                            
+                            <div style="display: none;">
+                                {{ form.network }}
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="network-card active shadow-sm" data-network="TRC20">
+                                        <div class="network-icon">
+                                            <img src="https://cryptologos.cc/logos/tron-trx-logo.svg?v=024" alt="Tron" width="35">
+                                        </div>
+                                        <span class="network-name">TRC20</span>
+                                        <span class="network-desc text-muted">Tron Network</span>
+                                        <div class="check-mark">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="network-card shadow-sm" data-network="BEP20">
+                                        <div class="network-icon">
+                                            <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.svg?v=024" alt="BNB" width="35">
+                                        </div>
+                                        <span class="network-name">BEP20</span>
+                                        <span class="network-desc text-muted">BSC Network</span>
+                                        <div class="check-mark">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if form.network.errors %}
+                                <div class="text-danger text-center small mt-2">{{ form.network.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="wallet-section mb-5 p-4 rounded-4 text-center animate-slide-up">
+                            <div class="badge bg-white text-primary border px-3 py-2 rounded-pill shadow-sm mb-3">
+                                <span id="currentNetworkLabel">TRC20</span> RECEIVE ADDRESS
+                            </div>
+                            
+                            <div class="address-box d-flex align-items-center justify-content-between p-3 bg-white border rounded-4 shadow-sm">
+                                <div class="address-text">
+                                    <code id="walletAddressDisplay" class="fw-bold text-primary">{{ wallet_trc20 }}</code>
+                                </div>
+                                <button type="button" onclick="copyAddress(this)" class="copy-btn btn shadow-none border-0 p-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0062ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <img id="qrPlaceholder" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ wallet_trc20 }}" alt="QR Code" class="img-fluid rounded-3 border p-2 bg-white shadow-sm" width="120">
                             </div>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label small fw-bold text-secondary">Transaction Hash (TXID)</label>
-                            <div class="position-relative">
-                                {{ form.tx_hash }}
+
+                        <div class="row g-4 mb-5">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-secondary">DEPOSIT AMOUNT (USDT)</label>
+                                <div class="custom-input-group shadow-sm">
+                                    <span class="input-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                    </span>
+                                    {{ form.amount }}
+                                </div>
+                                {% if form.amount.errors %}
+                                    <p class="text-danger small mt-1 mb-0">{{ form.amount.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-secondary">TRANSACTION ID (TXID / HASH)</label>
+                                <div class="custom-input-group shadow-sm">
+                                    <span class="input-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3y-3.5"></path></svg>
+                                    </span>
+                                    {{ form.tx_hash }}
+                                </div>
+                                <div class="form-text mt-1 text-muted" style="font-size: 11px;">
+                                    Paste the 64-character hash after completing the payment.
+                                </div>
                                 {% if form.tx_hash.errors %}
-                                    <div class="text-danger small mt-1">{{ form.tx_hash.errors.0 }}</div>
+                                    <p class="text-danger small mt-1 mb-0">{{ form.tx_hash.errors.0 }}</p>
                                 {% endif %}
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-blue rounded-3">
-                            Confirm Deposit
+
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-3 fw-bold rounded-4 shadow-blue border-0 transition-all mb-3">
+                            CONFIRM AND SUBMIT
                         </button>
                     </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'transactions:history' %}" class="history-link d-inline-flex align-items-center text-decoration-none">
+                            <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            Check Transaction Status
+                        </a>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="text-center mt-4">
-                <a href="{% url 'transactions:history' %}" class="text-decoration-none text-muted small hover-primary">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="me-1"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    View Deposit History
-                </a>
             </div>
         </div>
     </div>
@@ -83,59 +144,143 @@
 <style>
     :root {
         --primary-blue: #0062ff;
-        --soft-blue: #f0f7ff;
+        --secondary-teal: #00d1b2;
+        --soft-bg: #f8fafc;
+        --text-dark: #1e293b;
+        --border-color: #e2e8f0;
     }
+
+    .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+    .animate-slide-up { animation: slideUp 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
     .deposit-card {
         background: #ffffff;
-        border-radius: 28px;
-        transition: transform 0.3s ease;
+        border-radius: 35px;
+        z-index: 1;
     }
-    .icon-shape {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+
+    .bg-decoration { position: absolute; z-index: -1; pointer-events: none; width: 100%; height: 100%; }
+    .pos-1 { top: -50px; right: -50px; }
+
+    .icon-circle {
+        width: 70px; height: 70px;
+        background: linear-gradient(135deg, var(--primary-blue), var(--secondary-teal));
+        border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        transform: rotate(-10deg);
     }
-    .instruction-box {
-        background-color: var(--soft-blue);
-        border-radius: 18px;
+
+    /* استایل کارت‌های شبکه */
+    .network-card {
+        background: #fff;
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        padding: 20px 10px;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .bg-primary-soft { background-color: rgba(0, 98, 255, 0.1); }
-    .bg-success-soft { background-color: rgba(16, 185, 129, 0.1); }
-    .wallet-display { border: 1.5px dashed #dee2e6 !important; }
-    
-    /* استایل دهی به فیلد‌های فرم جنگو */
-    input[type="number"], input[type="text"] {
-        border-radius: 12px;
-        padding: 12px 15px;
-        border: 1px solid #e2e8f0;
-        width: 100%;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
+    .network-card:hover { border-color: var(--primary-blue); transform: translateY(-5px); }
+    .network-card.active {
+        border-color: var(--primary-blue);
+        background: rgba(0, 98, 255, 0.03);
     }
-    input:focus {
-        border-color: var(--primary-blue) !important;
-        box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.1) !important;
-        outline: none;
+
+    .network-icon { margin-bottom: 12px; transition: transform 0.3s; }
+    .network-card.active .network-icon { transform: scale(1.15); }
+
+    .network-name { display: block; font-weight: 800; color: var(--text-dark); font-size: 1rem; }
+    .network-desc { font-size: 0.75rem; font-weight: 500; }
+
+    .check-mark {
+        position: absolute; top: 10px; right: 10px;
+        width: 20px; height: 20px; background: var(--primary-blue);
+        border-radius: 50%; display: none; padding: 3px;
     }
-    .shadow-blue {
-        box-shadow: 0 8px 24px rgba(0, 98, 255, 0.25);
+    .network-card.active .check-mark { display: block; }
+
+    /* استایل ولت */
+    .wallet-section { background: var(--soft-bg); border: 1px dashed #cbd5e1; }
+    .address-box { font-family: 'Monaco', 'Consolas', monospace; }
+    #walletAddressDisplay { font-size: 0.85rem; word-break: break-all; }
+
+    /* استایل اینپوت‌ها */
+    .custom-input-group {
+        display: flex; align-items: center;
+        background: #fff; border: 1.5px solid var(--border-color);
+        border-radius: 16px; padding: 0 15px;
+        transition: all 0.3s;
     }
-    .hover-scale:hover { transform: scale(1.1); }
-    .tracking-wider { letter-spacing: 0.05em; }
-    .hover-primary:hover { color: var(--primary-blue) !important; }
+    .custom-input-group:focus-within {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.08);
+    }
+    .input-icon { margin-right: 12px; }
+    .custom-input-group input {
+        border: none !important; box-shadow: none !important;
+        padding: 14px 0; font-weight: 600; font-size: 1rem;
+        flex-grow: 1; background: transparent;
+    }
+
+    .btn-primary-gradient {
+        background: linear-gradient(135deg, var(--primary-blue), #2563eb);
+        color: white; letter-spacing: 1px;
+    }
+    .btn-primary-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 98, 255, 0.3); }
+
+    .history-link { color: #64748b; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; }
+    .history-link:hover { color: var(--primary-blue); }
+    .shadow-blue { box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); }
 </style>
 
 <script>
-function copyToClipboard() {
-    const text = document.getElementById("walletAddr").innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        const btn = event.currentTarget;
-        const originalIcon = btn.innerHTML;
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-        setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+    // دیکشنری اطلاعات ولت‌ها
+    const walletConfig = {
+        'TRC20': {
+            address: '{{ wallet_trc20 }}',
+            qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ wallet_trc20 }}'
+        },
+        'BEP20': {
+            address: '{{ wallet_bep20 }}',
+            qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ wallet_bep20 }}'
+        }
+    };
+
+    const cards = document.querySelectorAll('.network-card');
+    const realInput = document.getElementById('networkSelect'); // ایدی فیلد جنگو
+    const addrDisplay = document.getElementById('walletAddressDisplay');
+    const qrImage = document.getElementById('qrPlaceholder');
+    const labelDisplay = document.getElementById('currentNetworkLabel');
+
+    cards.forEach(card => {
+        card.addEventListener('click', function() {
+            const net = this.getAttribute('data-network');
+            
+            // 1. آپدیت ظاهر کارت‌ها
+            cards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 2. آپدیت فیلد مخفی جنگو برای ارسال در فرم
+            realInput.value = net;
+            
+            // 3. آپدیت اطلاعات ولت
+            const config = walletConfig[net];
+            addrDisplay.innerText = config.address;
+            qrImage.src = config.qr;
+            labelDisplay.innerText = net;
+        });
     });
-}
+
+    function copyAddress(btn) {
+        const addr = document.getElementById('walletAddressDisplay').innerText;
+        navigator.clipboard.writeText(addr).then(() => {
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+        });
+    }
 </script>
 {% endblock %}

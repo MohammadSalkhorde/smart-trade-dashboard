@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* استایل‌های اختصاصی برای جذابیت بیشتر در موبایل */
+    .receipt-card {
+        border-radius: 30px;
+        background: #ffffff;
+        position: relative;
+    }
+    .receipt-header {
+        border-radius: 30px 30px 0 0;
+        padding: 40px 20px;
+    }
+    .status-badge {
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .info-label {
+        color: #707579;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+    .info-value {
+        color: #0f0f0f;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    .hash-box {
+        background: #f4f6f8;
+        border: 1px dashed #ced4da;
+        border-radius: 12px;
+        padding: 12px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        color: #3390ec;
+        word-break: break-all;
+    }
+    .divider-dashed {
+        border-top: 2px dashed #e9ecef;
+        margin: 20px 0;
+        position: relative;
+    }
+    /* افکت بریدگی رسید در دو طرف خط چین */
+    .divider-dashed::before, .divider-dashed::after {
+        content: '';
+        position: absolute;
+        top: -10px;
+        width: 20px;
+        height: 20px;
+        background: #f3f6f9; /* رنگ پس‌زمینه اصلی صفحه شما */
+        border-radius: 50%;
+    }
+    .divider-dashed::before { left: -30px; }
+    .divider-dashed::after { right: -30px; }
+
+    .btn-action {
+        border-radius: 15px;
+        padding: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <a href="{% url 'transactions:history' %}" class="btn btn-white shadow-sm rounded-circle p-2" style="width: 40px; height: 40px;">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <h5 class="fw-bold mb-0">Transaction Receipt</h5>
+        <div style="width: 40px;"></div> </div>
+
+    <div class="card border-0 shadow-sm receipt-card">
+        <div class="receipt-header text-center {% if tx.tx_type == 'deposit' %}bg-success{% else %}bg-danger{% endif %} text-white">
+            <div class="opacity-75 small mb-1">{% if tx.tx_type == 'withdraw' %}Final Payout{% else %}Total Deposit{% endif %}</div>
+            <div class="display-4 fw-bold mb-2">${{ tx.net_amount }}</div>
+            <span class="status-badge {% if tx.status == 'approved' %}bg-white text-success{% elif tx.status == 'pending' %}bg-white text-warning{% else %}bg-white text-danger{% endif %} shadow-sm">
+                {{ tx.get_status_display|upper }}
+            </span>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="info-label">Type</div>
+                    <div class="info-value text-capitalize">{{ tx.tx_type }}</div>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="info-label">Currency</div>
+                    <div class="info-value">{{ tx.currency }} <span class="badge bg-light text-dark border ms-1">{{ tx.network }}</span></div>
+                </div>
+                
+                <div class="col-12 mt-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Requested Amount</span>
+                        <span class="fw-bold text-dark">${{ tx.amount }}</span>
+                    </div>
+                    {% if tx.tx_type == 'withdraw' %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Processing Fee (Tax)</span>
+                        <span class="fw-bold text-danger">-${{ tx.fee }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="divider-dashed"></div>
+
+            <div class="mb-4">
+                <div class="info-label">Transaction Hash</div>
+                <div class="hash-box mb-2">
+                    {{ tx.tx_hash|default:"N/A" }}
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-light flex-grow-1 py-2 rounded-3 border" onclick="copyToClipboard('{{ tx.tx_hash }}')">
+                        <i class="bi bi-clipboard me-1"></i> Copy Hash
+                    </button>
+                    {% if tx.tx_hash %}
+                        {% if tx.network == 'TRC20' %}
+                        <a href="https://tronscan.org/#/transaction/{{ tx.tx_hash }}" target="_blank" class="btn btn-sm btn-primary rounded-3 px-3 py-2">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                        {% elif tx.network == 'BEP20' %}
+                        <a href="https://bscscan.com/tx/{{ tx.tx_hash }}" target="_blank" class="btn btn-sm btn-warning rounded-3 px-3 py-2">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="info-label">Date</div>
+                    <div class="info-value small">{{ tx.created_at|date:"M d, Y" }}</div>
+                </div>
+                <div class="col-6 text-end">
+                    <div class="info-label">Time</div>
+                    <div class="info-value small">{{ tx.created_at|date:"H:i:s" }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="info-label">Internal Reference</div>
+                    <div class="info-value text-muted small">#TXN-{{ tx.id|add:1000 }}</div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-dark btn-action" onclick="window.print()">
+                    <i class="bi bi-printer me-2"></i> Print Receipt
+                </button>
+                <a href="{% url 'accounts:ticket_list' %}" class="btn btn-link text-muted btn-sm text-decoration-none">
+                    <i class="bi bi-question-circle me-1"></i> Need help with this transaction?
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        if (!text || text === 'N/A') return;
+        navigator.clipboard.writeText(text).then(() => {
+            // ایجاد یک نوتیفیکیشن ساده و زیبا
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+            btn.classList.replace('btn-light', 'btn-success');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('btn-success', 'btn-light');
+            }, 2000);
+        });
+    }
+</script>
+{% endblock %}

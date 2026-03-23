@@ -16,11 +16,15 @@
                 </thead>
                 <tbody>
                     {% for tx in transactions %}
-                    <tr>
-                        <td>
-                            <span class="fw-bold {% if tx.tx_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
-                                {{ tx.tx_type|upper }}
-                            </span>
+                    <tr onclick="window.location='{% url 'transactions:transaction_detail' tx.id %}'" style="cursor: pointer;">                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="p-2 rounded-circle {% if tx.tx_type == 'deposit' %}bg-success-subtle{% else %}bg-danger-subtle{% endif %} me-2">
+                                    <i class="bi {% if tx.tx_type == 'deposit' %}bi-arrow-down-left text-success{% else %}bi-arrow-up-right text-danger{% endif %}"></i>
+                                </div>
+                                <span class="fw-bold {% if tx.tx_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                                    {{ tx.tx_type|upper }}
+                                </span>
+                            </div>
                         </td>
                         <td class="fw-bold">${{ tx.amount }}</td>
                         <td>

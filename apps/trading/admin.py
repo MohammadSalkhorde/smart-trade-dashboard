@@ -18,9 +18,7 @@ class ActionValueForm(forms.Form):
 @admin.register(LeadTrader)
 class LeadTraderAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_manual_mode', 'roi_30d', 'win_rate', 'max_drawdown', 'total_copiers', 'risk_level')
-    
     list_editable = ('is_manual_mode', 'risk_level', 'win_rate', 'max_drawdown') 
-    
     actions = ['inject_custom_profit', 'apply_target_growth_step']
     readonly_fields = ('roi_30d', 'chart_history_json')
 
@@ -34,9 +32,7 @@ class LeadTraderAdmin(admin.ModelAdmin):
     )
 
     def inject_custom_profit(self, request, queryset):
-        form = None
         action_checkbox_name = helpers.ACTION_CHECKBOX_NAME
-        
         if 'apply' in request.POST:
             form = ActionValueForm(request.POST)
             if form.is_valid():
@@ -45,8 +41,7 @@ class LeadTraderAdmin(admin.ModelAdmin):
                     trader.add_profit_point(value)
                 self.message_user(request, f"Successfully injected {value}% profit to {queryset.count()} traders.")
                 return HttpResponseRedirect(request.get_full_path())
-        
-        if not form:
+        else:
             form = ActionValueForm(initial={
                 '_selected_action': request.POST.getlist(action_checkbox_name)
             })
@@ -56,8 +51,7 @@ class LeadTraderAdmin(admin.ModelAdmin):
             'form': form, 
             'title': 'Execute Profit Injection'
         })
-    
-    inject_custom_profit.short_description = "Inject Custom Profit (%%)"
+    inject_custom_profit.short_description = "Inject Custom Profit (%)"
 
     @admin.action(description='Apply one step of Target Growth (1/7)')
     def apply_target_growth_step(self, request, queryset):
@@ -74,13 +68,24 @@ class TradingPairAdmin(admin.ModelAdmin):
     search_fields = ('symbol', 'display_name')
     list_filter = ('is_active',)
 
-# --- SystemSettings Admin ---
+# --- SystemSettings Admin (اصلاح شده) ---
 @admin.register(SystemSettings)
 class SystemSettingsAdmin(admin.ModelAdmin):
-    list_display = ('site_name', 'tron_wallet_address', 'min_deposit_amount')
+    # اضافه کردن هر دو آدرس به لیست نمایش
+    list_display = ('site_name', 'tron_wallet_address', 'bsc_wallet_address', 'min_deposit_amount')
     
-    def has_add_permission(self, request):
+    # چیدمان فیلدها در صفحه ویرایش تنظیمات
+    fieldsets = (
+        ('General Settings', {
+            'fields': ('site_name', 'min_deposit_amount')
+        }),
+        ('Crypto Wallets (Deposit)', {
+            'fields': ('tron_wallet_address', 'bsc_wallet_address'),
+            'description': 'Enter the wallet addresses where users should send their USDT.'
+        }),
+    )
 
+    def has_add_permission(self, request):
         return not SystemSettings.objects.exists()
 
 # --- FollowedTrader Admin ---

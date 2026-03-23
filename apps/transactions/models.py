@@ -17,12 +17,19 @@ class Transaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     tx_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
+    fee = models.DecimalField(max_digits=20, decimal_places=2, default=0.00)
     currency = models.CharField(max_length=10, default='USDT')
     tx_hash = models.CharField(max_length=255) 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    NETWORK_CHOICES = (
+        ('TRC20', 'TRC20'),
+        ('BEP20', 'BEP20'),
+    )
+    network = models.CharField(max_length=10, choices=NETWORK_CHOICES, default='TRC20')
+    
     def __str__(self):
         return f"{self.user.username} - {self.tx_type} - {self.amount}"
 
@@ -61,3 +68,10 @@ class Transaction(models.Model):
                     user.save()
         
         super().save(*args, **kwargs)
+        
+    @property
+    def net_amount(self):
+        """مبلغی که واقعاً پرداخت یا دریافت می‌شود"""
+        if self.tx_type == 'withdraw':
+            return self.amount - self.fee
+        return self.amount

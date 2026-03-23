@@ -7,7 +7,8 @@ class SystemSettings(models.Model):
     tron_wallet_address = models.CharField(max_length=255, default="TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim")
     min_deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=10.0)
     site_name = models.CharField(max_length=100, default="SmartTrade")
-
+    bsc_wallet_address = models.CharField(max_length=255, help_text="BEP20 Address", default="0x...")
+    min_deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=10.0)
     class Meta:
         verbose_name = "System Setting"
         verbose_name_plural = "System Settings"
