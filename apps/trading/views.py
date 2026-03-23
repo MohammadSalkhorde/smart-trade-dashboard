@@ -168,22 +168,31 @@ def trader_detail(request, trader_id):
     }
     return render(request, 'trading/trader_detail.html', context)
 
+@login_required
 def update_trader_chart(request, trader_id):
-    """آپدیت چارت توسط ادمین و همگام‌سازی PNL تریدر"""
+    """آپدیت چارت توسط ادمین و همگام‌سازی ROI تریدر"""
     if request.user.is_staff and request.method == 'POST':
         try:
             data = json.loads(request.body)
             trader = LeadTrader.objects.get(id=trader_id)
             points = data.get('points', [])
-            trader.chart_history_json = points
             
-            if points:
-
-                new_roi = Decimal(str(points[-1]))
+            # تبدیل نقاط به فرمت اعشاری برای دیتابیس
+            cleaned_points = [float(p) for p in points]
+            trader.chart_history_json = cleaned_points
+            
+            if cleaned_points:
+                # آخرین نقطه نمودار به عنوان سود ۳۰ روزه تریدر در نظر گرفته می‌شود
+                new_roi = Decimal(str(cleaned_points[-1]))
+                
+                # جلوگیری از فراتر رفتن از بازه تعیین شده در دیتابیس (اختیاری)
+                if new_roi > 1000: new_roi = Decimal('1000.00')
+                if new_roi < -100: new_roi = Decimal('-100.00')
+                
                 trader.roi_30d = new_roi
             
             trader.save()
-            return JsonResponse({'status': 'ok'})
+            return JsonResponse({'status': 'ok', 'new_roi': float(trader.roi_30d)})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'forbidden'}, status=403)

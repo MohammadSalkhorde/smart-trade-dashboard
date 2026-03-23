@@ -182,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const updateRoiDisplay = (value) => {
             const numValue = parseFloat(value);
+            // نمایش علامت + برای سود و - برای ضرر
             roiElement.innerText = (numValue >= 0 ? '+' : '') + numValue.toFixed(2) + '%';
             roiElement.style.color = numValue >= 0 ? '#10b981' : '#ef4444';
         };
@@ -219,19 +220,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     } : false
                 },
+                // در فایل trader_detail.html بخش تنظیمات Chart.js
                 scales: {
                     x: { display: false },
                     y: { 
-                        display: true, // محور نمایش داده شود
+                        display: true, 
                         grid: { color: '#f1f5f9' },
                         beginAtZero: false, 
-                        min: -80, // حداقل ضرر ۸۰ درصد
-                        max: 300, // حداکثر سود ۳۰۰ درصد
+                        min: -100, // حداقل ضرر ۱۰۰ درصد
+                        max: 1000, // حداکثر سود ۱۰۰۰ درصد (مطابق خواسته مشتری)
                         ticks: {
-                            display: true, // نمایش اعداد کنار نمودار
+                            stepSize: 100, // فواصل اعداد روی نمودار ۱۰۰ تایی باشد تا شلوغ نشود
+                            display: true,
                             color: '#64748b',
                             font: { size: 10 },
-                            callback: function(value) { return value + '%'; } // اضافه کردن علامت درصد
+                            callback: function(value) { return value + '%'; }
                         }
                     }
                 }
