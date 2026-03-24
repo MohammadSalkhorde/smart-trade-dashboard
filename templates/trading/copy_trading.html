@@ -92,6 +92,30 @@
 }
     </style>
     <div class="row g-3">
+        <div class="col-12 mb-3">
+            <div class="card create-strategy-card border-0 shadow-sm p-4" onclick="showLocationError()" style="cursor: pointer; background: linear-gradient(135deg, #0062ff 0%, #004dc9 100%); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                
+                <div class="row align-items-center position-relative" style="z-index: 2;">
+                    <div class="col-md-8 col-12 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="create-icon-box">
+                                <i class="bi bi-graph-up-arrow text-white"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Step into the Spotlight</h5>
+                                <p class="text-white opacity-75 small mb-0">Create your own strategy, attract followers, and earn from their success.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12 text-md-end">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold text-primary shadow-sm">
+                            Create Strategy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% for trader in traders %}
         <div class="col-12">
             <div class="card trader-card-blue border-0 shadow-sm p-3 position-relative" 
@@ -329,10 +353,49 @@
     .info-box-mini { background: #f8fafc; border-radius: 10px; padding: 8px 12px; font-size: 0.75rem; color: #64748b; }
     .btn-close-custom { background: none; border: none; color: #94a3b8; font-size: 1.1rem; transition: 0.2s; line-height: 1; padding: 0; }
     .btn-close-custom:hover { color: #ef4444; }
+
+    .create-strategy-card {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    }
+
+    .create-strategy-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(0, 98, 255, 0.25) !important;
+    }
+
+    .create-icon-box {
+        width: 54px;
+        height: 54px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <script>
+
+    function showLocationError() {
+    // جلوگیری از تداخل با کلیک‌های احتمالی دیگر
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Service Unavailable',
+            text: 'We apologize, but the "Lead Trader" registration is currently not available in your region (Iran) due to local financial regulations.',
+            icon: 'info',
+            confirmButtonColor: '#0062ff',
+            confirmButtonText: 'I Understand'
+        });
+    } else {
+        // اگر SweetAlert نصب نیست، از آلرت پیش‌فرض استفاده کن
+        alert("Service Unavailable: This feature is not currently supported in your country due to local regulatory requirements.");
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const tradersData = [
         {% for trader in traders %}

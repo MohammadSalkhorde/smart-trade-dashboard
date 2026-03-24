@@ -31,9 +31,11 @@ def update_pnl_ajax(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'fail'}, status=400)
 
+
+
 @login_required
 def copy_action(request, trader_id):
-    """شروع کپی کردن یک تریدر یا افزایش موجودی پوزیشن قبلی"""
+    """شروع کپی یا افزایش موجودی با حفظ دقیق درصد سود (PnL%) قبلی"""
     trader = get_object_or_404(LeadTrader, id=trader_id)
     user = request.user
     
@@ -49,14 +51,13 @@ def copy_action(request, trader_id):
             messages.error(request, "Minimum investment amount is $1.00")
             return redirect('trading:copy_list')
 
-        # چک کردن موجودی قبل از ورود به تراکنش برای سرعت بیشتر
         if user.balance < copy_amount:
-            messages.error(request, f"Insufficient balance! You need ${copy_amount}.")
+            messages.error(request, f"Insufficient balance!")
             return redirect('transactions:deposit')
 
         try:
             with transaction.atomic():
-                # ۱. استخراج دیتای بازار
+                # ۱. دریافت دیتای سمبل و ROI فعلی
                 try:
                     traders_list = list(LeadTrader.objects.all().order_by('id'))
                     index = traders_list.index(trader) + 1
@@ -65,28 +66,47 @@ def copy_action(request, trader_id):
                 except:
                     symbol = "BTCUSDT"
 
-                current_data = CryptoPriceService.fetch_market_data(symbol)
-                current_entry_price = Decimal(str(current_data.get('price', 0)))
                 current_trader_roi = trader.roi_30d 
 
-                # ۲. کسر موجودی کاربر و آپدیت AUM تریدر
+                # ۲. کسر از موجودی کاربر و آپدیت AUM
                 user.balance -= copy_amount
                 user.save()
                 
                 trader.aum = Decimal(trader.aum) + copy_amount
                 trader.save()
                 
-                # ۳. مدیریت پوزیشن کپی (به جای get_or_create از filter استفاده می‌کنیم که امن‌تر است)
+                # ۳. مدیریت پوزیشن کپی
                 follow = FollowedTrader.objects.filter(user=user, trader=trader, is_active=True).first()
                 
                 if follow:
-                    # آپدیت پوزیشن موجود
-                    follow.investment_amount += copy_amount
-                    follow.entry_roi = current_trader_roi 
+                    # --- منطق حفظ درصد سود (PnL Persistence) ---
+                    
+                    # الف) محاسبه درصد سود فعلی پوزیشن
+                    current_pnl_percent = current_trader_roi - follow.entry_roi
+                    
+                    # ب) محاسبه ضریب تعدیل
+                    # اگر سود ۱۰۰٪ باشد، ضریب می‌شود ۲ (۱ + ۱۰۰/۱۰۰)
+                    # اگر ضرر ۲۰٪ باشد، ضریب می‌شود ۰.۸ (۱ - ۲۰/۱۰۰)
+                    adjustment_factor = (Decimal('1') + (current_pnl_percent / Decimal('100')))
+                    
+                    # ج) تعدیل مبلغ واریزی جدید
+                    # برای اینکه درصد تغییر نکند، مبلغ واریزی باید بر ضریب سود تقسیم شود
+                    # این کار باعث می‌شود در محاسبات فرانت‌اِند، سود روی این مبلغ هم اعمال شود و عدد نهایی درست دربیاید
+                    if adjustment_factor > 0:
+                        adjusted_deposit = copy_amount / adjustment_factor
+                        follow.investment_amount += adjusted_deposit
+                    else:
+                        # اگر پوزیشن در ضرر ۱۰۰٪ (لیکویید) باشد، عملاً ریست می‌شود
+                        follow.investment_amount = copy_amount
+                        follow.entry_roi = current_trader_roi
+
                     follow.save()
-                    messages.success(request, f"Added ${copy_amount} to your position with {trader.name}.")
+                    messages.success(request, f"Added ${copy_amount}. PnL% maintained.")
                 else:
                     # ایجاد پوزیشن جدید
+                    current_data = CryptoPriceService.fetch_market_data(symbol)
+                    current_entry_price = Decimal(str(current_data.get('price', 0)))
+                    
                     FollowedTrader.objects.create(
                         user=user, 
                         trader=trader,
@@ -101,14 +121,12 @@ def copy_action(request, trader_id):
             return redirect('accounts:dashboard')
 
         except Exception as e:
-            # این خط خیلی مهم است؛ در ترمینال نگاه کنید ببینید دقیقا چه اروری می‌نویسد
-            print("--- CRITICAL ERROR IN COPY_ACTION ---")
-            print(f"Error Type: {type(e).__name__}")
-            print(f"Error Message: {e}")
-            messages.error(request, "Database is busy. Please try again in a few seconds.")
+            print(f"Error in copy_action: {e}")
+            messages.error(request, "Error processing request.")
             return redirect('trading:copy_list')
     
     return redirect('trading:copy_list')
+
 @login_required
 def stop_copy_action(request, follow_id):
     """توقف کپی و محاسبه بازگشت وجه بر اساس سود لحظه خروج با حفظ کف موجودی (صفر)"""
