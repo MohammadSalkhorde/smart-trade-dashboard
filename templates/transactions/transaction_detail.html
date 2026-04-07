@@ -110,21 +110,31 @@
             <div class="divider-dashed"></div>
 
             <div class="mb-4">
-                <div class="info-label">Transaction Hash</div>
-                <div class="hash-box mb-2">
-                    {{ tx.tx_hash|default:"N/A" }}
+                <div class="info-label">
+                    {% if tx.tx_type == 'withdraw' %}
+                        Destination Wallet ({{ tx.network }})
+                    {% else %}
+                        Transaction Identifier
+                    {% endif %}
                 </div>
+                
+                <div class="hash-box mb-2" id="wallet-address">
+                    {# این فیلد همان مقدار هش یا آدرس ولت را نمایش می‌دهد #}
+                    {{ tx.tx_hash|default:"Processing..." }}
+                </div>
+
                 <div class="d-flex gap-2">
                     <button class="btn btn-sm btn-light flex-grow-1 py-2 rounded-3 border" onclick="copyToClipboard('{{ tx.tx_hash }}')">
-                        <i class="bi bi-clipboard me-1"></i> Copy Hash
+                        <i class="bi bi-clipboard me-1"></i> Copy Address
                     </button>
+                    
                     {% if tx.tx_hash %}
                         {% if tx.network == 'TRC20' %}
-                        <a href="https://tronscan.org/#/transaction/{{ tx.tx_hash }}" target="_blank" class="btn btn-sm btn-primary rounded-3 px-3 py-2">
+                        <a href="https://tronscan.org/#/transaction/{{ tx.tx_hash }}" target="_blank" class="btn btn-sm btn-primary rounded-3 px-3 py-2" title="View on TronScan">
                             <i class="bi bi-box-arrow-up-right"></i>
                         </a>
                         {% elif tx.network == 'BEP20' %}
-                        <a href="https://bscscan.com/tx/{{ tx.tx_hash }}" target="_blank" class="btn btn-sm btn-warning rounded-3 px-3 py-2">
+                        <a href="https://bscscan.com/tx/{{ tx.tx_hash }}" target="_blank" class="btn btn-sm btn-warning rounded-3 px-3 py-2" title="View on BscScan">
                             <i class="bi bi-box-arrow-up-right"></i>
                         </a>
                         {% endif %}
