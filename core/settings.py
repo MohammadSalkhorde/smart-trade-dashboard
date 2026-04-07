@@ -4,14 +4,15 @@ import os
 # --- Basic Config ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# سعی می‌کند از متغیر محیطی بخواند، اگر نبود از کلید دیفالت استفاده می‌کند
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*xmm7ru+t1&@nrc3+piqq^26qlwku7mmp*a^tprjm7^jb)!b8k')
 
-DEBUG = True
+DEBUG = True # در زمان دیپلوی نهایی False کن
 
-# فقط اجازه ورود با دامنه‌های اصلی داده می‌شود (آی‌پی سرور حذف شد)
 ALLOWED_HOSTS = [
     'smartcopytraders.com', 
     'www.smartcopytraders.com',
+    '91.107.154.232',  # اضافه شدن آی‌پی سرور
     '127.0.0.1',
     'localhost'
 ]
@@ -35,7 +36,7 @@ AUTH_USER_MODEL = 'accounts.User'
 # --- Middleware ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # برای مدیریت فایل‌های استاتیک در سرور
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,6 +75,7 @@ DATABASES = {
 }
 
 # --- Password Validation ---
+# فعلاً خالی گذاشتی که برای تست راحت باشی
 AUTH_PASSWORD_VALIDATORS = []
 
 # --- Internationalization ---
@@ -85,6 +87,7 @@ USE_TZ = True
 # --- Static & Media Files ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# ذخیره‌سازی بهینه برای سرعت بیشتر در سرور
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -92,25 +95,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- PRODUCTION SECURITY (Hardened for Cloudflare) ---
+# --- PRODUCTION & CLOUDFLARE SECURITY ---
 
-# تشخیص HTTPS از هدر کلودفلر
+# تشخیص HTTPS از سمت کلودفلر یا Nginx
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# دامنه‌های مورد اعتماد برای CSRF (اینجا پروتکل الزامی است)
+# دامنه‌های مورد اعتماد برای CSRF (هم آی‌پی هم دامنه)
 CSRF_TRUSTED_ORIGINS = [
     'https://smartcopytraders.com',
-    'https://www.smartcopytraders.com'
+    'https://www.smartcopytraders.com',
+    'http://91.107.154.232',
+    'https://91.107.154.232'
 ]
 
-# اجباری کردن HTTPS در سطح جنگو
-SECURE_SSL_REDIRECT = False
+# فعلاً False برای جلوگیری از خطای Redirect تا قبل از ست شدن کامل SSL
+SECURE_SSL_REDIRECT = False 
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
-# محافظت از کوکی‌ها و جلوگیری از حملات XSS
+# تنظیمات ضروری امنیتی
 SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = False  # معمولا برای درخواست‌های AJAX در جنگو False می‌گذاریم
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
