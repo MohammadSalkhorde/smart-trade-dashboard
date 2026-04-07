@@ -2,9 +2,7 @@
 
 {% block content %}
 <style>
-    body {
-        background: #f8faff;
-    }
+    body { background: #f8faff; }
     .auth-card {
         border: none;
         border-radius: 35px;
@@ -12,7 +10,7 @@
         backdrop-filter: blur(10px);
         box-shadow: 0 25px 50px -12px rgba(0, 82, 255, 0.15);
         overflow: hidden;
-        width: 100%; /* اطمینان از عدم خروج کارت از والد در موبایل */
+        width: 100%;
     }
     .input-group-custom {
         background-color: #f3f6f9;
@@ -22,7 +20,7 @@
         display: flex;
         align-items: center;
         width: 100%;
-        overflow: hidden; /* جلوگیری از بیرون زدگی محتوای داخل گروه */
+        overflow: hidden;
     }
     .input-group-custom:focus-within {
         border-color: #0052ff;
@@ -34,18 +32,12 @@
         border: none;
         padding: 12px 15px;
         font-weight: 500;
-        width: 100%; /* عرض کامل */
-        flex-grow: 1; /* اشغال فضای باقی‌مانده */
+        width: 100%;
+        flex-grow: 1;
     }
-    .input-group-custom input:focus {
-        box-shadow: none;
-        outline: none;
-    }
-    .input-group-custom i {
-        color: #94a3b8;
-        padding-left: 15px;
-        flex-shrink: 0; /* جلوگیری از کوچک شدن آیکون */
-    }
+    .input-group-custom input:focus { box-shadow: none; outline: none; }
+    .input-group-custom i { color: #94a3b8; padding-left: 15px; flex-shrink: 0; }
+    
     .btn-login {
         background: linear-gradient(135deg, #0052ff 0%, #00a3ff 100%);
         border: none;
@@ -70,13 +62,13 @@
         50% { transform: translateY(-20px) rotate(5deg); }
     }
     
-    /* اصلاح برای نمایش بهتر در موبایل */
     @media (max-width: 576px) {
-        .auth-card {
-            padding: 2rem !important;
-            border-radius: 25px;
-        }
+        .auth-card { padding: 2rem !important; border-radius: 25px; }
     }
+
+    /* تضمین قرارگیری صحیح لایه‌ها */
+    .modal-backdrop { z-index: 1040 !important; }
+    .modal { z-index: 1050 !important; }
 </style>
 
 <div class="container position-relative" style="min-height: 90vh; display: flex; align-items: center; justify-content: center;">
@@ -88,7 +80,8 @@
         </svg>
     </div>
 
-    <div class="row w-100 justify-content-center m-0"> <div class="col-11 col-sm-9 col-md-6 col-lg-5 col-xl-4">
+    <div class="row w-100 justify-content-center m-0"> 
+        <div class="col-11 col-sm-9 col-md-6 col-lg-5 col-xl-4">
             <div class="auth-card p-5">
                 <div class="text-center mb-5">
                     <div class="mb-3">
@@ -112,7 +105,6 @@
                             {% else %}
                                 <i class="bi bi-shield-lock fs-5"></i>
                             {% endif %}
-                            {# اضافه کردن استایل مستقیم برای اطمینان از کنترل عرض #}
                             {{ field }}
                         </div>
                         {% if field.errors %}
@@ -126,7 +118,7 @@
                             <input class="form-check-input" type="checkbox" id="remember">
                             <label class="form-check-label text-muted" for="remember">Remember me</label>
                         </div>
-                        <a href="#" class="text-primary text-decoration-none fw-bold">Forgot?</a>
+                        <a href="#" class="text-primary text-decoration-none fw-bold" id="forgot-password-btn">Forgot?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-login w-100 text-white shadow-lg">
@@ -142,4 +134,58 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-body p-5 text-center" id="forgotModalBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('forgot-password-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    const emailInput = document.querySelector('input[name*="username"]') || document.querySelector('input[type="text"]');
+    const emailValue = emailInput ? emailInput.value.trim() : "";
+    const modalElement = document.getElementById('forgotModal');
+    const modalBody = document.getElementById('forgotModalBody');
+
+    // منطق مشابه صفحه تریدرها برای آزاد کردن مودال از کانتینر
+    if (modalElement.parentElement !== document.body) {
+        document.body.appendChild(modalElement);
+    }
+
+    if (emailValue === "") {
+        modalBody.innerHTML = `
+            <div class="mb-4 d-inline-flex align-items-center justify-content-center" 
+                 style="width: 80px; height: 80px; background: #fff4f4; color: #ef4444; border-radius: 50%; font-size: 2.2rem;">
+                <i class="bi bi-exclamation-circle-fill"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-3">Email Required</h4>
+            <p class="text-muted mb-4">Please enter your email address in the login field first to receive a reset link.</p>
+            <button type="button" class="btn btn-danger w-100 rounded-pill py-3 fw-bold shadow-sm" data-bs-dismiss="modal" style="background: #ef4444; border: none;">
+                Got it
+            </button>
+        `;
+    } else {
+        modalBody.innerHTML = `
+            <div class="mb-4 d-inline-flex align-items-center justify-content-center" 
+                 style="width: 80px; height: 80px; background: #f0f7ff; color: #0062ff; border-radius: 50%; font-size: 2.2rem;">
+                <i class="bi bi-send-check-fill"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-3">Link Sent!</h4>
+            <p class="text-muted mb-4">A password reset link has been sent to:<br><span class="fw-bold text-primary">${emailValue}</span></p>
+            <button type="button" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm" data-bs-dismiss="modal" style="background: #0062ff; border: none;">
+                Check Inbox
+            </button>
+        `;
+    }
+    
+    const forgotModal = new bootstrap.Modal(modalElement);
+    forgotModal.show();
+});
+</script>
 {% endblock %}

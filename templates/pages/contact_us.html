@@ -157,6 +157,37 @@
         .info-panel, .form-panel { padding: 40px; }
         .contact-wrapper { padding: 40px 0; }
     }
+
+    /* استایل اصلاح شده برای جلوگیری از بیرون زدگی در موبایل */
+.contact-method {
+    flex-wrap: wrap; /* در موبایل آیکون و متن می‌توانند زیر هم بروند */
+    padding: 20px;
+    height: auto;
+    min-width: 0; /* برای مدیریت بهتر عرض در فلکس‌باکس */
+}
+
+.contact-method div {
+    flex: 1;
+    min-width: 200px; /* اگر عرض کمتر از این شد، به خط بعد می‌رود */
+}
+
+.contact-method .fw-bold {
+    word-break: break-all; /* شکستن ایمیل‌های طولانی */
+    font-size: clamp(0.85rem, 3.5vw, 1.05rem); /* سایز داینامیک */
+    display: block;
+    line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+    .contact-method {
+        gap: 12px;
+        padding: 15px;
+    }
+    
+    .info-panel {
+        padding: 30px 20px;
+    }
+}
 </style>
 
 <div class="contact-wrapper">
@@ -186,7 +217,7 @@
                                 <i class="bi bi-envelope-at fs-3"></i>
                                 <div>
                                     <div class="small opacity-50">Email us</div>
-                                    <div class="fw-bold">support@smartcopytraders.com</div>
+                                    <div class="fw-bold text-break">support@smartcopytraders.com</div>    
                                 </div>
                             </a>
 

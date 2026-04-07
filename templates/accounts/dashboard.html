@@ -241,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
         {% for item in followed_traders %}
             { 
                 id: "{{ item.id }}", 
-                // ذخیره نقطه ورود کاربر به چارت (بسیار مهم)
                 entryRoi: parseFloat("{{ item.entry_roi|default:0 }}"),
                 symbol: "{% if forloop.counter|add:0|divisibleby:5 %}ADAUSDT{% elif forloop.counter|add:0|divisibleby:4 %}BNBUSDT{% elif forloop.counter|add:0|divisibleby:3 %}SOLUSDT{% elif forloop.counter|add:0|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}",
                 currentPnl: parseFloat("{{ item.last_pnl|default:0 }}"),
@@ -252,68 +251,69 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endfor %}
     ];
 
-    // ۲. آپدیت ظاهر داشبورد
-    // ۳. آپدیت ظاهر داشبورد
+    // ۲. تابع آپدیت سطرها (Table Rows)
     function updateUI(item) {
         const invElem = document.getElementById(`investment-val-${item.id}`);
         const profitElem = document.getElementById(`profit-val-${item.id}`);
         if (!invElem || !profitElem) return;
 
-        // --- اصلاح این بخش ---
-        // محاسبه درصد سود/ضرر (حداقل -100 درصد)
         const displayPnl = Math.max(item.currentPnl, -100);
+        const currentPositionValue = item.investment * (1 + (displayPnl / 100));
         
-        // محاسبه موجودی فعلی (حداقل 0 دلار)
-        const rawBalance = item.investment * (1 + (displayPnl / 100));
-        const currentBalance = Math.max(0, rawBalance);
-        // ----------------------
+        invElem.innerText = `$${Math.max(0, currentPositionValue).toLocaleString(undefined, {
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2
+        })}`;
         
-        invElem.innerText = `$${currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        
-        // نمایش درصد سود (اگر از ۱۰۰ درصد ضرر بیشتر بود، همان ۱۰۰- را نشان دهد)
         profitElem.innerText = (displayPnl >= 0 ? '+' : '') + displayPnl.toFixed(2) + '%';
         profitElem.style.color = displayPnl >= 0 ? "#10b981" : "#ef4444";
-        
         profitElem.setAttribute('data-last-pnl', displayPnl.toFixed(4));
-        updateTotalPortfolio();
     }
 
-    // ۳. محاسبه کل سود سبد دارایی
-// ۳. محاسبه کل سود سبد دارایی و موجودی کل
+    // ۳. تابع آپدیت کارت اصلی و موجودی کل
     function updateTotalPortfolio() {
-        if (traderState.length === 0) return;
+        const balanceElem = document.getElementById('total-balance-display');
+        const totalPnlElem = document.getElementById('total-pnl-display');
+        if (!balanceElem) return;
 
-        let totalProfitDollar = 0;
+        // ۱. موجودی نقد باقی‌مانده در کیف پول (مثلاً ۱۰۰۰ دلار)
+        const walletCash = parseFloat(balanceElem.getAttribute('data-initial-balance')) || 0;
+
+        let currentInvestmentsValue = 0; // ارزش فعلی کل پول‌های درگیر در معامله
         let sumPnlPercent = 0;
 
+        // ۲. محاسبه ارزش لحظه‌ای هر پوزیشن با احتساب سود و ضرر
         traderState.forEach(t => {
-            // محاسبه سود/ضرر هر پوزیشن به دلار
-            const positionProfit = t.investment * (t.currentPnl / 100);
-            totalProfitDollar += positionProfit;
-            sumPnlPercent += t.currentPnl;
+            const limitedPnl = Math.max(t.currentPnl, -100);
+            
+            // ارزش فعلی این پوزیشن = اصل پول (مثلاً ۲۰۰ دلار) + سود/ضررش
+            const positionValue = t.investment * (1 + (limitedPnl / 100));
+            
+            currentInvestmentsValue += positionValue;
+            sumPnlPercent += limitedPnl;
         });
 
-        // ۱. آپدیت درصد میانگین PnL (باکس کوچک سمت راست)
-        const avg = sumPnlPercent / traderState.length;
-        const totalDisplay = document.getElementById('total-pnl-display');
-        if (totalDisplay) {
-            totalDisplay.innerText = (avg >= 0 ? '+' : '') + avg.toFixed(2) + '%';
-            totalDisplay.style.color = avg >= 0 ? "#10b981" : "#ef4444";
-        }
+        // ۳. موجودی کل = پول نقد + ارزش پوزیشن‌های باز
+        // مثال: ۱۰۰۰ (نقد) + ۲۰۵ (اصل ۲۰۰ دلار + ۵ دلار سود) = ۱۲۰۵ دلار
+        const totalEquity = Math.max(0, walletCash + currentInvestmentsValue);
 
-        // ۲. آپدیت موجودی کل در کارت اصلی (Estimated Balance)
-        const balanceElem = document.getElementById('total-balance-display');
-        if (balanceElem) {
-            const initialBalance = parseFloat(balanceElem.getAttribute('data-initial-balance'));
-            const liveBalance = initialBalance + totalProfitDollar;
+        // ۴. آپدیت عدد بزرگ روی کارت اعتباری
+        balanceElem.innerText = `$${totalEquity.toLocaleString(undefined, {
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2
+        })}`;
+
+        // ۵. آپدیت درصد میانگین سبد (Live Portfolio PnL)
+        if (totalPnlElem) {
+            const avgPnl = traderState.length > 0 ? (sumPnlPercent / traderState.length) : 0;
+            const displayAvg = Math.max(0, avgPnl); // طبق درخواست قبلی منفی نشان نمی‌دهد
             
-            balanceElem.innerText = `$${liveBalance.toLocaleString(undefined, {
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
-            })}`;
+            totalPnlElem.innerText = displayAvg.toFixed(2) + '%';
+            totalPnlElem.style.color = displayAvg > 0 ? "#10b981" : "#94a3b8";
         }
     }
-    // ۴. همگام‌سازی مقدار سود نهایی با دیتابیس (برای رفرش صفحه)
+
+    // ۴. همگام‌سازی با سرور
     async function syncToServer(id, pnl) {
         try {
             await fetch('{% url "trading:update_pnl_ajax" %}', { 
@@ -324,58 +324,54 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (e) { console.error("Sync error"); }
     }
 
-    // ۵. قلب تپنده اسکریپت (محاسبه سود لحظه‌ای)
+    // ۵. چرخه به‌روزرسانی لحظه‌ای
     async function tick() {
         for (let item of traderState) {
             try {
-                // الف) گرفتن آخرین وضعیت چارت تریدر از سرور
                 const responseSync = await fetch(`/trading/get-latest-pnl/${item.id}/`);
                 const serverData = await responseSync.json();
                 
-                // مقدار فعلی چارت تریدر (مثلاً ۲۸.۰۰)
                 const currentTraderRoi = serverData.trader_roi; 
                 item.isManual = serverData.is_manual;
-
-                // ب) محاسبه تفاوت (سود کاربر = چارت فعلی - چارت زمان ورود)
-                // مثال: ۲۸ - ۴۷ = ۱۹- (ضرر)
                 let calculatedUserPnl = currentTraderRoi - item.entryRoi;
 
-                // ج) اگر تریدر در حالت خودکار است، نوسان بایننس را هم به این تفاوت اضافه کن
                 if (!item.isManual) {
                     const resBinance = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${item.symbol}`);
                     const dataBinance = await resBinance.json();
                     const freshPrice = parseFloat(dataBinance.price);
 
                     if (item.lastPrice > 0) {
-                        const marketMove = ((freshPrice - item.lastPrice) / item.lastPrice) * 100;
-                        // نوسان بازار به سود/ضرر پایه اضافه می‌شود
-                        calculatedUserPnl += marketMove;
+                        calculatedUserPnl += ((freshPrice - item.lastPrice) / item.lastPrice) * 100;
                     }
                     item.lastPrice = freshPrice;
                 }
 
-                // د) ثبت و نمایش
                 item.currentPnl = calculatedUserPnl;
                 updateUI(item);
                 syncToServer(item.id, item.currentPnl);
 
-            } catch (e) { console.error("Tick error for " + item.id, e); }
+            } catch (e) { console.error("Tick error", e); }
         }
+        // بعد از اینکه تمام تریدرها چک شدند، یکبار موجودی کل را آپدیت کن
+        updateTotalPortfolio();
     }
 
-    // شروع چرخه
+    // شروع اولیه
     traderState.forEach(item => updateUI(item));
+    updateTotalPortfolio();
+    
+    // اجرای تیک‌ها
     tick(); 
-    setInterval(tick, 3000); // هر ۳ ثانیه به‌روزرسانی
+    setInterval(tick, 3000);
 
-    // ۶. مدیریت دکمه STOP (ارسال سود نهایی به سرور برای تسویه حساب)
+    // ۶. مدیریت دکمه STOP
     document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('stop-copy-btn')) {
             const id = e.target.getAttribute('data-id');
             const profitElem = document.getElementById(`profit-val-${id}`);
             const finalPnl = profitElem ? profitElem.getAttribute('data-last-pnl') : "0";
             
-            if (confirm("Are you sure you want to stop copying? Your final PnL will be settled.")) {
+            if (confirm("Are you sure you want to stop?")) {
                 const input = document.getElementById(`live-pnl-input-${id}`);
                 const form = document.getElementById(`stop-form-${id}`);
                 if (input && form) { 

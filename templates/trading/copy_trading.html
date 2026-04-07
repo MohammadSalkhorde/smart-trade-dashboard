@@ -375,25 +375,33 @@
         justify-content: center;
         font-size: 1.4rem;
     }
+
+    /* تضمین قرارگیری لایه سیاه زیر مودال */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+.modal {
+    z-index: 1050 !important;
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <script>
 
-    function showLocationError() {
-    // جلوگیری از تداخل با کلیک‌های احتمالی دیگر
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'Service Unavailable',
-            text: 'We apologize, but the "Lead Trader" registration is currently not available in your region (Iran) due to local financial regulations.',
-            icon: 'info',
-            confirmButtonColor: '#0062ff',
-            confirmButtonText: 'I Understand'
-        });
-    } else {
-        // اگر SweetAlert نصب نیست، از آلرت پیش‌فرض استفاده کن
-        alert("Service Unavailable: This feature is not currently supported in your country due to local regulatory requirements.");
+function showLocationError() {
+    const modalElement = document.getElementById('statusModal');
+    
+    // این خط مودال را به انتهای تگ body منتقل می‌کند تا از زندان کانتینر آزاد شود
+    if (modalElement.parentElement !== document.body) {
+        document.body.appendChild(modalElement);
     }
+
+    const myModal = new bootstrap.Modal(modalElement, {
+        backdrop: true,
+        keyboard: true
+    });
+    
+    myModal.show();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -432,4 +440,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+
+<div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-body p-5 text-center">
+                <div class="mb-4 d-inline-flex align-items-center justify-content-center" 
+                     style="width: 80px; height: 80px; background: #f0f7ff; color: #0062ff; border-radius: 50%; font-size: 2.2rem;">
+                    <i class="bi bi-person-x-fill"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-3">Access Restricted</h4>
+                <p class="text-muted mb-4">
+                    The <span class="fw-bold text-primary">Lead Trader</span> registration is currently unavailable for your account due to regional regulatory requirements.
+                </p>
+                <button type="button" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm" 
+                        data-bs-dismiss="modal" style="background: #0062ff; border: none;">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
