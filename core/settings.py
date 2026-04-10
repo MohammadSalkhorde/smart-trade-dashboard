@@ -112,10 +112,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.smartercopytrade.com',
 ]
 
-# فعال‌سازی تنظیمات امنیتی برای حالت HTTPS
-SECURE_SSL_REDIRECT = True # اجبار به HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False 
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 # سایر تنظیمات امنیتی
 SESSION_COOKIE_HTTPONLY = True
