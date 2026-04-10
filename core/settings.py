@@ -4,17 +4,18 @@ import os
 # --- Basic Config ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# سعی می‌کند از متغیر محیطی بخواند، اگر نبود از کلید دیفالت استفاده می‌کند
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*xmm7ru+t1&@nrc3+piqq^26qlwku7mmp*a^tprjm7^jb)!b8k')
+# امنیت: حتماً در محیط سرور یک کلید اختصاصی تعریف کن، در غیر این صورت از این دیفالت استفاده می‌شود
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-prod-smarter-copy-trade-key-2026')
 
-DEBUG = True # در زمان دیپلوی نهایی False کن
+# غیرفعال کردن دیباگ برای امنیت و کارایی
+DEBUG = False 
 
 ALLOWED_HOSTS = [
-    'smartcopytraders.com', 
-    'www.smartcopytraders.com',
-    '91.107.154.232',  # اضافه شدن آی‌پی سرور
+    'smartercopytrade.com', 
+    'www.smartercopytrade.com',
+    '154.29.76.222',  # آی‌پی جدید شما
     '127.0.0.1',
-    'localhost'
+    'localhost',
 ]
 
 # --- Apps & Models ---
@@ -36,7 +37,7 @@ AUTH_USER_MODEL = 'accounts.User'
 # --- Middleware ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # برای مدیریت فایل‌های استاتیک در سرور
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,8 +76,12 @@ DATABASES = {
 }
 
 # --- Password Validation ---
-# فعلاً خالی گذاشتی که برای تست راحت باشی
-AUTH_PASSWORD_VALIDATORS = []
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+]
 
 # --- Internationalization ---
 LANGUAGE_CODE = 'en-us'
@@ -87,7 +92,6 @@ USE_TZ = True
 # --- Static & Media Files ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# ذخیره‌سازی بهینه برای سرعت بیشتر در سرور
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -97,23 +101,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- PRODUCTION & CLOUDFLARE SECURITY ---
 
-# تشخیص HTTPS از سمت کلودفلر یا Nginx
+# شناسایی HTTPS از سمت کلودفلر
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
-# دامنه‌های مورد اعتماد برای CSRF (هم آی‌پی هم دامنه)
+# دامنه‌های مورد اعتماد برای CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'https://smartcopytraders.com',
-    'https://www.smartcopytraders.com',
-    'http://91.107.154.232',
-    'https://91.107.154.232'
+    'https://smartercopytrade.com',
+    'https://www.smartercopytrade.com',
 ]
 
-# فعلاً False برای جلوگیری از خطای Redirect تا قبل از ست شدن کامل SSL
-SECURE_SSL_REDIRECT = False 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+# فعال‌سازی تنظیمات امنیتی برای حالت HTTPS
+SECURE_SSL_REDIRECT = True # اجبار به HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
-# تنظیمات ضروری امنیتی
+# سایر تنظیمات امنیتی
 SESSION_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
