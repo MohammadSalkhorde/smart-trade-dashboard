@@ -105,7 +105,11 @@ def user_dashboard(request):
 
     referral_earnings = request.user.referral_earnings 
     my_referrals = User.objects.filter(referred_by=request.user)
-    referral_link = f"{request.build_absolute_uri('/accounts/register/')}?ref={request.user.referral_code}"
+    # referral_link = f"{request.build_absolute_uri('/accounts/register/')}?ref={request.user.referral_code}"
+    referral_link = request.build_absolute_uri('/accounts/register/')
+    if not settings.DEBUG:
+        referral_link = referral_link.replace('http://', 'https://')
+    referral_link += f"?ref={request.user.referral_code}"
 
     context = {
         'form': form,
