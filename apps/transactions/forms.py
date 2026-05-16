@@ -4,18 +4,9 @@ from django.core.exceptions import ValidationError
 import re
 
 class DepositForm(forms.ModelForm):
-    NETWORK_CHOICES = [
-        ('TRC20', 'TRC20 (Tron)'),
-    ]
-    network = forms.ChoiceField(
-        choices=NETWORK_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-select'}),
-        required=True
-    )
-
     class Meta:
         model = Transaction
-        fields = ['network', 'amount']
+        fields = ['amount']
         widgets = {
             'amount': forms.NumberInput(attrs={
                 'class': 'form-control',
@@ -31,7 +22,7 @@ class DepositForm(forms.ModelForm):
             from django.core.exceptions import ValidationError
             raise ValidationError("Minimum deposit is 10 USDT")
         return amount
-    
+
 class WithdrawForm(forms.ModelForm):
     NETWORK_CHOICES = [
         ('TRC20', 'TRC20'),

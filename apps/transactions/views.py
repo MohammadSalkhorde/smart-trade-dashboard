@@ -12,7 +12,13 @@ from apps.accounts.tron_service import TronWalletService
 @login_required
 def deposit_view(request):
     wallet_service = TronWalletService()
-    user_wallet, created = wallet_service.get_or_create_user_wallet(request.user)
+    
+    try:
+        user_wallet, created = wallet_service.get_or_create_user_wallet(request.user)
+    except Exception as e:
+        from django.contrib import messages
+        messages.error(request, f"Wallet system not ready. Please contact support. Error: {str(e)}")
+        return redirect('transactions:history')
 
     if request.method == 'POST':
         form = DepositForm(request.POST)
@@ -21,10 +27,15 @@ def deposit_view(request):
             deposit.user = request.user
             deposit.tx_type = 'deposit'
             deposit.status = 'pending'
-            deposit.tx_hash = f"PENDING_{user_wallet.address}_{deposit.amount}"
+            deposit.network = 'TRC20'
+            deposit.tx_hash = ''
             deposit.save()
+            
             from django.contrib import messages
-            messages.success(request, f"Send exactly ${deposit.amount} USDT to your personal address: {user_wallet.address}")
+            messages.success(
+                request, 
+                f"Send exactly ${deposit.amount} USDT (TRC20) to your personal address: {user_wallet.address}"
+            )
             return redirect('transactions:history')
         else:
             from django.contrib import messages
@@ -37,7 +48,7 @@ def deposit_view(request):
         'user_wallet_address': user_wallet.address,
         'page_title': 'Deposit USDT'
     })
-
+    
 from decimal import Decimal
 
 @login_required
