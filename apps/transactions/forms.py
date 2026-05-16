@@ -4,55 +4,34 @@ from django.core.exceptions import ValidationError
 import re
 
 class DepositForm(forms.ModelForm):
-    # انتخاب شبکه - این فیلد نباید خالی بماند
     NETWORK_CHOICES = [
         ('TRC20', 'TRC20 (Tron)'),
-        ('BEP20', 'BEP20 (Binance Smart Chain)'),
     ]
     network = forms.ChoiceField(
         choices=NETWORK_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-select', 'id': 'networkSelect'}),
+        widget=forms.Select(attrs={'class': 'form-select'}),
         required=True
     )
 
     class Meta:
         model = Transaction
-        fields = ['network', 'amount', 'tx_hash'] # ترتیب فیلدها اصلاح شد
+        fields = ['network', 'amount']
         widgets = {
             'amount': forms.NumberInput(attrs={
-                'class': 'form-control', 
-                'placeholder': '0.00',
-                'min': '1',
-            }),
-            'tx_hash': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Enter 64-character TXID',
-                'maxlength': '66', # برای پشتیبانی از 0x در ابتدای هش های BEP20
+                'class': 'form-control',
+                'placeholder': 'Enter amount (min 10 USDT)',
+                'min': '10',
+                'step': '0.01'
             }),
         }
 
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
-        if amount and amount <= 0:
-            raise ValidationError("Amount must be greater than zero.")
+        if amount and amount < 10:
+            from django.core.exceptions import ValidationError
+            raise ValidationError("Minimum deposit is 10 USDT")
         return amount
-
-    def clean_tx_hash(self):
-        tx_hash = self.cleaned_data.get('tx_hash', '').strip()
-        
-        if re.search(r'[<>{}[\]\(\);|&]', tx_hash):
-            raise ValidationError("Invalid characters detected in transaction hash.")
-
-        # بررسی فرمت هش (هگزادسیمال 64 کاراکتری با یا بدون 0x)
-        clean_hash = tx_hash[2:] if tx_hash.startswith('0x') else tx_hash
-        if not re.match(r'^[a-fA-F0-9]{64}$', clean_hash):
-            raise ValidationError("Invalid TXID format. Must be a 64-character hex string.")
-
-        if Transaction.objects.filter(tx_hash=tx_hash).exists():
-            raise ValidationError("This transaction hash has already been submitted.")
-            
-        return tx_hash
-
+    
 class WithdrawForm(forms.ModelForm):
     NETWORK_CHOICES = [
         ('TRC20', 'TRC20'),

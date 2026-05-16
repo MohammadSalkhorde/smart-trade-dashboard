@@ -144,3 +144,19 @@ class TicketMessage(models.Model):
 
     def __str__(self):
         return f"Message by {self.sender.email} on Ticket #{self.ticket.id}"
+    
+    
+class UserWallet(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tron_wallet')
+    address = models.CharField(max_length=255, unique=True)
+    private_key = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_checked_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "User TRON Wallet"
+        verbose_name_plural = "User TRON Wallets"
+
+    def __str__(self):
+        return f"{self.user.email} - {self.address[:10]}..."

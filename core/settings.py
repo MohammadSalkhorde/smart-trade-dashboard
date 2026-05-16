@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-prod-smarter-copy-trade-key-2026')
 
 # غیرفعال کردن دیباگ برای امنیت و کارایی
-DEBUG = False 
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'smartercopytrade.com', 
@@ -121,3 +121,9 @@ SESSION_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+
+TRONGRID_API_KEY = ""
+TRONGRID_API_URL = "https://api.trongrid.io"
+MASTER_WALLET_ADDRESS = "TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim"
+MIN_BALANCE_TO_SWEEP = 5

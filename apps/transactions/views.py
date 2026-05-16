@@ -7,24 +7,12 @@ from django.conf import settings
 from .models import Transaction
 from apps.trading.models import SystemSettings
 
+from apps.accounts.tron_service import TronWalletService
+
 @login_required
 def deposit_view(request):
-    # جلوگیری از ثبت بیش از ۳ درخواست در جریان
-    pending_count = Transaction.objects.filter(user=request.user, status='pending', tx_type='deposit').count()
-    if pending_count >= 3:
-        messages.error(request, "You have too many pending requests. Please wait for admin approval.")
-        return redirect('transactions:history')
-
-    # دریافت تنظیمات سیستم برای نمایش آدرس کیف پول‌ها
-    system_settings = SystemSettings.objects.first()
-    
-    # مدیریت آدرس‌ها (TRC20 و BEP20) برای نمایش در تمپلیت
-    if system_settings:
-        wallet_trc20 = system_settings.tron_wallet_address
-        wallet_bep20 = getattr(system_settings, 'bsc_wallet_address', "0xAddressNotSet")
-    else:
-        wallet_trc20 = getattr(settings, 'TRON_WALLET_ADDRESS', "TBy5YFjUKjmCwLzdt3YoqjBpf493qVNrim")
-        wallet_bep20 = getattr(settings, 'BSC_WALLET_ADDRESS', "0xDefaultAddress")
+    wallet_service = TronWalletService()
+    user_wallet, created = wallet_service.get_or_create_user_wallet(request.user)
 
     if request.method == 'POST':
         form = DepositForm(request.POST)
@@ -33,23 +21,22 @@ def deposit_view(request):
             deposit.user = request.user
             deposit.tx_type = 'deposit'
             deposit.status = 'pending'
-            # فیلد network به طور خودکار از form.cleaned_data برداشته شده و ذخیره می‌شود
+            deposit.tx_hash = f"PENDING_{user_wallet.address}_{deposit.amount}"
             deposit.save()
-            messages.success(request, "Deposit request submitted successfully!")
+            from django.contrib import messages
+            messages.success(request, f"Send exactly ${deposit.amount} USDT to your personal address: {user_wallet.address}")
             return redirect('transactions:history')
         else:
-            # اگر فرم خطا داشت (مثل همون خطای فیلد اجباری)، پیغام بده
+            from django.contrib import messages
             messages.error(request, "Please correct the errors below.")
     else:
         form = DepositForm()
-    
+
     return render(request, 'transactions/deposit.html', {
         'form': form,
-        'wallet_trc20': wallet_trc20,
-        'wallet_bep20': wallet_bep20,
+        'user_wallet_address': user_wallet.address,
         'page_title': 'Deposit USDT'
     })
-
 
 from decimal import Decimal
 
