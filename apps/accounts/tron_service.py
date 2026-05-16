@@ -25,7 +25,7 @@ class TronWalletService:
             from tronpy import Tron
             from tronpy.providers import HTTPProvider
             
-            provider = HTTPProvider(api_key=self.api_key, base_url=self.api_url)
+            provider = HTTPProvider(api_key=self.api_key)
             client = Tron(provider=provider)
             wallet = client.generate_address()
             
@@ -45,11 +45,15 @@ class TronWalletService:
     def get_or_create_user_wallet(self, user):
         from .models import UserWallet
         
-        wallet, created = UserWallet.objects.get_or_create(
-            user=user,
-            defaults=self.generate_wallet()
-        )
-        return wallet, created
+        try:
+            wallet, created = UserWallet.objects.get_or_create(
+                user=user,
+                defaults=self.generate_wallet()
+            )
+            return wallet, created
+        except Exception as e:
+            print(f"Wallet creation error: {e}")
+            raise
 
     def get_usdt_balance(self, address):
         try:
@@ -77,7 +81,7 @@ class TronWalletService:
             if not self.api_key:
                 raise Exception("TRONGRID_API_KEY is required for transfer")
             
-            provider = HTTPProvider(api_key=self.api_key, base_url=self.api_url)
+            provider = HTTPProvider(api_key=self.api_key)
             client = Tron(provider=provider)
             
             private_key = PrivateKey.fromhex(from_private_key)
@@ -132,7 +136,6 @@ class TronWalletService:
         
         if transfer_result['success']:
             from apps.transactions.models import Transaction
-            from django.contrib.auth import get_user_model
             
             Transaction.objects.create(
                 user=wallet.user,
