@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
+from apps.transactions.views import nowpayments_webhook
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,6 +14,8 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls')),
     
     path('transactions/', include('apps.transactions.urls')),
+    
+    path('payment/webhook/', nowpayments_webhook, name='nowpayments_webhook'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
