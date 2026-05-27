@@ -7,133 +7,125 @@
             <div class="deposit-card border-0 shadow-lg position-relative overflow-hidden animate-fade-in">
                 
                 <div class="bg-decoration">
-                    <svg width="300" height="300" viewBox="0 0 200 200" fill="none" class="pos-1">
-                        <circle cx="100" cy="100" r="100" fill="url(#grad1)" fill-opacity="0.15"/>
-                        <defs>
-                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#0062ff;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#00d1b2;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
+                    <svg width="300" height="300" viewBox="0 0 200 200" class="pos-top-right">
+                        <circle cx="120" cy="80" r="100" fill="rgba(0, 98, 255, 0.07)"/>
                     </svg>
                 </div>
 
                 <div class="card-body p-4 p-md-5 position-relative">
-                    <div class="text-center mb-5">
-                        <div class="icon-circle mb-3 mx-auto shadow-blue">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                    <div class="d-flex align-items-center mb-5">
+                        <div class="icon-box-deposit shadow-blue me-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
                             </svg>
                         </div>
-                        <h2 class="fw-bold text-dark">Add Funds</h2>
-                        <p class="text-muted small">Deposit USDT via TRC20 Network</p>
+                        <div>
+                            <h3 class="fw-bold mb-0 text-dark">Add Funds</h3>
+                            <p class="text-muted small mb-0">Deposit USDT via Secure Networks</p>
+                        </div>
                     </div>
 
-                    {% if payment %}
-                        <!-- نمایش اطلاعات پرداخت در حال انتظار -->
-                        <div class="alert alert-success text-center border-0 shadow-sm rounded-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" class="mb-2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                            </svg>
-                            <h5 class="fw-bold mt-2">Send Exactly</h5>
-                            <h3 class="fw-bold text-primary">{{ payment.pay_amount }} USDT</h3>
-                            <p class="mb-0 small text-muted">(TRC20 Network)</p>
+                    <form method="post" id="depositForm" class="needs-validation">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary text-uppercase tracking-widest d-block text-center mb-3">Select Deposit Network</label>
+                            
+                            <select name="network" id="id_network" style="display:none;">
+                                <option value="TRC20" {% if form.network.value == 'TRC20' or not form.network.value %}selected{% endif %}>TRC20</option>
+                                <option value="BEP20" {% if form.network.value == 'BEP20' %}selected{% endif %}>BEP20</option>
+                            </select>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="network-select-card {% if form.network.value == 'TRC20' or not form.network.value %}active{% endif %}" data-net="TRC20">
+                                        <div class="net-icon">
+                                            <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/trx.png" alt="Tron Network">
+                                        </div>
+                                        <span class="net-name">TRC20</span>
+                                        <div class="indicator"></div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="network-select-card {% if form.network.value == 'BEP20' %}active{% endif %}" data-net="BEP20">
+                                        <div class="net-icon">
+                                            <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bnb.png" alt="BSC Network">
+                                        </div>
+                                        <span class="net-name">BEP20</span>
+                                        <div class="indicator"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if form.network.errors %}
+                                <div class="error-msg text-center animate-shake"><i class="bi bi-exclamation-triangle"></i> {{ form.network.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
-                        <div class="wallet-section mb-4 p-4 rounded-4 text-center">
-                            <label class="form-label fw-bold text-secondary mb-2">Deposit Address</label>
-                            <div class="address-box d-flex align-items-center justify-content-between p-3 bg-white border rounded-4 shadow-sm">
-                                <div class="address-text">
-                                    <code id="walletAddressDisplay" class="fw-bold text-primary" style="word-break: break-all;">{{ payment.pay_address }}</code>
-                                </div>
+                        <div class="admin-wallet-display mb-4 p-4 rounded-4 text-center">
+                            <span class="small fw-bold text-muted d-block mb-2">TRANSFER FUNDS TO THIS ADDRESS:</span>
+                            
+                            <div class="address-box d-flex align-items-center justify-content-between p-3 bg-white border rounded-4 shadow-sm mb-3">
+                                <code id="walletAddressDisplay" class="fw-bold text-primary fs-6" style="word-break: break-all;">{{ wallet_trc20 }}</code>
                                 <button type="button" onclick="copyAddress()" class="copy-btn btn shadow-none border-0 p-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0062ff" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                 </button>
                             </div>
-                            <div class="mt-3">
-                                <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ payment.pay_address }}" alt="QR Code" class="img-fluid rounded-3 border p-2 bg-white shadow-sm" width="120">
+
+                            <div class="qr-container">
+                                <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ wallet_trc20 }}" alt="QR Code" class="img-fluid rounded-4 border p-2 bg-white shadow-sm" width="130">
                             </div>
                         </div>
 
-                        <div class="alert alert-info small rounded-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle me-1" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                            </svg>
-                            <strong>Important:</strong> Send only USDT (TRC20) to this address. The payment will be credited automatically within 1-5 minutes after confirmation.
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'transactions:deposit' %}" class="btn btn-outline-primary rounded-4 py-2">New Deposit</a>
-                            <a href="{% url 'transactions:history' %}" class="btn btn-link text-muted text-decoration-none">View Transaction History</a>
-                        </div>
-
-                    {% elif pending %}
-                        <!-- درخواست pending قبلی -->
-                        <div class="alert alert-warning text-center rounded-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" class="mb-2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="12"></line>
-                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                            </svg>
-                            <h5 class="fw-bold mt-2">Pending Deposit Request</h5>
-                            <p>You already have a pending deposit request.</p>
-                            <hr>
-                            <p class="mb-1 small">Send exactly:</p>
-                            <strong class="fs-5">{{ pending.pay_amount }} USDT (TRC20)</strong>
-                            <p class="mt-2 mb-0 small text-muted">To: <code>{{ pending.pay_address }}</code></p>
-                        </div>
-                        <div class="d-grid">
-                            <a href="{% url 'transactions:history' %}" class="btn btn-primary rounded-4 py-2">Check Transaction Status</a>
-                        </div>
-
-                    {% else %}
-                        <!-- فرم اصلی برای وارد کردن مبلغ -->
-                        <form method="post" class="needs-validation">
-                            {% csrf_token %}
-                            
-                            <div class="mb-4">
-                                <label class="form-label fw-bold text-secondary">DEPOSIT AMOUNT (USDT)</label>
-                                <div class="custom-input-group shadow-sm">
-                                    <span class="input-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
-                                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                        </svg>
-                                    </span>
-                                    {{ form.amount }}
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary text-uppercase">Deposit Amount</label>
+                            <div class="glass-input-group shadow-sm {% if form.amount.errors %}is-invalid-group{% endif %}">
+                                <div class="input-prefix text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                                 </div>
-                                {% if form.amount.errors %}
-                                    <div class="text-danger small mt-1">{{ form.amount.errors.0 }}</div>
-                                {% endif %}
-                                <div class="form-text small text-muted mt-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="me-1" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                                    </svg>
-                                    Minimum deposit: 10 USDT
-                                </div>
+                                {{ form.amount }}
+                                <span class="input-suffix text-muted fw-bold">USDT</span>
                             </div>
-
-                            <button type="submit" class="btn btn-primary-gradient w-100 py-3 fw-bold rounded-4 shadow-blue border-0 transition-all mb-3">
-                                Generate Deposit Address
-                            </button>
-                        </form>
-
-                        <div class="text-center mt-3">
-                            <a href="{% url 'transactions:history' %}" class="history-link d-inline-flex align-items-center text-decoration-none">
-                                <svg class="me-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
+                            {% if form.amount.errors %}
+                                <div class="error-msg animate-shake"><i class="bi bi-exclamation-circle"></i> {{ form.amount.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text small text-muted mt-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                                 </svg>
-                                Transaction History
-                            </a>
+                                Minimum deposit: 3 USDT
+                            </div>
                         </div>
-                    {% endif %}
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary text-uppercase">Transaction Hash (TXID)</label>
+                            <div class="glass-input-group shadow-sm {% if form.tx_hash.errors %}is-invalid-group{% endif %}">
+                                <div class="input-prefix text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </div>
+                                {{ form.tx_hash }}
+                            </div>
+                            <div id="hashValidationError" class="error-msg d-none animate-shake"></div>
+                            {% if form.tx_hash.errors %}
+                                <div class="error-msg animate-shake"><i class="bi bi-exclamation-circle-fill"></i> {{ form.tx_hash.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-muted mt-2 small-notice">⚠️ Please enter the exact transaction hash for the admin to verify your deposit request.</p>
+                        </div>
+
+                        <button type="submit" class="btn-submit-deposit">
+                            <span>SUBMIT DEPOSIT REPORT</span>
+                            <svg class="ms-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </button>
+                    </form>
                 </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'transactions:history' %}" class="history-link-modern">
+                    <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    View Deposit History
+                </a>
             </div>
         </div>
     </div>
@@ -141,66 +133,169 @@
 
 <style>
     :root {
-        --primary-blue: #0062ff;
-        --secondary-teal: #00d1b2;
+        --deposit-blue: #0062ff;
+        --deposit-teal: #00d1b2;
         --soft-bg: #f8fafc;
-        --text-dark: #1e293b;
         --border-color: #e2e8f0;
+        --withdraw-red: #ef4444;
     }
 
-    .animate-fade-in { animation: fadeIn 0.8s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .deposit-card {
-        background: #ffffff;
-        border-radius: 35px;
-        z-index: 1;
+    .animate-fade-in { animation: fadeInUp 0.6s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .animate-shake { animation: shake 0.4s ease-in-out; }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
     }
 
-    .bg-decoration { position: absolute; z-index: -1; pointer-events: none; width: 100%; height: 100%; }
-    .pos-1 { top: -50px; right: -50px; }
+    .deposit-card { background: #ffffff; border-radius: 40px; z-index: 1; }
+    .pos-top-right { position: absolute; top: 0; right: 0; z-index: -1; }
 
-    .icon-circle {
-        width: 70px; height: 70px;
-        background: linear-gradient(135deg, var(--primary-blue), var(--secondary-teal));
-        border-radius: 24px;
-        display: flex; align-items: center; justify-content: center;
-        transform: rotate(-10deg);
+    .icon-box-deposit {
+        width: 60px; height: 60px;
+        background: linear-gradient(135deg, var(--deposit-blue), var(--deposit-teal));
+        border-radius: 20px; display: flex; align-items: center; justify-content: center;
     }
+    
+    .shadow-blue { box-shadow: 0 10px 25px rgba(0, 98, 255, 0.15); }
 
-    .wallet-section { background: var(--soft-bg); border: 1px dashed #cbd5e1; border-radius: 20px; }
-    .address-box { font-family: 'Monaco', 'Consolas', monospace; border-radius: 12px; }
+    .network-select-card {
+        background: #fff; border: 2.5px solid #f1f5f9; border-radius: 24px;
+        padding: 20px 10px; text-align: center; cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
+    }
+    .network-select-card .net-icon img { width: 32px; height: 32px; transition: transform 0.3s; margin-bottom: 8px; }
+    .network-select-card .net-name { font-weight: 800; font-size: 0.9rem; color: #475569; display: block; }
+    
+    .network-select-card.active {
+        border-color: var(--deposit-blue); background: #f0f7ff;
+    }
+    .network-select-card .indicator {
+        position: absolute; top: 12px; right: 12px; width: 8px; height: 8px;
+        background: #cbd5e1; border-radius: 50%;
+    }
+    .network-select-card.active .indicator { background: var(--deposit-blue); box-shadow: 0 0 10px var(--deposit-blue); }
 
-    .custom-input-group {
-        display: flex; align-items: center;
-        background: #fff; border: 1.5px solid var(--border-color);
-        border-radius: 16px; padding: 0 15px;
-        transition: all 0.3s;
+    .admin-wallet-display { background: var(--soft-bg); border: 1px dashed #cbd5e1; }
+    .address-box { font-family: 'Monaco', 'Consolas', monospace; }
+
+    .glass-input-group {
+        display: flex; align-items: center; background: #fff;
+        border: 2px solid var(--border-color); border-radius: 20px;
+        padding: 0 20px; transition: all 0.3s;
     }
-    .custom-input-group:focus-within {
-        border-color: var(--primary-blue);
-        box-shadow: 0 0 0 4px rgba(0, 98, 255, 0.08);
+    .glass-input-group:focus-within {
+        border-color: var(--deposit-blue); box-shadow: 0 10px 20px rgba(0, 98, 255, 0.05);
     }
-    .input-icon { margin-right: 12px; }
-    .custom-input-group input {
+    .is-invalid-group { border-color: var(--withdraw-red) !important; background: #fffafb; }
+    
+    .glass-input-group input {
         border: none !important; box-shadow: none !important;
-        padding: 14px 0; font-weight: 600; font-size: 1rem;
-        flex-grow: 1; background: transparent;
+        padding: 16px 12px; font-weight: 700; flex-grow: 1; font-size: 1.05rem;
+        background: transparent;
     }
 
-    .btn-primary-gradient {
-        background: linear-gradient(135deg, var(--primary-blue), #2563eb);
-        color: white; letter-spacing: 1px;
-        transition: all 0.3s;
+    .btn-submit-deposit {
+        width: 100%; padding: 18px; border-radius: 20px; border: none;
+        background: linear-gradient(135deg, var(--deposit-blue), #2563eb);
+        color: white; font-weight: 800; letter-spacing: 0.5px;
+        transition: all 0.3s; display: flex; align-items: center; justify-content: center;
     }
-    .btn-primary-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 98, 255, 0.3); }
+    .btn-submit-deposit:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 98, 255, 0.3); }
 
-    .history-link { color: #64748b; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; }
-    .history-link:hover { color: var(--primary-blue); }
-    .shadow-blue { box-shadow: 0 10px 25px rgba(0, 98, 255, 0.2); }
+    .error-msg { color: var(--withdraw-red); font-size: 0.8rem; margin-top: 8px; font-weight: 600; }
+    .small-notice { font-size: 11px; }
+    .history-link-modern {
+        color: #64748b; text-decoration: none; font-weight: 700; font-size: 0.9rem;
+        transition: all 0.3s; display: inline-flex; align-items: center;
+    }
+    .history-link-modern:hover { color: var(--deposit-blue); }
 </style>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // آدرس‌های کیف پول مدیریت که از ویو پاس داده شده‌اند
+        const wallets = {
+            'TRC20': '{{ wallet_trc20 }}',
+            'BEP20': '{{ wallet_bep20 }}'
+        };
+
+        const cards = document.querySelectorAll('.network-select-card');
+        const hiddenSelect = document.getElementById('id_network');
+        const addressDisplay = document.getElementById('walletAddressDisplay');
+        const qrImage = document.getElementById('qrCode');
+        const txHashInput = document.querySelector('input[name="tx_hash"]');
+        const hashError = document.getElementById('hashValidationError');
+        const form = document.getElementById('depositForm');
+
+        // تابع به روزرسانی آدرس ادمین و QR Code بر اساس شبکه انتخابی
+        function switchNetwork(network) {
+            const currentAddress = wallets[network];
+            addressDisplay.innerText = currentAddress;
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentAddress)}`;
+            validateHash(); // چک کردن ولیدیشن هش بعد از تغییر شبکه
+        }
+
+        cards.forEach(card => {
+            card.addEventListener('click', function() {
+                const selectedNet = this.getAttribute('data-net');
+                cards.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                hiddenSelect.value = selectedNet;
+                switchNetwork(selectedNet);
+            });
+        });
+
+        // ولیدیشن کلاینت‌ساید ساختار آدرس هش تراکنش (TXID)
+        function validateHash() {
+            const network = hiddenSelect.value;
+            const hash = txHashInput.value.trim();
+            
+            if (hash === '') {
+                hashError.classList.add('d-none');
+                return true;
+            }
+
+            if (network === 'TRC20') {
+                // هش تراکنش‌های شبکه ترون یک رشته هگزادسیمال ۶۴ کاراکتری است (بدون 0x پیش‌فرض)
+                const trcRegex = /^[a-fA-F0-9]{64}$/;
+                if (!trcRegex.test(hash)) {
+                    hashError.innerHTML = '<i class="bi bi-exclamation-circle"></i> Invalid TRC20 TXID. Must be a 64-character hex string.';
+                    hashError.classList.remove('d-none');
+                    return false;
+                }
+            } else if (network === 'BEP20') {
+                // هش تراکنش‌های بایننس اسمارت چین با 0x شروع شده و سپس ۶۴ کاراکتر هگزادسیمال دارد
+                const bepRegex = /^0x[a-fA-F0-9]{64}$/;
+                if (!bepRegex.test(hash)) {
+                    hashError.innerHTML = '<i class="bi bi-exclamation-circle"></i> Invalid BEP20 Hash. Must start with 0x followed by 64 hex characters.';
+                    hashError.classList.remove('d-none');
+                    return false;
+                }
+            }
+            hashError.classList.add('d-none');
+            return true;
+        }
+
+        if(txHashInput) {
+            txHashInput.addEventListener('input', validateHash);
+        }
+
+        // جلوگیری از سابمیت فرم در صورت اشتباه بودن فرمت هش
+        form.addEventListener('submit', function(e) {
+            if (!validateHash()) {
+                e.preventDefault();
+                txHashInput.focus();
+            }
+        });
+
+        // اجرای اولیه برای تنظیم آدرس پیش‌فرض
+        switchNetwork(hiddenSelect.value);
+    });
+
+    // تابع کپی آدرس متصل به دکمه
     function copyAddress() {
         const addr = document.getElementById('walletAddressDisplay').innerText;
         navigator.clipboard.writeText(addr).then(() => {
@@ -208,7 +303,6 @@
             const originalIcon = btn.innerHTML;
             btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
             setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
-            alert('Address copied to clipboard!');
         });
     }
 </script>
