@@ -1,160 +1,111 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<style>
-    .hero-section {
-        padding: 120px 0;
-        background: radial-gradient(circle at top right, #f4f8ff, #ffffff);
-    }
-    .hero-title {
-        font-size: 4rem;
-        font-weight: 800;
-        line-height: 1.1;
-        color: #1e2329;
-        letter-spacing: -1px;
-    }
-    .text-gradient {
-        background: linear-gradient(135deg, #0052ff, #00a3ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .feature-card {
-        border: 1px solid #f0f0f0;
-        border-radius: 32px;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        background: #ffffff;
-    }
-    .feature-card:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 30px 60px rgba(0, 82, 255, 0.08);
-        border-color: #e0eaff;
-    }
-    .stat-number {
-        font-size: 3rem;
-        font-weight: 800;
-        color: #0052ff;
-        font-family: 'Inter', sans-serif;
-    }
-    .btn-hero-primary {
-        padding: 18px 40px;
-        border-radius: 16px;
-        font-weight: 700;
-        background: #0052ff;
-        border: none;
-        box-shadow: 0 10px 20px rgba(0, 82, 255, 0.2);
-    }
-    .btn-hero-outline {
-        padding: 18px 40px;
-        border-radius: 16px;
-        font-weight: 700;
-        border: 2px solid #eef0f2;
-    }
-    .floating-icon {
-        animation: float 4s ease-in-out infinite;
-    }
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
-    }
-
-    /* --- بخش اصلاحی برای موبایل --- */
-    @media (max-width: 768px) {
-        .hero-section {
-            padding: 40px 0 20px 0; /* کم کردن فاصله بالا برای بالا رفتن محتوا */
-        }
-        .hero-title {
-            font-size: 2.2rem; /* کوچیک کردن سایز تیتر اصلی */
-        }
-        .hero-section .lead {
-            font-size: 1.1rem !important; /* کوچیک کردن متن زیر تیتر */
-            margin-bottom: 25px !important; /* کم کردن فاصله زیر متن */
-        }
-        .stat-number {
-            font-size: 2rem; /* کوچیک کردن اعداد آمار */
-        }
-        .btn-hero-primary, .btn-hero-outline {
-            padding: 12px 25px; /* کوچیک کردن دکمه‌ها */
-            font-size: 0.9rem;
-        }
-        .container.my-5 {
-            margin-top: 2rem !important;
-            margin-bottom: 2rem !important;
-        }
-    }
-</style>
-
-<div class="hero-section">
+<section class="quantum-hero-section">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">Next-Gen Copy Trading</span>
-                <h1 class="hero-title mb-4">Invest Like a Pro with <br><span class="text-gradient">AI Intelligence</span></h1>
-                <p class="lead text-muted mb-5 fs-4">Discover top-performing traders, replicate their strategies automatically, and grow your crypto portfolio without being an expert.</p>
-                <div class="d-flex gap-3">
-                    <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-hero-primary text-white">Get Started Now</a>
-                    <a href="{% url 'trading:copy_list' %}" class="btn btn-hero-outline text-dark">Explore Traders</a>
+        <div class="row align-items-center hero-row-gap">
+            <div class="col-lg-7 hero-content-alignment">
+                <div class="system-status-pill animate-fade-down">
+                    <span class="status-pulse-dot"></span>
+                    <i class="bi bi-patch-check-fill pill-badge-icon"></i> Algorithmic Core Version 4.2 Live
+                </div>
+                
+                <h1 class="hero-main-title animate-fade-left">
+                    Automate Your Capital. <br>Replicate <span class="neon-text-gradient">Alpha Generation</span>.
+                </h1>
+                
+                <p class="hero-description-lead animate-fade-up">
+                    Eliminate emotional biases. Securely sync your API exchange nodes with the world's elite systematic asset managers. Zero delay execution. Total telemetry management.
+                </p>
+                
+                <div class="hero-action-buttons-group">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-cyber-primary cta-large">
+                        Establish Connection <i class="bi bi-cpu btn-append-icon"></i>
+                    </a>
+                    <a href="{% url 'trading:copy_list' %}" class="btn btn-cyber-outline cta-large">
+                        Review Live TrackRecords
+                    </a>
                 </div>
             </div>
-            <div class="col-lg-5 d-none d-lg-block text-center">
-                <div class="floating-icon">
-                    <svg width="400" height="400" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="100" cy="100" r="80" fill="#0052ff" fill-opacity="0.05"/>
-                        <rect x="60" y="80" width="20" height="60" rx="4" fill="#0052ff" fill-opacity="0.3"/>
-                        <rect x="90" y="50" width="20" height="90" rx="4" fill="#0052ff" fill-opacity="0.6"/>
-                        <rect x="120" y="30" width="20" height="110" rx="4" fill="#0052ff"/>
-                        <path d="M40 140 L160 140" stroke="#eef0f2" stroke-width="2"/>
+            
+            <div class="col-lg-5 d-none d-lg-block hero-graphic-alignment">
+                <div class="abstract-vector-container">
+                    <svg class="cyber-grid-svg" width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="svg-circle-outer" cx="50" cy="50" r="40" stroke-width="0.5"/>
+                        <circle class="svg-circle-inner" cx="50" cy="50" r="30" stroke-width="0.5"/>
+                        <path class="svg-axis-line" d="M15 50 H85" stroke-width="0.2"/>
+                        <path class="svg-axis-line" d="M50 15 V85" stroke-width="0.2"/>
+                        <circle class="svg-node-green" cx="50" cy="30" r="2"/>
+                        <circle class="svg-node-blue" cx="70" cy="60" r="3"/>
+                        <circle class="svg-node-purple" cx="30" cy="55" r="1.5"/>
+                        <path class="svg-trend-line" d="M30 55 L50 30 L70 60" stroke-width="0.5" stroke-dasharray="2"/>
                     </svg>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="container my-5">
-    <div class="row text-center">
-        <div class="col-md-4">
-            <div class="stat-number">$24B+</div>
-            <p class="text-muted fw-bold text-uppercase small">Total Trading Volume</p>
-        </div>
-        <div class="col-md-4 border-start border-end">
-            <div class="stat-number">120K+</div>
-            <p class="text-muted fw-bold text-uppercase small">Active Investors</p>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-number">0.01ms</div>
-            <p class="text-muted fw-bold text-uppercase small">Execution Speed</p>
+<section class="quantum-telemetry-section">
+    <div class="container">
+        <div class="telemetry-wrapper-board">
+            <div class="row g-0 telemetry-row">
+                <div class="col-md-4 telemetry-data-block">
+                    <div class="telemetry-metric-value">$24,812,942,014</div>
+                    <div class="telemetry-metric-label">Cumulative Managed Volume</div>
+                </div>
+                <div class="col-md-4 telemetry-data-block middle-divider-block">
+                    <div class="telemetry-metric-value">124,902</div>
+                    <div class="telemetry-metric-label">Validated API Nodes</div>
+                </div>
+                <div class="col-md-4 telemetry-data-block">
+                    <div class="telemetry-metric-value">&lt; 12 Microseconds</div>
+                    <div class="telemetry-metric-label">Execution Pipeline Delay</div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold fs-1">Why Choose SmartTrade?</h2>
-        <p class="text-muted">The most secure and transparent copy trading ecosystem.</p>
+<section class="quantum-advantages-section">
+    <div class="container">
+        <div class="section-title-wrapper-center">
+            <h2 class="section-main-heading">Engineered for High-Frequency Integrity</h2>
+            <p class="section-sub-heading">An institutional framework optimized for multi-exchange tactical execution.</p>
+        </div>
+        
+        <div class="row cards-grid-gap">
+            <div class="col-md-4">
+                <div class="quantum-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-safe2"></i>
+                    </div>
+                    <h4 class="feature-card-title">Non-Custodial Integrity</h4>
+                    <p class="feature-card-description">Your funds never leave your exchange account. We utilize secure cryptographic API endpoints restricted strictly to order transmission protocols.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="quantum-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-node-plus"></i>
+                    </div>
+                    <h4 class="feature-card-title">Ultra-Low Latency Execution</h4>
+                    <p class="feature-card-description">Driven by advanced dedicated cross-connect arrays ensuring trade cloning commands are structured and filled in microsecond timeframes.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="quantum-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="bi bi-diagram-3"></i>
+                    </div>
+                    <h4 class="feature-card-title">Mathematical Risk Mitigation</h4>
+                    <p class="feature-card-description">Configure advanced real-time matrix safety parameters. Enforce absolute trailing stop-losses, maximum asset drawdowns, and systemic slippage caps.</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card feature-card p-5 h-100 border-0 shadow-sm">
-                <div class="mb-4 text-primary"><i class="bi bi-shield-lock-fill fs-1"></i></div>
-                <h4 class="fw-bold mb-3">Institutional Security</h4>
-                <p class="text-muted">Multi-layer encryption and cold storage for all digital assets. Your peace of mind is our priority.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card feature-card p-5 h-100 border-0 shadow-sm">
-                <div class="mb-4 text-primary"><i class="bi bi-cpu-fill fs-1"></i></div>
-                <h4 class="fw-bold mb-3">Real-time Sync</h4>
-                <p class="text-muted">Proprietary technology ensures trades are copied within milliseconds of the lead trader's action.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card feature-card p-5 h-100 border-0 shadow-sm">
-                <div class="mb-4 text-primary"><i class="bi bi-pie-chart-fill fs-1"></i></div>
-                <h4 class="fw-bold mb-3">Advanced Analytics</h4>
-                <p class="text-muted">Track ROI, Drawdown, and PnL with professional-grade charts and real-time reporting.</p>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 {% endblock %}

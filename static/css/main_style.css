@@ -1,0 +1,688 @@
+/* ==========================================================================
+   SMARTTRADE CORE NETWORK - MASTER STYLESHEET (NEO-EXCHANGE EDITION)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. GLOBAL VARIABLES & SYSTEM TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+    --bg-matrix: #06080a;
+    --bg-surface: rgba(13, 17, 23, 0.75);
+    --bg-card: #0d1117;
+    --accent-neon: #00ffcc;
+    --accent-blue: #0052ff;
+    --accent-purple: #8a2be2;
+    --text-master: #f0f4f8;
+    --text-dimmed: #8b9bb4;
+    --border-cyber: rgba(255, 255, 255, 0.06);
+    --border-neon-glow: rgba(0, 255, 204, 0.2);
+    --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* --------------------------------------------------------------------------
+   02. BASE CORE ARCHITECTURE
+   -------------------------------------------------------------------------- */
+body.cyber-body {
+    background-color: var(--bg-matrix);
+    color: var(--text-master);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+    letter-spacing: -0.2px;
+}
+
+.main-viewport {
+    min-height: 80vh;
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   03. HIGH-FIDELITY NAVIGATION NAVIGATION (HEADER)
+   -------------------------------------------------------------------------- */
+.cyber-navbar {
+    background: rgba(6, 8, 10, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-cyber);
+    padding: 16px 0;
+    transition: var(--transition-smooth);
+}
+
+.navbar-brand-crypto {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-master);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.brand-icon {
+    color: var(--accent-blue);
+    margin-right: 8px;
+    filter: drop-shadow(0 0 8px rgba(0, 82, 255, 0.4));
+}
+
+.brand-dot {
+    color: var(--accent-neon);
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+}
+
+.target-nav-gap {
+    gap: 4px;
+}
+
+.cyber-nav-link {
+    color: var(--text-dimmed);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 16px !important;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.link-icon {
+    margin-right: 6px;
+    font-size: 1.1rem;
+}
+
+.cyber-nav-link:hover, 
+.cyber-nav-link.active {
+    color: var(--accent-neon);
+    background: rgba(0, 255, 204, 0.04);
+}
+
+/* User Account Integration Panel */
+.navbar-actions-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-balance-badge {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-cyber);
+    padding: 8px 16px;
+    border-radius: 12px;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.balance-icon {
+    color: #22c55e;
+    margin-right: 6px;
+}
+
+.balance-label {
+    color: var(--text-dimmed);
+    margin-right: 4px;
+}
+
+.balance-amount {
+    color: #ffffff;
+}
+
+.auth-text-link {
+    color: var(--text-dimmed);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+}
+
+.auth-text-link:hover {
+    color: #ffffff;
+}
+
+/* Premium Interactive Action Buttons */
+.btn-cyber-primary {
+    background: linear-gradient(135deg, var(--accent-blue), #00a3ff);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 82, 255, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.btn-cyber-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(0, 82, 255, 0.45);
+    color: #ffffff;
+}
+
+.btn-cyber-outline {
+    background: transparent;
+    color: var(--text-master);
+    border: 1px solid var(--border-cyber);
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.btn-cyber-outline:hover {
+    border-color: var(--accent-neon);
+    color: var(--accent-neon);
+    background: rgba(0, 255, 204, 0.02);
+}
+
+.cyber-toggler {
+    border: 1px solid var(--border-cyber);
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--text-master);
+    background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   04. SECTION 01: HERO MODULE
+   -------------------------------------------------------------------------- */
+.quantum-hero-section {
+    padding: 120px 0 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-row-gap {
+    --bs-gutter-y: 3rem;
+}
+
+.system-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 50px;
+    background: rgba(34, 197, 94, 0.06);
+    border: 1px solid rgba(34, 197, 94, 0.15);
+    color: var(--accent-neon);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+
+.status-pulse-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #22c55e;
+    animation: corePulse 2s infinite;
+}
+
+.pill-badge-icon {
+    font-size: 0.95rem;
+}
+
+.hero-main-title {
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    color: #ffffff;
+}
+
+.neon-text-gradient {
+    background: linear-gradient(135deg, var(--accent-neon) 0%, #00a3ff 50%, var(--accent-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: textFlowShine 6s linear infinite;
+}
+
+.hero-description-lead {
+    color: var(--text-dimmed);
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 90%;
+}
+
+.hero-action-buttons-group {
+    display: flex;
+    gap: 16px;
+}
+
+.cta-large {
+    padding: 14px 36px;
+    border-radius: 14px;
+    font-size: 1rem;
+}
+
+.btn-append-icon {
+    margin-left: 8px;
+}
+
+/* Abstract Interface Vector Graphic */
+.abstract-vector-container {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: floatingMatrix 6s ease-in-out infinite;
+}
+
+.cyber-grid-svg {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 204, 0.1));
+}
+
+.svg-circle-outer { stroke: rgba(0, 255, 204, 0.08); }
+.svg-circle-inner { stroke: rgba(0, 82, 255, 0.12); }
+.svg-axis-line { stroke: rgba(255, 255, 255, 0.03); }
+.svg-node-green { fill: var(--accent-neon); filter: drop-shadow(0 0 6px var(--accent-neon)); }
+.svg-node-blue { fill: var(--accent-blue); filter: drop-shadow(0 0 8px var(--accent-blue)); }
+.svg-node-purple { fill: var(--accent-purple); }
+.svg-trend-line { stroke: var(--accent-neon); opacity: 0.4; }
+
+/* --------------------------------------------------------------------------
+   05. SECTION 02: TELEMETRY BOARD (STATS)
+   -------------------------------------------------------------------------- */
+.quantum-telemetry-section {
+    margin: 40px 0;
+}
+
+.telemetry-wrapper-board {
+    background: linear-gradient(180deg, rgba(13, 17, 23, 0.4) 0%, rgba(6, 8, 10, 0.8) 100%);
+    border: 1px solid var(--border-cyber);
+    border-radius: 24px;
+    padding: 32px 16px;
+    backdrop-filter: blur(10px);
+}
+
+.telemetry-data-block {
+    padding: 16px 32px;
+}
+
+.middle-divider-block {
+    border-left: 1px solid var(--border-cyber);
+    border-right: 1px solid var(--border-cyber);
+}
+
+.telemetry-metric-value {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -1px;
+    font-family: 'Space Grotesk', sans-serif;
+    background: linear-gradient(180deg, #ffffff 0%, #a4b3c6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.telemetry-metric-label {
+    color: var(--text-dimmed);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   06. SECTION 03: ADVANTAGES MATRIX (CARDS)
+   -------------------------------------------------------------------------- */
+.quantum-advantages-section {
+    padding: 80px 0;
+}
+
+.section-title-wrapper-center {
+    text-center: center;
+    margin-bottom: 60px;
+}
+
+.section-main-heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.section-sub-heading {
+    color: var(--text-dimmed);
+    font-size: 1.1rem;
+    margin-top: 12px;
+}
+
+.cards-grid-gap {
+    --bs-gutter-y: 1.5rem;
+}
+
+.quantum-feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-cyber);
+    border-radius: 24px;
+    padding: 40px;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+/* Gradient hover effect background link */
+.quantum-feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at top right, rgba(0, 255, 204, 0.03), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.quantum-feature-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--border-neon-glow);
+    box-shadow: 0 20px 40px rgba(0, 255, 204, 0.03);
+}
+
+.quantum-feature-card:hover::before {
+    opacity: 1;
+}
+
+.feature-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    background: rgba(0, 82, 255, 0.06);
+    border: 1px solid rgba(0, 82, 255, 0.15);
+    color: #0084ff;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+    transition: var(--transition-smooth);
+}
+
+.quantum-feature-card:hover .feature-icon-wrapper {
+    background: var(--accent-neon);
+    color: #06080a;
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+
+.feature-card-title {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.feature-card-description {
+    color: var(--text-dimmed);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   07. INDUSTRIAL ARCHITECTURE FOOTER
+   -------------------------------------------------------------------------- */
+.cyber-footer {
+    background: #030507;
+    border-top: 1px solid var(--border-cyber);
+    padding: 80px 0 30px 0;
+    margin-top: 80px;
+}
+
+.footer-grid-gap {
+    --bs-gutter-y: 2.5rem;
+}
+
+.footer-description-text {
+    color: var(--text-dimmed);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-width: 90%;
+}
+
+.footer-social-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.social-icon-link {
+    color: var(--text-dimmed);
+    font-size: 1.2rem;
+    transition: var(--transition-smooth);
+}
+
+.social-icon-link:hover {
+    color: var(--accent-neon);
+}
+
+.footer-heading {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+}
+
+.footer-link {
+    color: var(--text-dimmed);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+}
+
+.footer-link:hover {
+    color: var(--accent-neon);
+    transform: translateX(4px);
+}
+
+/* System Live Telemetry Monitor Widget */
+.status-telemetry-card {
+    background: rgba(13, 17, 23, 0.5);
+    border: 1px solid var(--border-cyber);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.status-header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.status-text-summary {
+    font-size: 0.85rem;
+    color: var(--text-dimmed);
+}
+
+.status-percentage-badge {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 50px;
+}
+
+.status-progress-track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.status-progress-bar-fill {
+    height: 100%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+}
+
+.footer-copyright-divider {
+    border-top: 1px solid var(--border-cyber);
+    margin-top: 48px;
+    padding-top: 24px;
+    text-center: center;
+}
+
+.copyright-text {
+    color: var(--text-dimmed);
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   08. UTILITY CORE ANIMATIONS ENGINE
+   -------------------------------------------------------------------------- */
+@keyframes corePulse {
+    0% { transform: scale(0.95); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 12px #22c55e; }
+    100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+@keyframes textFlowShine {
+    to { background-position: 200% center; }
+}
+
+@keyframes floatingMatrix {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(0.5deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Micro-interaction Core Fade Effects */
+.animate-fade-down { animation: fxDown 0.8s ease forwards; }
+.animate-fade-left { animation: fxLeft 0.8s ease forwards; }
+.animate-fade-up { animation: fxUp 0.8s ease forwards; }
+
+@keyframes fxDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fxLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fxUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --------------------------------------------------------------------------
+   09. DYNAMIC RESPONSIVE BREAKPOINTS GRID (MOBILE HARMONIZATION)
+   -------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+    .section-title-wrapper-center {
+        text-align: center !important;
+    }
+    
+    .quantum-hero-section {
+        padding: 60px 0 40px 0;
+    }
+
+    .hero-content-alignment {
+        text-align: center;
+    }
+
+    .hero-main-title {
+        font-size: 2.8rem;
+        letter-spacing: -1px;
+    }
+
+    .hero-description-lead {
+        font-size: 1.05rem;
+        max-width: 100%;
+        margin-bottom: 32px;
+    }
+
+    .hero-action-buttons-group {
+        flex-direction: column;
+        gap: 12px;
+        padding: 0 16px;
+    }
+
+    .telemetry-metric-value {
+        font-size: 2rem;
+    }
+
+    .mobile-border-divider {
+        border-left: none !important;
+        border-right: none !important;
+        border-top: 1px solid var(--border-cyber) !important;
+        border-bottom: 1px solid var(--border-cyber) !important;
+        margin: 12px 0;
+        padding: 24px 0;
+    }
+    
+    .section-main-heading {
+        font-size: 1.85rem;
+    }
+}
+
+/* ==========================================================================
+   TRADER LIST STYLES (FLAT, HIGH CONTRAST, STATIC UX)
+   ========================================================================== */
+
+/* Navigation Custom Links */
+.nav-link-custom { text-decoration: none; font-weight: 700; font-size: 1rem; color: #4b5d78; padding-bottom: 12px; position: relative; transition: color 0.2s ease; }
+.nav-link-custom.dimmed-link:hover { color: #ffffff; }
+.nav-link-custom.active-premium { color: var(--accent-neon); }
+.nav-link-custom.active-premium::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent-neon); box-shadow: 0 0 10px var(--accent-neon); }
+
+/* Flat Search Layout */
+.search-wrapper { max-width: 400px; width: 100%; }
+.search-input-group-cyber { display: flex; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-cyber); border-radius: 12px; padding: 4px 4px 4px 16px; transition: border-color 0.2s ease; }
+.search-input-group-cyber:focus-within { border-color: var(--accent-neon); background: rgba(255, 255, 255, 0.05); }
+.search-input-cyber { border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: #ffffff; font-weight: 500; }
+.search-input-cyber::placeholder { color: #4b5d78; }
+.search-btn-cyber { background: rgba(255, 255, 255, 0.05); color: #ffffff; border: 1px solid var(--border-cyber); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s ease; }
+.search-btn-cyber:hover { background: var(--accent-neon); color: #000000; }
+
+/* Fixed Premium Action Card */
+.create-strategy-premium-card { background: linear-gradient(135deg, rgba(0, 82, 255, 0.12) 0%, rgba(138, 43, 226, 0.12) 100%); border: 1px solid rgba(0, 82, 255, 0.3) !important; padding: 28px; border-radius: 16px; cursor: pointer; transition: border-color 0.2s ease; }
+.create-strategy-premium-card:hover { border-color: var(--accent-neon) !important; }
+.create-icon-box-cyber { width: 52px; height: 52px; background: rgba(0, 255, 204, 0.05); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+.text-neon { color: var(--accent-neon) !important; text-shadow: 0 0 8px rgba(0, 255, 204, 0.3); }
+
+/* Trader Avatars & Identifiers */
+.avatar-placeholder-cyber { width: 64px; height: 64px; border-radius: 50%; background: rgba(0, 82, 255, 0.15); border: 1px solid rgba(0, 82, 255, 0.4); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #00a3ff; font-size: 1.4rem; }
+.v-badge-cyber { position: absolute; bottom: -2px; right: -2px; color: var(--accent-neon); background: #0d1117; border-radius: 50%; font-size: 16px; line-height: 1; display: flex; }
+.roi-loading-text { font-family: monospace, sans-serif; letter-spacing: -0.5px; font-size: 1.6rem; }
+.badge-cyber-soft { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-cyber); font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; }
+.badge-cyber-soft.text-blue { color: #38bdf8 !important; }
+.badge-cyber-soft.text-green { color: #4ade80 !important; }
+.badge-cyber-soft.text-warning { color: #facc15 !important; }
+.tiny-text { font-size: 0.8rem; }
+.x-small-label { font-size: 0.75rem; letter-spacing: 0.3px; }
+
+/* High-Contrast Static Card Overhaul */
+.quantum-feature-card { transform: none !important; transition: border-color 0.2s ease !important; border: 1px solid var(--border-cyber) !important; background: #0f141c !important; z-index: 1; }
+.quantum-feature-card:hover { border-color: rgba(0, 255, 204, 0.4) !important; }
+
+/* TradingView & Clean Chart Layouts */
+.chart-clean-wrapper-cyber { position: relative; height: 80px; width: 100%; background: transparent; overflow: hidden; }
+.tradingview-widget-container-cyber { position: absolute; top: 0; left: -10px; width: calc(100% + 55px) !important; height: 95px !important; }
+.tradingview-widget-container-cyber iframe { width: 100% !important; height: 100% !important; clip-path: inset(0px 45px 0px 0); pointer-events: none; }
+.chart-touch-shield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
+
+/* Layout Borders & Breakpoints */
+.border-start-cyber { border-left: 1px solid var(--border-cyber); }
+@media (max-width: 767.98px) {
+    .border-start-cyber { border-left: none !important; border-top: 1px solid var(--border-cyber); padding-top: 16px; margin-top: 12px; }
+    .search-wrapper { max-width: 100%; }
+}
+
+/* Replicate Panel (Z-Index fix for seamless click events) */
+.cyber-overlay-form-panel { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 330px; background: #0d1117; border-radius: 16px; padding: 24px; z-index: 50; border: 1px solid rgba(0, 255, 204, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+.cyber-input-node { height: 46px; background: rgba(255, 255, 255, 0.05) !important; border: 1px solid var(--border-cyber) !important; border-radius: 8px !important; font-weight: 700 !important; color: #ffffff !important; }
+.cyber-input-node:focus { border-color: var(--accent-neon) !important; box-shadow: none !important; background: rgba(255, 255, 255, 0.08) !important; }
+.cyber-mini-receipt { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-cyber); border-radius: 8px; padding: 12px; }
+.btn-close-cyber { background: none; border: none; color: #ffffff; opacity: 0.6; font-size: 1.1rem; padding: 0; display: flex; transition: opacity 0.2s ease; }
+.btn-close-cyber:hover { opacity: 1; color: #ef4444; }

@@ -1,524 +1,122 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{{ page_title|default:"SmartTrade Neo-Exchange" }}</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
-    <style>
-        :root {
-            --neon-blue: #00d2ff;
-            --deep-royal: #0052ff;
-            --cyber-purple: #9d50bb;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --mobile-nav-height: 80px;
-        }
-
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #f4f7fa;
-            color: #1e2329;
-            overflow-x: hidden;
-            padding-bottom: var(--mobile-nav-height);
-        }
-
-        /* Animated Background Mesh */
-        .bg-mesh {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: 
-                radial-gradient(at 0% 0%, rgba(0, 210, 255, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(157, 80, 187, 0.07) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(0, 82, 255, 0.03) 0px, transparent 50%);
-        }
-
-        /* Desktop Navbar */
-        .navbar {
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            background: rgba(255, 255, 255, 0.75);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 0.8rem 0;
-            z-index: 1050;
-        }
-
-        /* 3D Developer Badge with Green Blinking Light */
-        .dev-badge-3d {
-            background: white;
-            border: 1px solid rgba(0,0,0,0.05);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 800;
-            color: #1e2329;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05), inset 0 -2px 5px rgba(0,0,0,0.05);
-            transition: 0.3s;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-        .dev-badge-3d:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            color: var(--deep-royal);
-        }
-        .status-dot {
-            width: 8px; height: 8px;
-            background-color: #00ff88;
-            border-radius: 50%;
-            margin-right: 10px;
-            box-shadow: 0 0 10px #00ff88;
-            animation: blink 1.5s infinite;
-        }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        /* Mobile Hamburger Menu */
-        .offcanvas {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-left: none;
-            border-radius: 30px 0 0 30px;
-        }
-        .offcanvas-header { border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .menu-link {
-            font-weight: 700;
-            color: #4a5568;
-            padding: 15px 20px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-            text-decoration: none;
-            margin-bottom: 5px;
-        }
-        .menu-link:hover {
-            background: rgba(0, 82, 255, 0.05);
-            color: var(--deep-royal);
-            transform: translateX(5px);
-        }
-        .menu-link i { margin-right: 15px; font-size: 1.2rem; color: var(--deep-royal); }
-
-        /* Floating Bottom Nav */
-        .mobile-bottom-nav {
-            position: fixed;
-            bottom: 20px; left: 15px; right: 15px;
-            background: rgba(18, 20, 24, 0.92);
-            backdrop-filter: blur(20px);
-            height: 70px;
-            display: flex; justify-content: space-around; align-items: center;
-            border-radius: 25px;
-            z-index: 1000;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .nav-item-mob { color: #848e9c; text-decoration: none; text-align: center; flex: 1; transition: 0.3s; }
-        .nav-item-mob.active { color: var(--neon-blue); transform: translateY(-5px); }
-        .nav-item-mob i { font-size: 1.4rem; display: block; }
-        .nav-item-mob span { font-size: 0.65rem; font-weight: 600; display: block; }
-
-        /* Footer Modernization */
-        .footer-card {
-            background: white;
-            border-radius: 40px;
-            padding: 60px 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-        }
-        .footer-link { color: #718096; text-decoration: none; transition: 0.2s; font-size: 0.9rem; }
-        .footer-link:hover { color: var(--deep-royal); padding-left: 5px; }
-
-        .icon-box {
-            width: 40px; height: 40px;
-            background: #f8fafc; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--deep-royal); transition: 0.3s;
-        }
-        .icon-box:hover { background: var(--deep-royal); color: white; transform: rotate(-10deg); }
-
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTrade Core | Institutional Copy Trading Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
 </head>
-<body>
+<body class="cyber-body">
 
-<div class="bg-mesh"></div>
-
-<nav class="navbar navbar-expand-lg sticky-top d-none d-lg-block">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-            <div class="bg-primary p-2 rounded-3 me-2 shadow-sm">
-                <i class="bi bi-lightning-charge-fill text-white"></i>
-            </div>
-            <span class="fw-bolder fs-3">Smart<span class="text-primary">Trade</span></span>
-        </a>
-
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-4 gap-2">
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="{% url 'trading:market_list' %}">Markets</a></li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="{% url 'trading:copy_list' %}">Copy Trading</a></li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="{% url 'accounts:about_us' %}">About</a></li>
-                <li class="nav-item"><a class="nav-link fw-bold px-3" href="{% url 'accounts:contact_us' %}">Contact</a></li>
-            </ul>
+    <nav class="navbar navbar-expand-lg cyber-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand-crypto" href="/">
+                <i class="bi bi-terminal-fill brand-icon"></i>SMART<span class="brand-dot">TRADE</span>
+            </a>
             
-            <div class="ms-auto d-flex align-items-center gap-3">
-                {% if user.is_authenticated %}
-                    <div class="d-none d-xl-flex gap-2">
-                        <a href="{% url 'transactions:deposit' %}" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
-                            <i class="bi bi-arrow-down-left-circle me-1"></i> Deposit
-                        </a>
-                        <a href="{% url 'transactions:withdraw' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
-                            <i class="bi bi-arrow-up-right-circle me-1"></i> Withdraw
-                        </a>
-                    </div>
-
-                    <div class="bg-light px-3 py-2 rounded-pill fw-bold border d-flex align-items-center">
-                        <i class="bi bi-wallet2 text-primary me-2"></i>
-                        <span class="text-dark">${{ user.balance|floatformat:2 }}</span>
-                    </div>
-                    
-                    <div class="dropdown">
-                        <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" style="cursor:pointer">
-                            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0052FF&color=fff&bold=true" class="rounded-circle border" width="40" height="40">
-                            <i class="bi bi-chevron-down small"></i>
-                        </div>
-                        <ul class="dropdown-menu dropdown-menu-end animate__animated animate__fadeInUp border-0 shadow-lg mt-3 p-2">
-                            <li><a class="dropdown-item py-2" href="{% url 'accounts:dashboard' %}"><i class="bi bi-grid me-2 text-primary"></i>Dashboard</a></li>
-                            {% if user.is_staff %}
-                                <li><a class="dropdown-item py-2 fw-bold text-primary" href="{% url 'accounts:admin_ticket_list' %}">
-                                    <i class="bi bi-shield-lock me-2"></i>Admin Support 
-                                </a></li>
-                                <li><a class="dropdown-item py-2" href="{% url 'accounts:ticket_list' %}">
-                                    <i class="bi bi-headset me-2 text-primary"></i>Support Tickets
-                                </a></li>
-                            {% else %}
-                                <li><a class="dropdown-item py-2" href="{% url 'accounts:ticket_list' %}">
-                                    <i class="bi bi-headset me-2 text-primary"></i>Support Tickets
-                                </a></li>
-                            {% endif %}
-                            <li><a class="dropdown-item py-2" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-person me-2 text-primary"></i>Settings</a></li>
-                            <li><a class="dropdown-item py-2" href="{% url 'transactions:deposit' %}"><i class="bi bi-plus-circle me-2 text-success"></i>Deposit Funds</a></li>
-                            <li><a class="dropdown-item py-2" href="{% url 'transactions:withdraw' %}"><i class="bi bi-dash-circle me-2 text-danger"></i>Withdraw Funds</a></li>
-                            <li><a class="dropdown-item py-2" href="{% url 'transactions:history' %}"><i class="bi bi-clock-history me-2 text-info"></i>Transactions</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger py-2" href="{% url 'accounts:logout' %}"><i class="bi bi-power me-2"></i>Logout</a></li>
-                        </ul>
-                    </div>
-                {% else %}
-                    <a href="{% url 'accounts:login' %}" class="btn fw-bold px-4">Login</a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Join Now</a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</nav>
-
-<div class="container d-lg-none py-3">
-    <div class="d-flex justify-content-between align-items-center">
-        <a class="text-decoration-none" href="{% url 'home' %}">
-            <h4 class="fw-bolder mb-0 text-dark">Smart<span class="text-primary">Trade</span></h4>
-        </a>
-        <button class="btn border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
-            <div class="bg-white p-2 rounded-3 shadow-sm border">
-                <i class="bi bi-filter-right fs-2 text-primary"></i>
-            </div>
-        </button>
-    </div>
-</div>
-
-<div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu">
-    <div class="offcanvas-header py-4">
-        {% comment %} <h5 class="offcanvas-title fw-bolder">Menu</h5> {% endcomment %}
-        <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div class="offcanvas-body d-flex flex-column">
-            <div class="d-grid gap-2">
-                {% if user.is_authenticated %}
-                    <div class="user-card-mobile p-3 mb-3 rounded-4 bg-light border">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0052FF&color=fff&bold=true" class="rounded-circle border" width="45" height="45">
-                            <div>
-                                <h6 class="mb-0 fw-bold">{{ user.username }}</h6>
-                                <small class="text-primary fw-bold">${{ user.balance|floatformat:2 }}</small>
-                            </div>
-                        </div>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <a href="{% url 'transactions:deposit' %}" class="btn btn-success w-100 py-2 rounded-3 shadow-sm fw-bold small">
-                                    <i class="bi bi-plus-lg"></i> Deposit
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{% url 'transactions:withdraw' %}" class="btn btn-success w-100 py-2 rounded-3 shadow-sm fw-bold small">
-                                    <i class="bi bi-box-arrow-up"></i> Withdraw
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-
-                    <a href="{% url 'home' %}" class="menu-link"><i class="bi bi-house"></i> Home Page</a>
-                    <a href="{% url 'trading:market_list' %}" class="menu-link"><i class="bi bi-graph-up"></i> Live Markets</a>
-                    <a href="{% url 'trading:copy_list' %}" class="menu-link"><i class="bi bi-people"></i> Experts & CopyTrade</a>
+            <button class="cyber-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#quantumNavbar">
+                <i class="bi bi-grid-fill"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="quantumNavbar">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 target-nav-gap">
+                    <li class="nav-item">
+                        <a class="cyber-nav-link active" href="/"><i class="bi bi-speedometer2 link-icon"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cyber-nav-link" href="{% url 'trading:copy_list' %}"><i class="bi bi-lightning-charge link-icon"></i> Elite Traders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cyber-nav-link" href="#"><i class="bi bi-shield-shaded link-icon"></i> Risk Matrix</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="cyber-nav-link" href="#"><i class="bi bi-cpu link-icon"></i> AI Analytics</a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-actions-wrapper">
                     {% if user.is_authenticated %}
-                        {% if user.is_staff %}
-                            <a href="{% url 'accounts:admin_ticket_list' %}" class="menu-link text-primary" style="background: rgba(0, 82, 255, 0.05);">
-                                <i class="bi bi-shield-check"></i> <strong>Admin Support Center</strong>
-                            </a>
-                            <a href="{% url 'accounts:ticket_list' %}" class="menu-link">
-                                <i class="bi bi-headset"></i> My Support Tickets
-                            </a>
-                        {% else %}
-                            <a href="{% url 'accounts:ticket_list' %}" class="menu-link">
-                                <i class="bi bi-headset"></i> My Support Tickets
-                            </a>
-                        {% endif %}
+                        <div class="user-balance-badge d-none d-xl-inline-flex">
+                            <i class="bi bi-wallet2 balance-icon"></i> 
+                            <span class="balance-label">Balance:</span> 
+                            <strong class="balance-amount">${{ user.profile.balance|default:"0.00" }}</strong>
+                        </div>
+                        <a href="#" class="btn btn-cyber-outline">Console</a>
                     {% else %}
-                        <a href="{% url 'accounts:contact_us' %}" class="menu-link"><i class="bi bi-headset"></i> Contact Us</a>
+                        <a href="#" class="auth-text-link">Sign In</a>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-cyber-primary">Deploy Account</a>
                     {% endif %}
-                    <hr class="my-2 opacity-25">
-                    <a href="{% url 'accounts:about_us' %}" class="menu-link"><i class="bi bi-info-circle"></i> About SmartTrade</a>
-                    <a href="{% url 'accounts:contact_us' %}" class="menu-link"><i class="bi bi-headset"></i> Support Center</a>
-                    <a href="{% url 'accounts:terms_conditions' %}" class="menu-link"><i class="bi bi-file-earmark-text"></i> Legal & Terms</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'accounts:dashboard' %}" class="menu-link"><i class="bi bi-grid"></i> Dashboard</a>
-                    <a href="{% url 'accounts:profile_dashboard' %}" class="menu-link"><i class="bi bi-person-gear"></i> Settings</a>
-                    <a href="{% url 'transactions:history' %}" class="menu-link"><i class="bi bi-clock-history"></i> Transactions History</a>
-                    <hr class="my-3 opacity-50">
-                    <a href="{% url 'accounts:logout' %}" class="menu-link text-danger"><i class="bi bi-power text-danger"></i> Logout</a>
-                {% else %}
-                    <hr class="my-3 opacity-50">
-                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary py-3 rounded-4 fw-bold mb-2">Login</a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-primary py-3 rounded-4 fw-bold shadow-sm">Join Now</a>
-                {% endif %}
-            </div>
-        </div> 
-    </div>
-</div>
-
-<div class="container mt-2 animate__animated animate__fadeIn">
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 2000; margin-top: 80px;"> 
-        
-        {% if messages %}
-            {% for message in messages %}
-                <div class="toast show bg-primary text-white border-0 mb-2 shadow-lg animate__animated animate__bounceInRight" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body fw-bold">
-                            <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        {% if unread_notifications %}
-            {% for note in unread_notifications %}
-                <div class="toast show bg-info text-white border-0 mb-2 shadow-lg animate__animated animate__shakeX" 
-                     id="notification-{{ note.id }}" role="alert" data-bs-autohide="false">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <small class="d-block opacity-75 fw-bold">
-                                <i class="bi bi-megaphone-fill me-1"></i> New Update
-                            </small>
-                            <strong>{{ note.message }}</strong>
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" 
-                                onclick="markNotificationAsRead('{{ note.id }}')" aria-label="Close"></button>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    {% block content %}{% endblock %}
-</div>
-
-<style>
-    /* اصلاح عرض منوی همبرگری برای موبایل */
-.offcanvas {
-    max-width: 80% !important; /* به جای پر کردن کل صفحه، فقط ۸۰ درصد را می‌گیرد */
-    border-radius: 30px 0 0 30px !important;
-    box-shadow: -10px 0 40px rgba(0,0,0,0.1) !important;
-}
-
-/* برای تبلت‌ها کمی باریک‌تر شود */
-@media (min-width: 768px) {
-    .offcanvas {
-        max-width: 400px !important;
-    }
-}
-
-.offcanvas-header {
-    padding: 1.5rem 1.5rem 1rem;
-    border-bottom: 1px solid rgba(0,0,0,0.03);
-}
-
-.offcanvas-title {
-    font-size: 1.1rem;
-    color: #1a202c;
-}
-
-/* استایل لینک‌های منو */
-.menu-link {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #4a5568;
-    padding: 12px 15px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s;
-    text-decoration: none;
-    margin-bottom: 2px;
-}
-
-.menu-link i {
-    margin-right: 12px;
-    font-size: 1.1rem;
-    color: var(--deep-royal);
-    width: 25px; /* تراز کردن آیکون‌ها */
-    display: inline-block;
-}
-
-/* دکمه برداشت سبز (طبق درخواست) */
-.btn-success {
-    background-color: #00c853 !important;
-    border-color: #00c853 !important;
-}
-
-.btn-success:hover {
-    background-color: #00a844 !important;
-}
-
-/* کارت کاربر در موبایل */
-/* تبدیل دکمه واریز به آبی برند */
-.user-card-mobile .btn-success:first-child {
-    background-color: var(--deep-royal) !important;
-    border-color: var(--deep-royal) !important;
-}
-
-/* اطمینان از سبز ماندن دکمه برداشت */
-{% comment %} .user-card-mobile .btn-success:last-child {
-    background-color: #00c853 !important;
-    border-color: #00c853 !important;
-} {% endcomment %}
-
-.small {
-    font-size: 0.8rem !important;
-}
-</style>
-<script>
-function markNotificationAsRead(notificationId) {
-    // ارسال درخواست به بک‌اِند برای تغییر وضعیت به "خوانده شده"
-    fetch(`/accounts/notifications/read/${notificationId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // حذف المان از صفحه با انیمیشن خود Bootstrap
-            const notifElement = document.getElementById(`notification-${notificationId}`);
-            if (notifElement) {
-                notifElement.classList.remove('show');
-                setTimeout(() => notifElement.remove(), 300);
-            }
-        } else {
-            console.error('Failed to mark notification as read.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-</script>
-
-<div class="mobile-bottom-nav d-lg-none">
-    <a href="{% url 'home' %}" class="nav-item-mob active"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
-    <a href="{% url 'trading:copy_list' %}" class="nav-item-mob"><i class="bi bi-activity"></i><span>Markets</span></a>
-    <a href="{% url 'accounts:dashboard' %}" class="nav-item-mob"><i class="bi bi-grid-fill"></i><span>Panel</span></a>
-    <a href="{% url 'accounts:profile_dashboard' %}" class="nav-item-mob"><i class="bi bi-person-circle"></i><span>Profile</span></a>
-</div>
-
-<footer class="mt-5 pb-5">
-    <div class="container">
-        <div class="footer-card">
-            <div class="row g-5">
-                <div class="col-lg-4">
-                    <h3 class="fw-bolder mb-4">Smart<span class="text-primary">Trade</span></h3>
-                    <p class="text-muted lh-lg mb-4">The next generation of crypto trading. We provide institutional-grade tools for retail traders, powered by advanced AI and real-time data analysis.</p>
-                    <div class="d-flex gap-3">
-                        <a href="https://t.me/" target="_blank" class="icon-box">
-                            <i class="bi bi-telegram"></i>
-                        </a>
-
-                        <a href="https://twitter.com" target="_blank" class="icon-box">
-                            <i class="bi bi-twitter-x"></i>
-                        </a>
-
-                        <a href="https://discord.com" target="_blank" class="icon-box">
-                            <i class="bi bi-discord"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-2 ms-lg-auto">
-                    <h6 class="fw-bold mb-4">Platform</h6>
-                    <div class="d-grid gap-3">
-                        <a href="{% url 'trading:market_list' %}" class="footer-link">Market Overview</a>
-                        <a href="{% url 'trading:copy_list' %}" class="footer-link">Copy Trading</a>
-                        <a href="#" class="footer-link">Trading API</a>
-                    </div>
-                </div>
-                <div class="col-6 col-lg-2">
-                    <h6 class="fw-bold mb-4">Company</h6>
-                    <div class="d-grid gap-3">
-                        <a href="{% url 'accounts:about_us' %}" class="footer-link">About Us</a>
-                        <a href="{% url 'accounts:contact_us' %}" class="footer-link">Contact Us</a>
-                        <a href="{% url 'accounts:terms_conditions' %}" class="footer-link">Terms of Service</a>
-                    </div>
-                </div>
-                {% comment %} <div class="col-lg-3">
-                    <div class="p-4 rounded-4 bg-light border border-white">
-                        <h6 class="fw-bold mb-3">Newsletter</h6>
-                        <p class="x-small text-muted mb-3">Get the latest market updates directly in your inbox.</p>
-                        <div class="input-group">
-                            <input type="text" class="form-control border-0 shadow-none bg-white rounded-start-pill ps-3" placeholder="Email...">
-                            <button class="btn btn-primary rounded-end-pill px-3"><i class="bi bi-send"></i></button>
-                        </div>
-                    </div>
-                </div> {% endcomment %}
-            </div>
-            
-            <hr class="my-5 opacity-10">
-            
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
-                <div class="small text-muted">© 2026 SmartTrade Neo-Exchange. Licensed & Encrypted.</div>
-                <div class="d-flex align-items-center flex-wrap justify-content-center justify-content-md-start">
-                    <span class="small text-muted me-2" style="font-size: 0.7rem; letter-spacing: 1px;">SYSTEM ARCHITECT</span>
-                    {% comment %} <a href="https://mohammad-salkhorde.ir" target="_blank" class="dev-badge-3d" style="padding: 5px 12px; font-size: 0.8rem; white-space: nowrap;">
-                        <span class="status-dot" style="width: 6px; height: 6px; margin-right: 8px;"></span>
-                        Mohammad Salkhordeh
-                    </a> {% endcomment %}
                 </div>
             </div>
         </div>
-    </div>
-    {% comment %} Mohammad Salkhorde {% endcomment %}
-</footer>
+    </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Smooth Haptic Feedback
-    document.querySelectorAll('.nav-item-mob, .btn, .menu-link').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if ('vibrate' in navigator) navigator.vibrate(10);
-        });
-    });
-</script>
+    <main class="main-viewport">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="cyber-footer">
+        <div class="container">
+            <div class="row footer-grid-gap">
+                <div class="col-lg-4 footer-brand-section">
+                    <a class="navbar-brand-crypto mb-3 d-inline-block" href="#">
+                        SMART<span class="brand-dot">TRADE</span>
+                    </a>
+                    <p class="footer-description-text">
+                        The ultimate algorithmic nexus bridging decentralized liquidity providers with microsecond trade replication protocols. Secure. Fully Audited. Automated.
+                    </p>
+                    <div class="footer-social-row">
+                        <a href="#" class="social-icon-link"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-telegram"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-discord"></i></a>
+                        <a href="#" class="social-icon-link"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-6 col-md-3 col-lg-2 footer-nav-column">
+                    <h5 class="footer-heading">Infrastructure</h5>
+                    <a href="#" class="footer-link">Liquidity Node</a>
+                    <a href="#" class="footer-link">API Webhooks</a>
+                    <a href="#" class="footer-link">Execution Logs</a>
+                    <a href="#" class="footer-link">Latency Statistics</a>
+                </div>
+                
+                <div class="col-6 col-md-3 col-lg-2 footer-nav-column">
+                    <h5 class="footer-heading">Risk Control</h5>
+                    <a href="#" class="footer-link">Drawdown Limits</a>
+                    <a href="#" class="footer-link">Slippage Shield</a>
+                    <a href="#" class="footer-link">Margin Guard</a>
+                    <a href="#" class="footer-link">Hedging Protocol</a>
+                </div>
+
+                <div class="col-md-6 col-lg-4 footer-status-column">
+                    <h5 class="footer-heading">System Status</h5>
+                    <div class="status-telemetry-card">
+                        <div class="status-header-meta">
+                            <span class="status-text-summary">All Systems Operational</span>
+                            <span class="status-percentage-badge">99.98%</span>
+                        </div>
+                        <div class="status-progress-track">
+                            <div class="status-progress-bar-fill" style="width: 99.98%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-copyright-divider">
+                <p class="copyright-text">&copy; 2026 SmartTrade Core Network. Engineered for high-fidelity asset management.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main_script.js' %}"></script>
 </body>
 </html>
