@@ -1,465 +1,225 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+<div class="container py-5">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <div>
-            <nav class="d-flex gap-4 border-bottom mb-2">
-                <a href="#" class="nav-link-custom active">Top Lead traders</a>
-                <a href="{% url 'trading:market_list' %}" class="nav-link-custom text-muted">Market Prices</a>
+            <nav class="d-flex gap-4 border-bottom border-secondary border-opacity-20 mb-3">
+                <a href="#" class="nav-link-custom active-premium">Top Lead Traders</a>
+                <a href="{% url 'trading:market_list' %}" class="nav-link-custom dimmed-link">Market Prices</a>
             </nav>
-            <p class="text-muted small mb-0">Discover and copy the best performing strategies in real-time.</p>
+            <p class="text-silver small mb-0">Discover and copy the best performing cybernetic strategies in real-time.</p>
         </div>
+        
         <div class="search-wrapper">
             <form action="{% url 'trading:copy_list' %}" method="GET">
-                <div class="search-input-group">
-                    <input type="text" name="q" class="search-input" 
-                        placeholder="Search trader or strategy..." 
-                        value="{{ request.GET.q|default:'' }}">
-                    <button type="submit" class="search-btn">
+                <div class="search-input-group-cyber">
+                    <input type="text" name="q" class="search-input-cyber" 
+                           placeholder="Search trader or strategy..." 
+                           value="{{ request.GET.q|default:'' }}">
+                    <button type="submit" class="search-btn-cyber">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    <style>
-        /* استایل اختصاصی باکس جستجو */
-.search-wrapper {
-    max-width: 400px;
-    width: 100%;
-}
 
-.search-input-group {
-    display: flex;
-    align-items: center;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 50px; 
-    padding: 5px 5px 5px 20px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-}
-
-.search-input-group:focus-within {
-    border-color: #0062ff;
-    box-shadow: 0 4px 15px rgba(0, 98, 255, 0.1);
-    transform: translateY(-1px);
-}
-
-.search-input {
-    border: none;
-    background: transparent;
-    outline: none;
-    width: 100%;
-    font-size: 0.9rem;
-    color: #1e293b;
-    font-weight: 500;
-}
-
-.search-input::placeholder {
-    color: #94a3b8;
-}
-
-.search-btn {
-    background: #0062ff;
-    color: white;
-    border: none;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    cursor: pointer;
-}
-
-.search-btn:hover {
-    background: #0052d6;
-    transform: scale(1.05);
-}
-
-.search-btn i {
-    font-size: 0.9rem;
-    line-height: 1;
-}
-
-@media (max-width: 768px) {
-    .search-wrapper {
-        max-width: 100%;
-    }
-}
-    </style>
-    <div class="row g-3">
-        <div class="col-12 mb-3">
-            <div class="card create-strategy-card border-0 shadow-sm p-4" onclick="showLocationError()" style="cursor: pointer; background: linear-gradient(135deg, #0062ff 0%, #004dc9 100%); position: relative; overflow: hidden;">
-                <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-                
+    <div class="row g-4">
+        
+        <div class="col-12 mb-2">
+            <div class="card create-strategy-premium-card" id="btnCreateStrategy">
+                <div class="premium-vector-bg"></div>
                 <div class="row align-items-center position-relative" style="z-index: 2;">
                     <div class="col-md-8 col-12 mb-3 mb-md-0">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="create-icon-box">
-                                <i class="bi bi-graph-up-arrow text-white"></i>
+                            <div class="create-icon-box-cyber">
+                                <i class="bi bi-graph-up-arrow text-neon"></i>
                             </div>
                             <div>
                                 <h5 class="fw-bold text-white mb-1">Step into the Spotlight</h5>
-                                <p class="text-white opacity-75 small mb-0">Create your own strategy, attract followers, and earn from their success.</p>
+                                <p class="text-dimmed small mb-0">Create your own autonomous strategy, attract global followers, and earn 10% profit share.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 col-12 text-md-end">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold text-primary shadow-sm">
-                            Create Strategy
+                        <button type="button" class="btn btn-cyber-primary px-4 py-2">
+                            Create Strategy <i class="bi bi-arrow-right-short ms-1"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
         {% for trader in traders %}
         <div class="col-12">
-            <div class="card trader-card-blue border-0 shadow-sm p-3 position-relative" 
-                 onclick="location.href='{% url 'trading:trader_detail' trader.id %}'" 
-                 style="cursor: pointer;">
+            <div class="card quantum-feature-card p-4 position-relative card-trader-node" 
+                 data-trader-id="{{ trader.id }}"
+                 data-url="{% url 'trading:trader_detail' trader.id %}">
                 
                 <div class="row align-items-center">
                     <div class="col-lg-3 col-md-5 col-12 mb-3 mb-md-0">
                         <div class="d-flex align-items-center gap-3">
                             <div class="avatar-box position-relative">
                                 {% if trader.avatar %}
-                                    <img src="{{ trader.avatar.url }}" class="rounded-circle border" width="60" height="60" style="object-fit: cover;">
-                                {% else %}
-                                    <div class="avatar-placeholder-blue">{{ trader.name|first|upper }}</div>
+                                    <img src="{{ trader.avatar.url }}" class="rounded-circle border border-secondary border-opacity-30" width="64" height="64" style="object-fit: cover;">
+                                {% else %} 
+                                    <div class="avatar-placeholder-cyber">{{ trader.name|first|upper }}</div>
                                 {% endif %}
-                                <div class="v-badge"><i class="bi bi-patch-check-fill"></i></div>
+                                <div class="v-badge-cyber"><i class="bi bi-patch-check-fill"></i></div>
                             </div>
                             <div>
-                                <h6 class="fw-bold text-dark mb-1">{{ trader.name }}</h6>
-                                <span class="text-muted tiny-text"><i class="bi bi-people-fill"></i> {{ trader.copiers_count }}/{{ trader.capacity }} Copiers</span>
-                                <div class="mt-2 d-flex align-items-baseline gap-2">
-                                    <h4 id="roi-{{ forloop.counter }}" class="roi-blue mb-0">...</h4>
-                                    <small class="text-muted x-small-label">30D ROI</small>
+                                <h6 class="fw-bold text-white mb-1">{{ trader.name }}</h6>
+                                <span class="tiny-text d-block mb-2"><i class="bi bi-people-fill text-neon me-1"></i> {{ trader.copiers_count }}/{{ trader.capacity }} Copiers</span>
+                                
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <h3 id="roi-{{ forloop.counter }}" 
+                                        class="roi-loading-text mb-0 fw-bold" 
+                                        data-manual="{{ trader.is_manual_mode|yesno:'true,false' }}" 
+                                        data-roi="{{ trader.roi_30d }}"
+                                        data-symbol="{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}">
+                                        ...
+                                    </h3>
+                                    <small class="x-small-label">30D ROI</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-12 mb-3 mb-md-0 px-md-3">
-                        <div class="chart-clean-wrapper">
+                    <div class="col-lg-4 col-md-4 col-12 mb-3 mb-md-0 px-md-3">
+                        <div class="chart-clean-wrapper-cyber">
                             {% if trader.is_manual_mode %}
-                                <canvas id="miniChart{{ trader.id }}" style="width:100%; height:80px;"></canvas>
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        new Chart(document.getElementById('miniChart{{ trader.id }}'), {
-                                            type: 'line',
-                                            data: {
-                                                labels: {{ trader.chart_history_json|safe|default:"[0]" }}.map((_,i)=>i),
-                                                datasets: [{
-                                                    data: {{ trader.chart_history_json|safe|default:"[0]" }},
-                                                    borderColor: '#10b981',
-                                                    borderWidth: 2,
-                                                    fill: true,
-                                                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                                                    pointRadius: 0,
-                                                    tension: 0.4
-                                                }]
-                                            },
-                                            options: { 
-                                                maintainAspectRatio: false,
-                                                plugins: { legend: {display: false} }, 
-                                                scales: { x:{display:false}, y:{display:false} } 
-                                            }
-                                        });
-                                    });
-                                </script>
+                                <canvas class="trader-mini-canvas" id="miniChart{{ trader.id }}" data-history="{{ trader.chart_history_json|safe|default:'[]' }}"></canvas>
                             {% else %}
-                                <div class="tradingview-widget-container">
-                                    <div class="tradingview-widget-container__widget"></div>
-                                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                                    {
-                                    "symbol": "{% if forloop.counter|divisibleby:5 %}BINANCE:ADAUSDT{% elif forloop.counter|divisibleby:4 %}BINANCE:BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BINANCE:BTCUSDT{% endif %}",
-                                    "width": "100%", "height": "100%", "locale": "en", "dateRange": "30D",
-                                    "colorTheme": "light", "isTransparent": true, "autosize": true, "chartOnly": true, "noTimeScale": true
-                                    }
-                                    </script>
-                                </div>
-                                <div class="chart-touch-shield"></div>
+                                <canvas class="trader-mini-canvas" id="miniChart{{ trader.id }}" data-history="[]"></canvas>
                             {% endif %}
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-md-4 col-12 border-start-md px-md-4 border-start-custom">
+                    <div class="col-lg-3 col-md-3 col-12 border-start-cyber px-md-4">
                         <div class="row g-2">
-                            <div class="col-4">
-                                <label class="text-muted d-block x-small-label">30D Profit</label>
-                                <span class="fw-bold text-dark small">${{ trader.pnl_30d }}</span>
+                            <div class="col-4 col-md-12 col-lg-4 mb-md-1 mb-lg-0">
+                                <label class="d-block x-small-label">30D Profit</label>
+                                <span class="fw-bold text-white small">${{ trader.pnl_30d }}</span>
                             </div>
-                            <div class="col-4">
-                                <label class="text-muted d-block x-small-label">AUM</label>
-                                <span class="fw-bold text-dark small">${{ trader.aum }}</span>
+                            <div class="col-4 col-md-12 col-lg-4 mb-md-1 mb-lg-0">
+                                <label class="d-block x-small-label">AUM</label>
+                                <span class="fw-bold text-white small">${{ trader.aum }}</span>
                             </div>
-                            <div class="col-4">
-                                <label class="text-muted d-block x-small-label">Drawdown</label>
-                                <span class="fw-bold text-danger small">{{ trader.max_drawdown }}%</span>
+                            <div class="col-4 col-md-12 col-lg-4">
+                                <label class="d-block x-small-label">Drawdown</label>
+                                <span class="fw-bold small" style="color: #ff3366;">{{ trader.max_drawdown }}%</span>
                             </div>
-                            <div class="col-12 mt-2">
-                                <div class="d-flex gap-2">
-                                    <span class="badge-blue-soft">Futures</span>
-                                    <span class="badge-blue-soft text-success">Low Risk</span>
-                                    <span class="badge-blue-soft text-warning">Verified</span>
+                            <div class="col-12 mt-3">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <span class="badge-cyber-soft text-blue">Futures</span>
+                                    <span class="badge-cyber-soft text-green">Low Risk</span>
+                                    <span class="badge-cyber-soft text-warning">Verified</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-2 col-md-3 col-12 text-end mt-3 mt-md-0">
-                        <button type="button" 
-                                class="btn btn-copy-blue shadow-sm w-100 py-2"
-                                onclick="event.stopPropagation(); document.getElementById('simpleForm{{ trader.id }}').style.display='block';">
-                            Copy
+                    <div class="col-lg-2 col-md-12 col-12 text-end mt-4 mt-lg-0">
+                        <button type="button" class="btn btn-cyber-primary w-100 py-2.5 btn-replicate-trigger">
+                            Replicate <i class="bi bi-lightning-fill ms-1 text-white" style="font-size: 0.8rem;"></i>
                         </button>
                     </div>
                 </div>
 
-                <div id="simpleForm{{ trader.id }}" class="simple-overlay-form shadow-lg" onclick="event.stopPropagation();">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-bold text-dark" style="font-size: 0.95rem;">Copy Strategy</span>
-                        <button type="button" class="btn-close-custom" onclick="this.parentElement.parentElement.style.display='none';">
+                <div class="cyber-overlay-form-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold text-white" style="font-size: 1.05rem; letter-spacing: -0.3px;">Allocation Protocol</span>
+                        <button type="button" class="btn-close-cyber">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
                     <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <label class="x-small-label text-muted">Investment Amount</label>
-                                <span class="text-primary fw-bold x-small-label">USDT</span>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <label class="x-small-label text-white mb-0">Investment Capital</label>
+                                <span class="text-neon fw-bold x-small-label">USDT</span>
                             </div>
-                            <input type="number" name="amount" class="form-control form-control-custom" placeholder="0.00" min="1" step="0.01" required>
+                            <input type="number" name="amount" class="form-control cyber-input-node" placeholder="0.00" min="1" step="0.01" required>
                         </div>
-                        <div class="info-box-mini mb-3">
+                        <div class="cyber-mini-receipt mb-4">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span>Trader:</span>
-                                <span class="text-dark fw-bold">{{ trader.name }}</span>
+                                <span class="text-silver small fw-bold">Target Node:</span>
+                                <span class="text-white fw-bold small">{{ trader.name }}</span>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" style="font-size: 0.85rem;">
-                            Confirm & Start
+                        <button type="submit" class="btn btn-cyber-primary w-100 py-2.5 fw-bold">
+                            Initialize Replicating
                         </button>
                     </form>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5"><p class="text-muted">No traders found.</p></div>
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-cpu-fill text-white opacity-50 mb-3 d-block" style="font-size: 3rem;"></i>
+            <p class="text-white fw-bold">No tactical master nodes registered on this matrix network.</p>
+        </div>
         {% endfor %}
     </div>
 </div>
 
-<style>
-    body { background-color: #f8fafd; overflow-x: hidden; }
-    
-    /* بخش اصلاح شده چارت برای فضای بیشتر */
-    .chart-clean-wrapper {
-        position: relative;
-        height: 85px; /* ارتفاع باکس را کمی افزایش دادیم */
-        width: 100%;
-        background: transparent;
-        overflow: hidden;
-        margin: 5px 0;
-    }
-
-    .tradingview-widget-container {
-        position: absolute;
-        top: 0px; /* از حالت منفی خارج شد تا بالای چارت حذف نشود */
-        left: -10px; 
-        width: calc(100% + 55px) !important; 
-        height: 100px !important; /* ارتفاع ویجت داخلی تنظیم شد */
-    }
-
-    .tradingview-widget-container iframe {
-        width: 100% !important;
-        height: 100% !important;
-        clip-path: inset(0px 45px 0px 0); /* فقط قیمت سمت راست را میبریم */
-        pointer-events: none;
-    }
-
-    .chart-touch-shield {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 10;
-        background: transparent;
-    }
-
-    .nav-link-custom { text-decoration: none; font-weight: 700; font-size: 0.95rem; color: #64748b; padding-bottom: 8px; position: relative; }
-    .nav-link-custom.active { color: #0062ff; }
-    .nav-link-custom.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: #0062ff; border-radius: 2px; }
-
-    .trader-card-blue { border-radius: 16px; background: #ffffff; transition: all 0.3s ease; border: 1px solid #e2e8f0 !important; z-index: 1; }
-    .trader-card-blue:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,98,255,0.08) !important; border-color: #0062ff33 !important; }
-
-    .avatar-placeholder-blue { width: 60px; height: 60px; border-radius: 50%; background: #e0eaff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0062ff; font-size: 1.3rem; }
-    .v-badge { position: absolute; bottom: 0; right: 0; color: #0062ff; background: #fff; border-radius: 50%; font-size: 16px; line-height: 1; z-index: 2; border: 2px solid #fff; }
-
-    .roi-blue { font-weight: 800; font-size: 1.6rem; }
-    .x-small-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
-    .badge-blue-soft { background: #f0f7ff; color: #0062ff; font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
-
-    .btn-copy-blue { background: #0062ff; color: #fff; font-weight: 700; border: none; border-radius: 12px; transition: 0.2s; position: relative; z-index: 5; }
-    .btn-copy-blue:hover { background: #0052d6; color: #fff; }
-
-    .tiny-text { font-size: 0.75rem; color: #64748b; }
-
-    @media (min-width: 768px) { .border-start-md { border-left: 1px solid #e2e8f0 !important; } }
-    @media (max-width: 767px) {
-        .border-start-custom { border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 15px; border-left: none !important; }
-    }
-
-.simple-overlay-form {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 310px; 
-    min-height: 280px; 
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 25px;
-    z-index: 9999; 
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
-}
-
-.trader-card-blue:has(.simple-overlay-form[style*="display: block"]) {
-    z-index: 1000 !important; 
-}
-
-.form-control-custom { 
-    height: 50px; 
-    margin-bottom: 15px;
-}
-
-.info-box-mini {
-    margin: 15px 0;
-    padding: 12px;
-}
-
-    .form-control-custom { background: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 12px !important; font-weight: 700 !important; padding: 10px 15px !important; font-size: 1rem; color: #1e293b; }
-    .form-control-custom:focus { border-color: #0062ff !important; box-shadow: none !important; background: #fff !important; }
-    .info-box-mini { background: #f8fafc; border-radius: 10px; padding: 8px 12px; font-size: 0.75rem; color: #64748b; }
-    .btn-close-custom { background: none; border: none; color: #94a3b8; font-size: 1.1rem; transition: 0.2s; line-height: 1; padding: 0; }
-    .btn-close-custom:hover { color: #ef4444; }
-
-    .create-strategy-card {
-    border-radius: 20px;
-    transition: all 0.3s ease;
-    }
-
-    .create-strategy-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 15px 30px rgba(0, 98, 255, 0.25) !important;
-    }
-
-    .create-icon-box {
-        width: 54px;
-        height: 54px;
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-    }
-
-    /* تضمین قرارگیری لایه سیاه زیر مودال */
-.modal-backdrop {
-    z-index: 1040 !important;
-}
-.modal {
-    z-index: 1050 !important;
-}
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- <script>
-
-function showLocationError() {
-    const modalElement = document.getElementById('statusModal');
-    
-    // این خط مودال را به انتهای تگ body منتقل می‌کند تا از زندان کانتینر آزاد شود
-    if (modalElement.parentElement !== document.body) {
-        document.body.appendChild(modalElement);
-    }
-
-    const myModal = new bootstrap.Modal(modalElement, {
-        backdrop: true,
-        keyboard: true
-    });
-    
-    myModal.show();
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const tradersData = [
-        {% for trader in traders %}
-        {
-            id: "{{ forloop.counter }}",
-            isManual: {{ trader.is_manual_mode|yesno:"true,false" }},
-            manualRoi: "{{ trader.roi_30d }}",
-            symbol: "{% if forloop.counter|divisibleby:5 %}ADAUSDT{% elif forloop.counter|divisibleby:4 %}BNBUSDT{% elif forloop.counter|divisibleby:3 %}SOLUSDT{% elif forloop.counter|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}"
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ];
-
-    tradersData.forEach((trader) => {
-        const roiElement = document.getElementById(`roi-${trader.id}`);
-        
-        if (trader.isManual) {
-            // استفاده از سود تعیین شده توسط ادمین
-            const val = parseFloat(trader.manualRoi).toFixed(2);
-            roiElement.innerText = (val >= 0 ? '+' : '') + val + '%';
-            roiElement.style.color = val >= 0 ? '#10b981' : '#ef4444';
-        } else {
-            // دریافت سود زنده از بایننس
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${trader.symbol}&interval=1d&limit=30`)
-                .then(response => response.json())
-                .then(data => {
-                    const openPrice = parseFloat(data[0][1]); 
-                    const closePrice = parseFloat(data[data.length - 1][4]); 
-                    const change = (((closePrice - openPrice) / openPrice) * 100).toFixed(2);
-                    roiElement.innerText = (change >= 0 ? '+' : '') + change + '%';
-                    roiElement.style.color = change >= 0 ? '#10b981' : '#ef4444';
-                })
-                .catch(() => { roiElement.innerText = '+0.00%'; });
-        }
-    });
-});
-</script>
-
-
 <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+        <div class="modal-content" style="border-radius: 24px; background: #090d14; border: 2px solid #ff3366; box-shadow: 0 20px 50px rgba(0,0,0,0.95);">
             <div class="modal-body p-5 text-center">
                 <div class="mb-4 d-inline-flex align-items-center justify-content-center" 
-                     style="width: 80px; height: 80px; background: #f0f7ff; color: #0062ff; border-radius: 50%; font-size: 2.2rem;">
+                     style="width: 80px; height: 80px; background: rgba(255, 51, 102, 0.1); color: #ff3366; border-radius: 50%; font-size: 2.2rem; border: 1px solid #ff3366;">
                     <i class="bi bi-person-x-fill"></i>
                 </div>
-                <h4 class="fw-bold text-dark mb-3">Access Restricted</h4>
-                <p class="text-muted mb-4">
-                    The <span class="fw-bold text-primary">Lead Trader</span> registration is currently unavailable for your account due to regional regulatory requirements.
+                <h4 class="fw-bold text-white mb-3" style="font-family: 'Space Grotesk', sans-serif;">Access Restricted</h4>
+                <p class="text-silver small mb-4">
+                    The <span class="fw-bold text-white">Lead Trader</span> registration protocol is currently offline or unavailable for your secure account instance due to decentralized network regulations.
                 </p>
-                <button type="button" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-sm" 
-                        data-bs-dismiss="modal" style="background: #0062ff; border: none;">
-                    I Understand
+                <button type="button" class="btn btn-cyber-primary w-100 py-3" data-bs-dismiss="modal">
+                    Acknowledge System Log
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .chart-clean-wrapper-cyber {
+        position: relative;
+        width: 100%;
+        height: 80px;
+        overflow: hidden;
+    }
+    .trader-mini-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+    /* افکت درخشش نئونی برای درصدهای سود و زیان */
+.roi-loading-text {
+    font-family: 'Space Grotesk', sans-serif;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* وقتی عدد مثبت و سبز است */
+.roi-loading-text[style*="rgb(0, 255, 136)"], 
+.roi-loading-text[style*="#00ff88"] {
+    text-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 25px rgba(0, 255, 136, 0.15);
+}
+
+/* وقتی عدد منفی و قرمز است (یه قرمز نئونی و فوق‌العاده شیک) */
+.roi-loading-text[style*="rgb(255, 51, 102)"], 
+.roi-loading-text[style*="#ff3366"] {
+    text-shadow: 0 0 12px rgba(255, 51, 102, 0.4), 0 0 25px rgba(255, 51, 102, 0.15);
+}
+</style>
 {% endblock %}
