@@ -817,3 +817,96 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("Settings interface thread caught exception.", error);
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const netSelect = document.getElementById('id_network');
+    const addrInput = document.getElementById('walletAddr');
+    const qr = document.getElementById('qrCode');
+    const nodes = document.querySelectorAll('.net-node');
+
+    nodes.forEach(node => {
+        node.addEventListener('click', () => {
+            nodes.forEach(n => n.classList.remove('active'));
+            node.classList.add('active');
+
+            const net = node.dataset.net;
+            const addr = netSelect.querySelector(`option[value="${net}"]`).dataset.addr;
+            
+            // انیمیشن کوچک برای تغییر
+            addrInput.style.opacity = 0;
+            setTimeout(() => {
+                netSelect.value = net;
+                addrInput.value = addr;
+                qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${addr}`;
+                addrInput.style.opacity = 1;
+            }, 200);
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. تنظیمات اولیه و انتخابگرها
+    const netSelect = document.getElementById('id_network');
+    const addrDisplay = document.getElementById('walletAddressDisplay');
+    const qrCode = document.getElementById('qrCode');
+    const nodes = document.querySelectorAll('.blockchain-selector-node');
+    const depositForm = document.getElementById('depositForm');
+    const submitBtn = document.querySelector('.btn-premium-submit-deposit');
+
+    // 2. منطق تغییر شبکه با افکت
+    nodes.forEach(node => {
+        node.addEventListener('click', function() {
+            // حذف کلاس فعال از همه و افزودن به جاری
+            nodes.forEach(n => n.classList.remove('active'));
+            this.classList.add('active');
+
+            const net = this.dataset.net;
+            const option = netSelect.querySelector(`option[value="${net}"]`);
+            const address = option.dataset.address;
+
+            // انیمیشن کوچک برای تعویض آدرس
+            addrDisplay.style.opacity = '0';
+            qrCode.style.opacity = '0';
+
+            setTimeout(() => {
+                netSelect.value = net;
+                addrDisplay.textContent = address;
+                qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${address}`;
+                
+                addrDisplay.style.opacity = '1';
+                qrCode.style.opacity = '1';
+            }, 150);
+        });
+    });
+
+    // 3. هندل کردن دکمه سابمیت (جلوگیری از دابل سابمیت و استایل لودینگ)
+    depositForm.addEventListener('submit', function(e) {
+        if (submitBtn.classList.contains('btn-processing-state')) {
+            e.preventDefault();
+            return;
+        }
+
+        // فعال کردن استایل لودینگ
+        submitBtn.classList.add('btn-processing-state');
+        submitBtn.querySelector('.btn-text').textContent = 'TRANSMITTING...';
+        submitBtn.querySelector('svg').style.display = 'none';
+    });
+});
+
+/**
+ * تابع اختصاصی برای کپی آدرس با انیمیشن آیکون
+ */
+function copyAddress() {
+    const address = document.getElementById('walletAddressDisplay').textContent;
+    const btn = document.querySelector('.btn-vault-copy');
+    
+    navigator.clipboard.writeText(address).then(() => {
+        // تغییر آیکون به تیک (Success)
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        
+        setTimeout(() => {
+            btn.innerHTML = originalIcon;
+        }, 2000);
+    });
+}
