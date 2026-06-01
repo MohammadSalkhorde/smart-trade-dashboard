@@ -450,3 +450,188 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }, 3000); // هر ۳ ثانیه یک نود شبکه رندوم پالس می‌زند
 });
+
+/**
+ * ==========================================================================
+ * CYBERPUNK REAL-TIME PORTFOLIO TRACKER (SAFE INDEPENDENT NODE)
+ * ==========================================================================
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    // احاطه کردن کل منطق اسکریپت درون try-catch برای تضمین عدم سرایت خطا به بقیه فایل‌ها
+    try {
+        const contextElem = document.getElementById('cyber-js-context');
+        if (!contextElem) return; // اگر المان‌های این صفحه نبودند، اسکریپت متوقف شود
+
+        // استخراج آدرس‌ها و توکن امنیتی از کانتینر HTML
+        const syncUrl = contextElem.getAttribute('data-sync-url') || '/trading/update-pnl-ajax/';
+        const csrfToken = contextElem.getAttribute('data-csrf-token') || '';
+
+        // ۱. استخراج اطلاعات پوزیشن‌ها از ساختار جدول DOM (جایگزین حلقه جنگو)
+        const traderRows = document.querySelectorAll('.trader-node-row');
+        const traderState = [];
+
+        traderRows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const entryRoi = parseFloat(row.getAttribute('data-entry-roi')) || 0;
+            const investment = parseFloat(row.getAttribute('data-investment')) || 0;
+            const currentPnl = parseFloat(row.getAttribute('data-last-pnl')) || 0;
+            const loopCounter = parseInt(row.getAttribute('data-loop-counter')) || 1;
+
+            // تشخیص زوج یا فرد بودن مارکت‌ها برای همگام‌سازی جفت ارز بایننس
+            let symbol = "BTCUSDT";
+            if (loopCounter % 5 === 0) symbol = "ADAUSDT";
+            else if (loopCounter % 4 === 0) symbol = "BNBUSDT";
+            else if (loopCounter % 3 === 0) symbol = "SOLUSDT";
+            else if (loopCounter % 2 === 0) symbol = "ETHUSDT";
+
+            traderState.push({
+                id: id,
+                entryRoi: entryRoi,
+                symbol: symbol,
+                currentPnl: currentPnl,
+                investment: investment,
+                isManual: false,
+                lastPrice: 0
+            });
+        });
+
+        // ۲. تابع به‌روزرسانی نمایشی سطر هر تریدر (سود/زیان و ارزش فعلی)
+        function updateUI(item) {
+            const invElem = document.getElementById(`investment-val-${item.id}`);
+            const profitElem = document.getElementById(`profit-val-${item.id}`);
+            if (!invElem || !profitElem) return;
+
+            const displayPnl = Math.max(item.currentPnl, -100);
+            const currentPositionValue = item.investment * (1 + (displayPnl / 100));
+            
+            // نمایش قیمت لحظه‌ای پوزیشن با فرمت پولی
+            invElem.innerText = `$${Math.max(0, currentPositionValue).toLocaleString(undefined, {
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2
+            })}`;
+            
+            // استایل‌دهی نئونی به درصد سود/ضرر
+            profitElem.innerText = (displayPnl >= 0 ? '+' : '') + displayPnl.toFixed(2) + '%';
+            profitElem.style.color = displayPnl >= 0 ? "#00ff88" : "#ff3366";
+            profitElem.setAttribute('data-last-pnl', displayPnl.toFixed(4));
+        }
+
+        // ۳. تابع آپدیت کارت بالانس اصلی و میانگین سود سبد (Live Portfolio PnL)
+        function updateTotalPortfolio() {
+            const balanceElem = document.getElementById('total-balance-display');
+            const totalPnlElem = document.getElementById('total-pnl-display');
+            if (!balanceElem) return;
+
+            const walletCash = parseFloat(balanceElem.getAttribute('data-initial-balance')) || 0;
+            let currentInvestmentsValue = 0;
+            let sumPnlPercent = 0;
+
+            traderState.forEach(t => {
+                const limitedPnl = Math.max(t.currentPnl, -100);
+                const positionValue = t.investment * (1 + (limitedPnl / 100));
+                
+                currentInvestmentsValue += positionValue;
+                sumPnlPercent += limitedPnl;
+            });
+
+            const totalEquity = Math.max(0, walletCash + currentInvestmentsValue);
+
+            // رندر عدد کل روی کارت اعتباری دارک پلتفرم
+            balanceElem.innerText = `$${totalEquity.toLocaleString(undefined, {
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2
+            })}`;
+
+            // رندر درصد کلی مانیتورینگ PnL سبد
+            if (totalPnlElem) {
+                const avgPnl = traderState.length > 0 ? (sumPnlPercent / traderState.length) : 0;
+                const displayAvg = Math.max(0, avgPnl);
+                
+                totalPnlElem.innerText = displayAvg.toFixed(2) + '%';
+                totalPnlElem.style.color = displayAvg > 0 ? "#00ff88" : "#94a3b8";
+            }
+        }
+
+        // ۴. متد ارسال بک‌گراند دیتا به بک‌اند بدون بارگذاری مجدد (AJAX Sync)
+        async function syncToServer(id, pnl) {
+            try {
+                if (!syncUrl) return;
+                await fetch(syncUrl, { 
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'X-CSRFToken': csrfToken 
+                    },
+                    body: JSON.stringify({ id: id, pnl: pnl.toFixed(4) })
+                });
+            } catch (e) { 
+                console.warn("Matrix background sync paused temporarily."); 
+            }
+        }
+
+        // ۵. پروتکل چرخه‌ای دریافت قیمت لایو تیکرها از صرافی بایننس
+        async function tick() {
+            for (let item of traderState) {
+                try {
+                    // استعلام آخرین وضعیت تریدر از پورت اختصاصی سرور خودت
+                    const responseSync = await fetch(`/trading/get-latest-pnl/${item.id}/`);
+                    const serverData = await responseSync.json();
+                    
+                    const currentTraderRoi = serverData.trader_roi; 
+                    item.isManual = serverData.is_manual;
+                    let calculatedUserPnl = currentTraderRoi - item.entryRoi;
+
+                    // اگر پوزیشن بر روی حالت اتوماتیک صرافی قرار داشت
+                    if (!item.isManual) {
+                        const resBinance = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${item.symbol}`);
+                        const dataBinance = await resBinance.json();
+                        const freshPrice = parseFloat(dataBinance.price);
+
+                        if (item.lastPrice > 0) {
+                            calculatedUserPnl += ((freshPrice - item.lastPrice) / item.lastPrice) * 100;
+                        }
+                        item.lastPrice = freshPrice;
+                    }
+
+                    item.currentPnl = calculatedUserPnl;
+                    updateUI(item);
+                    syncToServer(item.id, item.currentPnl);
+
+                } catch (e) { 
+                    console.error(`Tick connection lost for node sequence: ${item.symbol}`, e); 
+                }
+            }
+            updateTotalPortfolio();
+        }
+
+        // کانفینگ و لودینگ اولیه پورتفولیو مانیتورینگ
+        if (traderState.length > 0) {
+            traderState.forEach(item => updateUI(item));
+            updateTotalPortfolio();
+            tick(); 
+            // اجرای جادوی ریل‌تایم هر ۳ ثانیه یک‌بار
+            setInterval(tick, 3000);
+        }
+
+        // ۶. اینترسپتور دکمه توقف فوری پوزیشن کپی‌ترید (STOP BUTTON INTERCEPTOR)
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('stop-copy-btn')) {
+                const id = e.target.getAttribute('data-id');
+                const profitElem = document.getElementById(`profit-val-${id}`);
+                const finalPnl = profitElem ? profitElem.getAttribute('data-last-pnl') : "0";
+                
+                if (confirm("Are you sure you want to stop terminating this copy trading link?")) {
+                    const input = document.getElementById(`live-pnl-input-${id}`);
+                    const form = document.getElementById(`stop-form-${id}`);
+                    if (input && form) { 
+                        input.value = finalPnl; 
+                        form.submit(); 
+                    }
+                }
+            }
+        });
+
+    } catch (globalError) {
+        console.error("Critical recovery protocol engaged. Portfolio Core Isolated: ", globalError);
+    }
+});

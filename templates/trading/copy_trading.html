@@ -4,7 +4,6 @@
 {% block content %}
 <div class="container py-5">
     
-    <!-- هدر و بخش جستجو -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <div>
             <nav class="d-flex gap-4 border-bottom border-secondary border-opacity-20 mb-3">
@@ -30,9 +29,8 @@
 
     <div class="row g-4">
         
-        <!-- بنر ایجاد استراتژی اختصاصی -->
         <div class="col-12 mb-2">
-            <div class="card create-strategy-premium-card" id="btnCreateStrategy">
+            <div class="card create-strategy-premium-card" id="btnCreateStrategy" style="cursor: pointer;">
                 <div class="premium-vector-bg"></div>
                 <div class="row align-items-center position-relative" style="z-index: 2;">
                     <div class="col-md-8 col-12 mb-3 mb-md-0">
@@ -55,13 +53,14 @@
             </div>
         </div>
 
-        <!-- لیست تریدرها -->
         {% for trader in traders %}
         <div class="col-12">
-            <div class="card quantum-feature-card p-4 position-relative card-trader-node" data-trader-id="{{ trader.id }}">
+            <div class="card quantum-feature-card p-4 position-relative card-trader-node" 
+                 style="cursor: pointer;"
+                 data-trader-id="{{ trader.id }}"
+                 data-action-url="{% url 'trading:trader_detail' trader.id %}">
                 
                 <div class="row align-items-center">
-                    <!-- بخش آواتار و نام تریدر -->
                     <div class="col-lg-3 col-md-5 col-12 mb-3 mb-md-0">
                         <div class="d-flex align-items-center gap-3">
                             <div class="avatar-box position-relative">
@@ -90,7 +89,6 @@
                         </div>
                     </div>
 
-                    <!-- بخش نمودار کوچک -->
                     <div class="col-lg-4 col-md-4 col-12 mb-3 mb-md-0 px-md-3">
                         <div class="chart-clean-wrapper-cyber">
                             {% if trader.is_manual_mode %}
@@ -101,7 +99,6 @@
                         </div>
                     </div>
 
-                    <!-- بخش جزئیات سود و ضرر -->
                     <div class="col-lg-3 col-md-3 col-12 border-start-cyber px-md-4">
                         <div class="row g-2">
                             <div class="col-4 col-md-12 col-lg-4 mb-md-1 mb-lg-0">
@@ -126,7 +123,6 @@
                         </div>
                     </div>
 
-                    <!-- دکمه Replicate که مودال کپی را باز می‌کند -->
                     <div class="col-lg-2 col-md-12 col-12 text-end mt-4 mt-lg-0">
                         <button type="button" 
                                 class="btn btn-cyber-primary w-100 py-2.5 btn-open-copy-modal"
@@ -149,9 +145,6 @@
     </div>
 </div>
 
-<!-- ==========================================
-     مودال کپی و تخصیص بودجه (مانند صفحه دیتل)
-     ========================================== -->
 <div class="modal fade" id="cyberCopyModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content cyber-premium-modal-box">
@@ -192,7 +185,6 @@
     </div>
 </div>
 
-<!-- مودال محدودیت دسترسی قبلی -->
 <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 24px; background: #090d14; border: 2px solid #ff3366; box-shadow: 0 20px 50px rgba(0,0,0,0.95);">
@@ -215,10 +207,26 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- اسکریپت کنترل مودال کپی هوشمند -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // باز کردن مودال ثبت بودجه به صورت اختصاصی با پر کردن اتوماتیک اطلاعات تریدر
+        
+        // ۱. مدیریت هوشمند کلیک روی کل باکس کارت تریدرها بدون تداخل
+        const traderCards = document.querySelectorAll('.card-trader-node');
+        traderCards.forEach(card => {
+            card.addEventListener('click', function (e) {
+                // اگر کاربر روی دکمه Replicate یا دکمه‌های مودال کلیک کرد، مسیر هدایت را مسدود کن
+                if (e.target.closest('.btn-open-copy-modal') || e.target.closest('.modal')) {
+                    return;
+                }
+                
+                const targetUrl = this.getAttribute('data-action-url');
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        });
+
+        // ۲. باز کردن مودال ثبت بودجه به صورت اختصاصی و جلوگیری از تداخل ایونتها
         const copyButtons = document.querySelectorAll('.btn-open-copy-modal');
         const copyModalElement = document.getElementById('cyberCopyModal');
         
@@ -229,28 +237,47 @@
 
             copyButtons.forEach(button => {
                 button.addEventListener('click', function (e) {
-                    e.stopPropagation(); // جلوگیری از تداخل کلیک روی کل کارت تریدر
+                    e.stopPropagation(); // جلوگیری از بالا آمدن کلیک و فعال شدن لینک کارت تریدر
                     
                     const traderName = this.getAttribute('data-trader-name');
                     const actionUrl = this.getAttribute('data-action-url');
                     
-                    // تزریق اطلاعات تریدر انتخاب شده به درون مودال شیشه ای
+                    // تزریق اطلاعات تریدر انتخاب شده به درون مودال
                     modalTraderNameSpan.textContent = traderName;
                     modalForm.setAttribute('action', actionUrl);
                     
-                    // نمایش مودال الرت گونه در وسط صفحه
                     bootstrapCopyModal.show();
                 });
+            });
+        }
+
+        // ۳. رویداد دکمه بنر ایجاد استراتژی (نمایش مودال وضعیت شبکه)
+        const btnCreateStrategy = document.getElementById('btnCreateStrategy');
+        const statusModalElement = document.getElementById('statusModal');
+        if (btnCreateStrategy && statusModalElement) {
+            const bootstrapStatusModal = new bootstrap.Modal(statusModalElement);
+            btnCreateStrategy.addEventListener('click', function() {
+                bootstrapStatusModal.show();
             });
         }
     });
 </script>
 
 <style>
+    /* هاور افکت پیشرفته برای جذاب‌تر شدن کلیک روی کل باکس کارت */
+    .card-trader-node {
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+    }
+    .card-trader-node:hover {
+        transform: translateY(-4px);
+        border-color: rgba(56, 189, 248, 0.35) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.1) !important;
+    }
+
     /* --- استایل های اختصاصی کامپوننت مودال شیشه ای نئونی --- */
     .cyber-premium-modal-box {
-        background: #0f172a !important; /* رنگ تیره و عمیق هماهنگ با بدنه قالب */
-        border: 2px solid rgba(56, 189, 248, 0.4) !important; /* کادر درخشان آبی سایبر */
+        background: #0f172a !important;
+        border: 2px solid rgba(56, 189, 248, 0.4) !important;
         border-radius: 24px !important;
         box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(56, 189, 248, 0.25) !important;
         overflow: hidden;
@@ -259,12 +286,12 @@
     .btn-close-cyber-modal {
         background: transparent;
         border: none;
-        color: var(--text-silver);
+        color: #94a3b8;
         font-size: 1.2rem;
         transition: all 0.2s;
     }
     .btn-close-cyber-modal:hover {
-        color: #ff3366; /* تغییر رنگ به قرمز نئونی در هاور */
+        color: #ff3366;
         transform: scale(1.1);
     }
 
