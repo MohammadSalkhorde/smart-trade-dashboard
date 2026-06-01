@@ -932,3 +932,464 @@ h1, h2, h3, h4, h5, h6 {
 .text-dimmed{
     color: #ffffff
 }
+
+/* ==========================================================================
+   MASTER CYBERPUNK / PREMIUM DARK THEME
+   ========================================================================== */
+
+:root {
+    /* رنگ‌های پس‌زمینه عمیق با لایه‌های نوری */
+    --bg-matrix: #06090f;            /* پس‌زمینه اصلی صفحه */
+    --card-cyber: #0f172a;           /* پس‌زمینه کارت‌ها (کمی روشن‌تر برای ایجاد کنتراست) */
+    --border-cyber: rgba(255, 255, 255, 0.12); /* مرزهای مشخص‌تر */
+    
+    /* سیستم رنگی لایو و نئون */
+    --neon-green: #00ff88;           /* کدهای مثبت و سود */
+    --neon-red: #ff3366;             /* کدهای منفی و ضرر */
+    --neon-blue: #38bdf8;            /* رنگ ساختاری لینک‌ها و دکمه‌ها */
+    
+    /* متون با کنتراست بالا برای جلوگیری از خستگی چشم */
+    --text-white: #ffffff;           /* عناوین و مقادیر حیاتی */
+    --text-silver: #cbd5e1;          /* متن‌های بدنه و برچسب‌های فرعی (کاملاً خوانا) */
+    --text-dimmed: #94a3b8;          /* توضیحات ریزتر */
+}
+
+/* اعمال فونت و رنگ به کل ساختار */
+body {
+    background-color: var(--bg-matrix) !important;
+    color: var(--text-white) !important;
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+/* گرادینت نئونی پس‌زمینه برای عمق دادن به صفحه */
+.cyber-matrix-bg {
+    background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 60%);
+    min-height: 100vh;
+}
+
+/* --- دکمه بازگشت هدر --- */
+.btn-cyber-back {
+    width: 44px;
+    height: 44px;
+    background: var(--card-cyber);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-white) !important;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+.btn-cyber-back:hover {
+    color: var(--neon-blue) !important;
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+/* متن هدر فوقانی */
+.text-silver {
+    color: var(--text-silver) !important;
+}
+.tracking-cyber { 
+    letter-spacing: 2px; 
+}
+.text-neon-red { 
+    color: var(--neon-red) !important; 
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.4); 
+}
+
+/* --- بخش آواتار و پروفایل تریدر --- */
+.avatar-container-premium {
+    position: relative;
+    display: inline-block;
+}
+.premium-node-avatar {
+    border: 2px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
+    padding: 4px;
+    background: var(--bg-matrix);
+}
+.avatar-placeholder-cyber {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 2px solid rgba(56, 189, 248, 0.4);
+    color: var(--neon-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
+}
+.v-badge-profile-cyber {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: #0284c7;
+    color: var(--text-white);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-matrix);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+
+/* استراتژی‌ها و بچ‌های تایید تریدر */
+.badge-cyber-soft {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-silver);
+    border-radius: 8px;
+    font-weight: 600;
+}
+.text-blue { color: #38bdf8 !important; }
+.text-warning { color: #f59e0b !important; }
+
+/* --- کارت‌های آمار سه گانه (ROI / Win Rate / Max DD) --- */
+.quantum-stat-node {
+    background: var(--card-cyber);
+    border: 1px solid var(--border-cyber);
+    border-radius: 16px;
+    padding: 18px 10px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.quantum-stat-node:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+.label-text-cyber {
+    color: var(--text-silver) !important; /* تغییر به نقره‌ای روشن برای خوانایی عالی */
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+.value-text-cyber {
+    font-size: 1.3rem;
+    font-weight: 800;
+    position: relative;
+    z-index: 2;
+    font-family: 'Space Grotesk', sans-serif;
+}
+.text-neon {
+    color: var(--neon-green) !important;
+    text-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+}
+
+/* گلو نئونی پشت کارت‌ها */
+.stat-glow-bg {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    filter: blur(25px);
+    opacity: 0.25;
+    pointer-events: none;
+}
+.bg-green-glow { background: var(--neon-green); }
+.bg-blue-glow { background: #0062ff; }
+.bg-red-glow { background: var(--neon-red); }
+
+/* --- باکس نمودار پلتفرم --- */
+.quantum-feature-card {
+    background: var(--card-cyber) !important;
+    border: 1px solid var(--border-cyber) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+.text-dimmed { 
+    color: var(--text-dimmed) !important; 
+}
+.chart-container {
+    position: relative;
+    height: 260px;
+    width: 100%;
+}
+.real-chart-wrapper-premium {
+    height: 260px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-cyber);
+}
+
+/* پنل دسترسی روت ادمین */
+.admin-intercept-panel {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px dashed rgba(245, 158, 11, 0.4);
+    border-radius: 12px;
+    padding: 14px;
+    color: #fdba74 !important; /* نارنجی کاملاً روشن و خوانا */
+}
+.btn-cyber-save {
+    background: #0284c7;
+    color: var(--text-white) !important;
+    border: none;
+    border-radius: 30px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+}
+.btn-cyber-save:hover {
+    background: #0369a1;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+/* --- دکمه و نوار شناور پایین صفحه --- */
+.fixed-action-bar-cyber {
+    bottom: 0 !important;
+    left: 0; right: 0;
+    z-index: 1040;
+    border-top: 1px solid var(--border-cyber);
+    padding-bottom: 28px !important;
+    border-radius: 24px 24px 0 0;
+    overflow: hidden;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+}
+.blur-backdrop {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.9); /* شیشه تاریک با غلظت بالا */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1;
+}
+.btn-cyber-primary {
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+    border: none;
+    color: var(--text-white) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+    transition: all 0.3s ease;
+}
+.btn-cyber-primary:hover {
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+    transform: translateY(-2px);
+}
+
+/* --- مودال اختصاصی شیشه‌ای کپی پروتکل --- */
+.cyber-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(4, 6, 10, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cyber-modal-card {
+    background: #1e293b; /* روشن‌تر کردن پس‌زمینه مودال جهت خوانایی بیشتر */
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 24px;
+    max-width: 420px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+}
+.btn-close-cyber {
+    background: transparent;
+    border: none;
+    color: var(--text-silver);
+    font-size: 1.4rem;
+    transition: color 0.2s;
+}
+.btn-close-cyber:hover { color: var(--neon-red); }
+
+/* اینپوت‌های مودال کپی */
+.cyber-input-node {
+    background: #0f172a !important; /* فیلد تاریک عمیق */
+    border: 1px solid var(--border-cyber) !important;
+    color: var(--text-white) !important;
+    border-radius: 14px !important;
+    padding: 14px 16px !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.cyber-input-node:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.35) !important;
+}
+.btn-cyber-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-cyber);
+    color: var(--text-silver);
+    border-radius: 14px;
+    transition: all 0.2s;
+}
+.btn-cyber-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-white);
+}
+
+/* ==========================================================================
+   ULTIMATE BLACKOUT CYBERPUNK - MARGINAL OVERRIDE (ANTI-WHITE BG)
+   ========================================================================== */
+
+/* قفل کردن پس‌زمینه کل سیستم و ساختار بدنه */
+html, body, .cyber-matrix-bg {
+    background-color: #06090f !important;
+    background: #06090f !important;
+    color: #ffffff !important;
+}
+
+/* اورراید کردن کارت بوت‌استرپ که عامل اصلی سفیدی باکس بود */
+.quantum-feature-card, 
+.card, 
+#market-table {
+    background-color: #0f172a !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* اورراید کردن تک‌تک سلول‌ها و ردیف‌های جدول (بوت‌استرپ به این‌ها رنگ سفید میده) */
+.table, 
+.table>tbody>tr, 
+.table>tbody>tr>td, 
+.table>thead>tr>th,
+.cyber-table-row,
+.responsive-tr {
+    background-color: #0f172a !important;
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* هدر جدول دسکتاپ */
+.cyber-table-head, 
+.cyber-table-head tr, 
+.cyber-table-head th {
+    background-color: #0b111e !important;
+    background: #0b111e !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* هاور ردیف‌ها با هایلایت ملایم نئون آبی */
+.table-hover tbody tr:hover,
+.table-hover tbody tr.cyber-table-row:hover {
+    background-color: rgba(56, 189, 248, 0.08) !important;
+    background: rgba(56, 189, 248, 0.08) !important;
+}
+
+/* متون فرعی و لیبل‌ها */
+.text-dimmed, .text-muted {
+    color: #94a3b8 !important;
+}
+.tracking-cyber {
+    letter-spacing: 1.5px;
+}
+
+/* استایل آیکون کریپتوها */
+.crypto-logo-cyber {
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.3));
+    border-radius: 50%;
+}
+
+/* فونت مدرن دیجیتالی مخصوص قیمت‌ها */
+.font-space-cyber {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.3px;
+}
+
+/* متون درخشان نئونی بر اساس پالت قبلی */
+.text-neon-green {
+    color: #00ff88 !important;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+.text-neon-red {
+    color: #ff3366 !important;
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+}
+
+/* دکمه اختصاصی ترید نئونی */
+.btn-cyber-primary {
+    background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    transition: all 0.25s ease;
+}
+.btn-cyber-primary:hover {
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   RESPONSIVE GRID FOR MOBILE (FLUID CARD LAYOUT)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    .responsive-tr {
+        display: flex !important;
+        flex-wrap: wrap;
+        padding: 16px 20px;
+        position: relative;
+    }
+    
+    /* چینش مجدد المان‌ها روی موبایل برای خوانایی ماکسیمم */
+    .asset-td { width: 60% !important; order: 1; border: none !important; padding: 0 !important; }
+    .price-td { width: 40% !important; order: 2; text-align: right; border: none !important; padding: 0 !important; }
+    .symbol-td { width: 60% !important; order: 3; border: none !important; padding: 6px 0 0 44px !important; }
+    .change-td { width: 40% !important; order: 4; text-align: right; border: none !important; padding: 6px 0 0 0 !important; }
+    .action-td { width: 100% !important; order: 5; border: none !important; padding: 16px 0 0 0 !important; }
+    
+    .w-100-mobile { width: 100% !important; display: block; text-align: center; }
+    .small-mobile-font { font-size: 0.95rem !important; }
+    .table-responsive-custom { overflow-x: hidden; }
+}
+
+@media (min-width: 768px) {
+    .table td { white-space: nowrap; }
+}
+
+/* ==========================================================================
+   ULTIMATE SMOOTH ROUNDED CORNERS OVERRIDE
+   ========================================================================== */
+
+/* نرم کردن لبه‌های کارت اصلی جدول و اجبار به بریدن محتوای تیز داخلی */
+.quantum-feature-card, 
+.card {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}
+
+/* گرد کردن لبه‌های کل جدول برای مچ شدن با کارت */
+#market-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}
+
+/* گرد کردن لبه‌های اولین ردیف (هدر) */
+#market-table thead tr:first-child th:first-child {
+    border-top-left-radius: 20px !important;
+}
+#market-table thead tr:first-child th:last-child {
+    border-top-right-radius: 20px !important;
+}
+
+/* گرد کردن لبه‌های آخرین ردیف جدول روی دسکتاپ */
+#market-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 20px !important;
+}
+#market-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 20px !important;
+}
+
+/* گرد کردن اختصاصی لبه باکس‌ها در حالت نمایش موبایل (ریسپانسیو فلوید) */
+@media (max-width: 767.98px) {
+    .responsive-tr {
+        border-radius: 16px !important;
+        margin-bottom: 12px !important; /* ایجاد فاصله بین کارت‌های موبایل برای زیبایی بیشتر */
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+}

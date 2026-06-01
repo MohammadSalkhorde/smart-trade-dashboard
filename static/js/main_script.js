@@ -256,3 +256,197 @@ const SmartTradeCore = {
         }
     }
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    // خواندن روت کانتکست صفحه جهت اطمینان از صحت آدرس‌دهی و جلوگیری از خطای دیگر صفحات
+    const contextEl = document.getElementById('trader-page-context');
+    if (!contextEl) return;
+
+    // استخراج متغیرها از کانتکست شیلد المنت با لایه امن کستینگ بولین
+    const isStaff = contextEl.getAttribute('data-is-staff') === 'true';
+    const isManual = contextEl.getAttribute('data-is-manual') === 'true';
+    const traderId = parseInt(contextEl.getAttribute('data-trader-id') || '0');
+    const csrfToken = contextEl.getAttribute('data-csrf');
+    const updateUrl = contextEl.getAttribute('data-update-url');
+    const roiElement = document.getElementById('display-roi');
+
+    // محاسبه‌ی نام سورس رمز ارز بر اساس شناسه تریدر (همگام با سیستم جنگو تمپلیت)
+    let symbol = "BTCUSDT";
+    if (traderId % 5 === 0) symbol = "ADAUSDT";
+    else if (traderId % 4 === 0) symbol = "BNBUSDT";
+    else if (traderId % 3 === 0) symbol = "SOLUSDT";
+    else if (traderId % 2 === 0) symbol = "ETHUSDT";
+
+    // تابع هوشمند پردازش رنگ، سایه درخشندگی (Neon Glow) و تزریق استایل متون درصد
+    const updateRoiDisplay = (value) => {
+        if (!roiElement) return;
+        const numValue = parseFloat(value);
+        roiElement.innerText = (numValue >= 0 ? '+' : '') + numValue.toFixed(2) + '%';
+        
+        if (numValue >= 0) {
+            roiElement.style.color = '#00ff88';
+            roiElement.style.textShadow = '0 0 12px rgba(0, 255, 136, 0.4), 0 0 25px rgba(0, 255, 136, 0.15)';
+        } else {
+            roiElement.style.color = '#ff3366';
+            roiElement.style.textShadow = '0 0 12px rgba(255, 51, 102, 0.4), 0 0 25px rgba(255, 51, 102, 0.15)';
+        }
+    };
+
+    // سناریوی اول: حالت مدیریت دستی یا ادمین پلتفرم (اجرای موتور مستقل Chart.js)
+    if (isStaff || isManual) {
+        const chartCanvas = document.getElementById('traderChart');
+        
+        if (chartCanvas) {
+            const ctx = chartCanvas.getContext('2d');
+            
+            // پارس امن آرایه برای چلوگیری از بروز خطای برک‌داون فایل جی‌اس
+            let chartData;
+            try {
+                chartData = JSON.parse(contextEl.getAttribute('data-chart-data') || '[0, 5, 10, 8, 15]');
+            } catch (e) {
+                chartData = [0, 5, 10, 8, 15];
+            }
+            
+            if (chartData && chartData.length > 0) {
+                updateRoiDisplay(chartData[chartData.length - 1]);
+            }
+
+            const traderChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map((_, i) => i + 1),
+                    datasets: [{
+                        data: chartData,
+                        borderColor: '#0062ff',
+                        backgroundColor: 'rgba(0, 98, 255, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: isStaff ? 6 : 0,
+                        pointHoverRadius: isStaff ? 9 : 0,
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#ffffff',
+                        borderWidth: 2.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        dragData: isStaff ? {
+                            round: 2,
+                            onDrag: function(e, datasetIndex, index, value) {
+                                if (index === chartData.length - 1) {
+                                    updateRoiDisplay(value);
+                                }
+                            },
+                            onDragEnd: function(e, datasetIndex, index, value) {
+                                updateRoiDisplay(value);
+                            }
+                        } : false
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { 
+                            display: true, 
+                            grid: { color: 'rgba(255, 255, 255, 0.02)' },
+                            beginAtZero: false, 
+                            min: -100, 
+                            max: 1000, 
+                            ticks: {
+                                stepSize: 200, 
+                                display: true,
+                                color: '#64748b',
+                                font: { size: 10, family: 'Space Grotesk' },
+                                callback: function(value) { return value + '%'; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // رویداد ادمین: ارسال بردار نقاط دستکاری شده روی چارت به بک‌انند
+            if (isStaff && updateUrl) {
+                document.getElementById('saveChart')?.addEventListener('click', function() {
+                    const updatedData = traderChart.data.datasets[0].data;
+                    fetch(updateUrl, {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json", 
+                            "X-CSRFToken": csrfToken 
+                        },
+                        body: JSON.stringify({ points: updatedData })
+                    })
+                    .then(res => res.json())
+                    .then(data => { 
+                        if(data.status === 'ok') alert("Matrix vectors committed successfully!"); 
+                    });
+                });
+            }
+        }
+    }
+
+    // سناریوی دوم: کاربر عادی + چارت اتوماتیک لایو (فچ دیتای حمایتی بایننس فقط در صورت نیاز)
+    if (!isStaff && !isManual) {
+        fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=30`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const open = parseFloat(data[0][1]);
+                    const close = parseFloat(data[data.length - 1][4]);
+                    const change = (((close - open) / open) * 100).toFixed(2);
+                    updateRoiDisplay(change);
+                }
+            })
+            .catch(() => { 
+                // کنترل خطای برون مرزی یا تایم‌اوت ریکوئست شبکه‌ای بایننس
+                if(roiElement && roiElement.innerText === '0%') {
+                    updateRoiDisplay(0.00); 
+                }
+            });
+    }
+});
+
+/* ===================================================
+   توابع شیلد محافظتی و مدیریت مودال تخصیص بودجه کپی کلاینت
+   =================================================== */
+function openCopyFormDetail() {
+    const modal = document.getElementById('copyModalContainer');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCopyFormDetail() {
+    const modal = document.getElementById('copyModalContainer');
+    if (modal) modal.style.display = 'none';
+}
+
+// ناوبری بستن لایه مودال با کلیک روی فضای تاریک و شیشه‌ای پس‌زمینه
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('copyModalContainer');
+    if (modal && event.target === modal) {
+        closeCopyFormDetail();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const priceRows = document.querySelectorAll('.cyber-table-row');
+    
+    // شبیه‌ساز فلش افکت مارکت برای زنده نشان دادن دیتای جدول
+    setInterval(() => {
+        // انتخاب تصادفی یک ردیف برای اعمال پالس نوری
+        const randomIndex = Math.floor(Math.random() * priceRows.length);
+        const targetRow = priceRows[randomIndex];
+        
+        if(targetRow) {
+            const priceSpan = targetRow.querySelector('.price-td span');
+            priceSpan.style.transition = 'text-shadow 0.2s ease, color 0.2s ease';
+            priceSpan.style.color = '#38bdf8';
+            priceSpan.style.textShadow = '0 0 10px #38bdf8';
+            
+            setTimeout(() => {
+                priceSpan.style.color = '#ffffff';
+                priceSpan.style.textShadow = 'none';
+            }, 400);
+        }
+    }, 3000); // هر ۳ ثانیه یک نود شبکه رندوم پالس می‌زند
+});

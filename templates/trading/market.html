@@ -1,118 +1,85 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="mb-4 mb-md-5 text-center text-md-start">
-        <h2 class="fw-bold text-dark">Market Quotes</h2>
-        <p class="text-muted small">Real-time cryptocurrency prices with 24h market trends.</p>
-    </div>
-
-    <div class="card border-0 shadow-sm" style="border-radius: 20px; background: #ffffff; overflow: hidden;">
-        <div class="table-responsive-custom">
-            <table class="table table-hover align-middle mb-0" id="market-table">
-                <thead class="d-none d-md-table-header-group" style="background-color: #f8fafd;">
-                    <tr class="text-muted small text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                        <th class="ps-4 py-3 fw-bold">Asset</th>
-                        <th class="fw-bold">Symbol</th>
-                        <th class="fw-bold">Last Price</th>
-                        <th class="fw-bold">24h Change</th>
-                        <th class="text-end pe-4 fw-bold">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in market_data %}
-                    <tr class="responsive-tr">
-                        <td class="ps-md-4 py-3 asset-td">
-                            <div class="d-flex align-items-center">
-                                <div class="symbol-icon-container me-2 me-md-3">
-                                    <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/{{ item.symbol|slice:':3'|lower }}.png" 
-                                         onerror="this.src='https://cdn-icons-png.flaticon.com/512/25/25228.png'" 
-                                         width="28" height="28" alt="{{ item.name }}">
-                                </div>
-                                <div>
-                                    <span class="fw-bold d-block text-dark small-mobile-font">{{ item.name }}</span>
-                                    <span class="text-muted x-small-label d-md-block">Mainnet</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="symbol-td">
-                            <span class="badge bg-light text-dark border fw-medium px-2 py-1" style="font-size: 0.65rem;">{{ item.symbol }}</span>
-                        </td>
-                        <td class="price-td">
-                            <span class="fw-bold text-dark small-mobile-font">${{ item.display_price|floatformat:2 }}</span>
-                        </td>
-                        <td class="change-td">
-                            {% if item.manipulation >= 0 %}
-                                <div class="d-flex align-items-center text-success fw-bold small-mobile-font">
-                                    <i class="bi bi-caret-up-fill me-1"></i>
-                                    <span>+{{ item.manipulation }}%</span>
-                                </div>
-                            {% else %}
-                                <div class="d-flex align-items-center text-danger fw-bold small-mobile-font">
-                                    <i class="bi bi-caret-down-fill me-1"></i>
-                                    <span>{{ item.manipulation }}%</span>
-                                </div>
-                            {% endif %}
-                        </td>
-                        <td class="text-md-end pe-md-4 action-td">
-                            <a href="{% url 'trading:copy_list' %}" class="btn btn-trade-blue rounded-pill fw-bold shadow-sm w-100-mobile">
-                                Trade
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">No market data available.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="cyber-matrix-bg py-5">
+    <div class="container">
+        
+        <div class="mb-4 mb-md-5 text-center text-md-start">
+            <h2 class="fw-bold text-white tracking-cyber mb-1">MARKET QUOTES</h2>
+            <p class="text-dimmed small">Real-time cryptocurrency prices with 24h network market trends.</p>
         </div>
+
+        <div class="card quantum-feature-card border-0" style="overflow: hidden;">
+            <div class="table-responsive-custom">
+                <table class="table table-hover align-middle mb-0" id="market-table">
+                    <thead class="d-none d-md-table-header-group cyber-table-head">
+                        <tr class="small text-uppercase tracking-cyber" style="font-size: 0.7rem;">
+                            <th class="ps-4 py-3 fw-bold text-silver">Asset</th>
+                            <th class="fw-bold text-silver">Symbol</th>
+                            <th class="fw-bold text-silver">Last Price</th>
+                            <th class="fw-bold text-silver">24h Change</th>
+                            <th class="text-end pe-4 fw-bold text-silver">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in market_data %}
+                        <tr class="responsive-tr cyber-table-row">
+                            <td class="ps-md-4 py-3 asset-td">
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol-icon-container me-2 me-md-3">
+                                        <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/{{ item.symbol|slice:':3'|lower }}.png" 
+                                             onerror="this.src='https://cdn-icons-png.flaticon.com/512/25/25228.png'" 
+                                             width="32" height="32" alt="{{ item.name }}" class="crypto-logo-cyber">
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold d-block text-white small-mobile-font">{{ item.name }}</span>
+                                        <span class="text-dimmed x-small-label d-md-block">Mainnet Node</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="symbol-td">
+                                <span class="badge badge-cyber-soft text-blue px-2 py-1" style="font-size: 0.65rem;">{{ item.symbol }}</span>
+                            </td>
+                            
+                            <td class="price-td">
+                                <span class="fw-bold text-white small-mobile-font font-space-cyber">${{ item.display_price|floatformat:2 }}</span>
+                            </td>
+                            
+                            <td class="change-td">
+                                {% if item.manipulation >= 0 %}
+                                    <div class="d-flex align-items-center text-neon-green fw-bold small-mobile-font font-space-cyber">
+                                        <i class="bi bi-caret-up-fill me-1"></i>
+                                        <span>+{{ item.manipulation }}%</span>
+                                    </div>
+                                {% else %}
+                                    <div class="d-flex align-items-center text-neon-red fw-bold small-mobile-font font-space-cyber">
+                                        <i class="bi bi-caret-down-fill me-1"></i>
+                                        <span>{{ item.manipulation }}%</span>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="text-md-end pe-md-4 action-td">
+                                <a href="{% url 'trading:copy_list' %}" class="btn btn-cyber-primary rounded-pill fw-bold w-100-mobile py-2 px-4">
+                                    Trade <i class="bi bi-lightning-fill ms-1" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-dimmed">
+                                <i class="bi bi-exclamation-triangle mb-2 d-block text-neon-red" style="font-size: 2rem;"></i>
+                                No market data feed available on this matrix instance.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
-
-<style>
-    body { background-color: #f8fafd; overflow-x: hidden; width: 100%; }
-    .x-small-label { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; color: #94a3b8 !important; }
-
-    .btn-trade-blue { 
-        background-color: #0062ff; 
-        color: white !important; 
-        border: none; 
-        font-size: 0.75rem;
-        padding: 8px 20px;
-        transition: 0.3s;
-    }
-
-    /* استایل اصلی موبایل (بدون اسکرول افقی) */
-    @media (max-width: 767.98px) {
-        .responsive-tr {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            position: relative;
-        }
-        
-        .asset-td { width: 60%; order: 1; border: none !important; padding: 0 !important; }
-        .price-td { width: 40%; order: 2; text-align: right; border: none !important; padding: 0 !important; }
-        .symbol-td { width: 60%; order: 3; border: none !important; padding: 5px 0 0 38px !important; }
-        .change-td { width: 40%; order: 4; text-align: right; border: none !important; padding: 5px 0 0 0 !important; }
-        .action-td { width: 100%; order: 5; border: none !important; padding: 15px 0 0 0 !important; }
-        
-        .w-100-mobile { width: 100%; display: block; text-align: center; }
-        .small-mobile-font { font-size: 0.9rem !important; }
-        
-        .table-responsive-custom { overflow-x: hidden; }
-        .symbol-icon-container { width: 32px; height: 32px; }
-    }
-
-    /* دسکتاپ */
-    @media (min-width: 768px) {
-        .btn-trade-blue:hover { transform: translateY(-2px); background-color: #0052d6; }
-        .table td { white-space: nowrap; }
-    }
-
-    .table-hover tbody tr:hover { background-color: #f0f7ff !important; }
-</style>
 {% endblock %}

@@ -4,6 +4,7 @@
 {% block content %}
 <div class="container py-5">
     
+    <!-- هدر و بخش جستجو -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <div>
             <nav class="d-flex gap-4 border-bottom border-secondary border-opacity-20 mb-3">
@@ -29,6 +30,7 @@
 
     <div class="row g-4">
         
+        <!-- بنر ایجاد استراتژی اختصاصی -->
         <div class="col-12 mb-2">
             <div class="card create-strategy-premium-card" id="btnCreateStrategy">
                 <div class="premium-vector-bg"></div>
@@ -53,13 +55,13 @@
             </div>
         </div>
 
+        <!-- لیست تریدرها -->
         {% for trader in traders %}
         <div class="col-12">
-            <div class="card quantum-feature-card p-4 position-relative card-trader-node" 
-                 data-trader-id="{{ trader.id }}"
-                 data-url="{% url 'trading:trader_detail' trader.id %}">
+            <div class="card quantum-feature-card p-4 position-relative card-trader-node" data-trader-id="{{ trader.id }}">
                 
                 <div class="row align-items-center">
+                    <!-- بخش آواتار و نام تریدر -->
                     <div class="col-lg-3 col-md-5 col-12 mb-3 mb-md-0">
                         <div class="d-flex align-items-center gap-3">
                             <div class="avatar-box position-relative">
@@ -72,7 +74,7 @@
                             </div>
                             <div>
                                 <h6 class="fw-bold text-white mb-1">{{ trader.name }}</h6>
-                                <span class="tiny-text d-block mb-2"><i class="bi bi-people-fill text-neon me-1"></i> {{ trader.copiers_count }}/{{ trader.capacity }} Copiers</span>
+                                <span class="tiny-text d-block mb-2"><i class="bi bi-people-fill text-neon me-1"></i> {{ trader.copiers_count }} / {{ trader.capacity }} Copiers</span>
                                 
                                 <div class="d-flex align-items-baseline gap-2">
                                     <h3 id="roi-{{ forloop.counter }}" 
@@ -88,6 +90,7 @@
                         </div>
                     </div>
 
+                    <!-- بخش نمودار کوچک -->
                     <div class="col-lg-4 col-md-4 col-12 mb-3 mb-md-0 px-md-3">
                         <div class="chart-clean-wrapper-cyber">
                             {% if trader.is_manual_mode %}
@@ -98,6 +101,7 @@
                         </div>
                     </div>
 
+                    <!-- بخش جزئیات سود و ضرر -->
                     <div class="col-lg-3 col-md-3 col-12 border-start-cyber px-md-4">
                         <div class="row g-2">
                             <div class="col-4 col-md-12 col-lg-4 mb-md-1 mb-lg-0">
@@ -122,40 +126,18 @@
                         </div>
                     </div>
 
+                    <!-- دکمه Replicate که مودال کپی را باز می‌کند -->
                     <div class="col-lg-2 col-md-12 col-12 text-end mt-4 mt-lg-0">
-                        <button type="button" class="btn btn-cyber-primary w-100 py-2.5 btn-replicate-trigger">
+                        <button type="button" 
+                                class="btn btn-cyber-primary w-100 py-2.5 btn-open-copy-modal"
+                                data-trader-id="{{ trader.id }}"
+                                data-trader-name="{{ trader.name }}"
+                                data-action-url="{% url 'trading:copy_action' trader.id %}">
                             Replicate <i class="bi bi-lightning-fill ms-1 text-white" style="font-size: 0.8rem;"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="cyber-overlay-form-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="fw-bold text-white" style="font-size: 1.05rem; letter-spacing: -0.3px;">Allocation Protocol</span>
-                        <button type="button" class="btn-close-cyber">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    <form action="{% url 'trading:copy_action' trader.id %}" method="POST">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <label class="x-small-label text-white mb-0">Investment Capital</label>
-                                <span class="text-neon fw-bold x-small-label">USDT</span>
-                            </div>
-                            <input type="number" name="amount" class="form-control cyber-input-node" placeholder="0.00" min="1" step="0.01" required>
-                        </div>
-                        <div class="cyber-mini-receipt mb-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-silver small fw-bold">Target Node:</span>
-                                <span class="text-white fw-bold small">{{ trader.name }}</span>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-cyber-primary w-100 py-2.5 fw-bold">
-                            Initialize Replicating
-                        </button>
-                    </form>
-                </div>
             </div>
         </div>
         {% empty %}
@@ -167,6 +149,50 @@
     </div>
 </div>
 
+<!-- ==========================================
+     مودال کپی و تخصیص بودجه (مانند صفحه دیتل)
+     ========================================== -->
+<div class="modal fade" id="cyberCopyModal" tabindex="-1" aria-hidden="true" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content cyber-premium-modal-box">
+            <div class="modal-body p-4 position-relative">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fw-bold text-white tracking-cyber" style="font-size: 1.1rem;">ALLOCATION PROTOCOL</span>
+                    <button type="button" class="btn-close-cyber-modal" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <form id="cyberCopyForm" method="POST" action="">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <label class="x-small-label text-silver mb-0">Investment Capital</label>
+                            <span class="text-neon fw-bold x-small-label">USDT</span>
+                        </div>
+                        <input type="number" name="amount" class="form-control cyber-input-node" placeholder="0.00" min="1" step="0.01" required>
+                    </div>
+
+                    <div class="cyber-mini-receipt mb-4 p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-dimmed small fw-bold">Target Node:</span>
+                            <span id="modalTraderName" class="text-white fw-bold small">...</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-cyber-primary w-100 py-3 fw-bold tracking-cyber">
+                        INITIALIZE REPLICATING
+                    </button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال محدودیت دسترسی قبلی -->
 <div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 24px; background: #090d14; border: 2px solid #ff3366; box-shadow: 0 20px 50px rgba(0,0,0,0.95);">
@@ -189,7 +215,66 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- اسکریپت کنترل مودال کپی هوشمند -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // باز کردن مودال ثبت بودجه به صورت اختصاصی با پر کردن اتوماتیک اطلاعات تریدر
+        const copyButtons = document.querySelectorAll('.btn-open-copy-modal');
+        const copyModalElement = document.getElementById('cyberCopyModal');
+        
+        if (copyModalElement && copyButtons.length > 0) {
+            const bootstrapCopyModal = new bootstrap.Modal(copyModalElement);
+            const modalForm = document.getElementById('cyberCopyForm');
+            const modalTraderNameSpan = document.getElementById('modalTraderName');
+
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // جلوگیری از تداخل کلیک روی کل کارت تریدر
+                    
+                    const traderName = this.getAttribute('data-trader-name');
+                    const actionUrl = this.getAttribute('data-action-url');
+                    
+                    // تزریق اطلاعات تریدر انتخاب شده به درون مودال شیشه ای
+                    modalTraderNameSpan.textContent = traderName;
+                    modalForm.setAttribute('action', actionUrl);
+                    
+                    // نمایش مودال الرت گونه در وسط صفحه
+                    bootstrapCopyModal.show();
+                });
+            });
+        }
+    });
+</script>
+
 <style>
+    /* --- استایل های اختصاصی کامپوننت مودال شیشه ای نئونی --- */
+    .cyber-premium-modal-box {
+        background: #0f172a !important; /* رنگ تیره و عمیق هماهنگ با بدنه قالب */
+        border: 2px solid rgba(56, 189, 248, 0.4) !important; /* کادر درخشان آبی سایبر */
+        border-radius: 24px !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(56, 189, 248, 0.25) !important;
+        overflow: hidden;
+    }
+
+    .btn-close-cyber-modal {
+        background: transparent;
+        border: none;
+        color: var(--text-silver);
+        font-size: 1.2rem;
+        transition: all 0.2s;
+    }
+    .btn-close-cyber-modal:hover {
+        color: #ff3366; /* تغییر رنگ به قرمز نئونی در هاور */
+        transform: scale(1.1);
+    }
+
+    .cyber-mini-receipt {
+        background: rgba(6, 9, 15, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+    }
+
+    /* تنظیمات ساختار کانواس چارت‌های کوچک */
     .chart-clean-wrapper-cyber {
         position: relative;
         width: 100%;
@@ -204,22 +289,19 @@
         height: 100% !important;
         display: block;
     }
+
     /* افکت درخشش نئونی برای درصدهای سود و زیان */
-.roi-loading-text {
-    font-family: 'Space Grotesk', sans-serif;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-/* وقتی عدد مثبت و سبز است */
-.roi-loading-text[style*="rgb(0, 255, 136)"], 
-.roi-loading-text[style*="#00ff88"] {
-    text-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 25px rgba(0, 255, 136, 0.15);
-}
-
-/* وقتی عدد منفی و قرمز است (یه قرمز نئونی و فوق‌العاده شیک) */
-.roi-loading-text[style*="rgb(255, 51, 102)"], 
-.roi-loading-text[style*="#ff3366"] {
-    text-shadow: 0 0 12px rgba(255, 51, 102, 0.4), 0 0 25px rgba(255, 51, 102, 0.15);
-}
+    .roi-loading-text {
+        font-family: 'Space Grotesk', sans-serif;
+        transition: color 0.3s ease, text-shadow 0.3s ease;
+    }
+    .roi-loading-text[style*="rgb(0, 255, 136)"], 
+    .roi-loading-text[style*="#00ff88"] {
+        text-shadow: 0 0 12px rgba(0, 255, 136, 0.4), 0 0 25px rgba(0, 255, 136, 0.15);
+    }
+    .roi-loading-text[style*="rgb(255, 51, 102)"], 
+    .roi-loading-text[style*="#ff3366"] {
+        text-shadow: 0 0 12px rgba(255, 51, 102, 0.4), 0 0 25px rgba(255, 51, 102, 0.15);
+    }
 </style>
 {% endblock %}
