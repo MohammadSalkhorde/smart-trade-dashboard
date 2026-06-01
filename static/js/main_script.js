@@ -753,3 +753,67 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("Register UI enhancement caught localized exception.", error);
     }
 });
+
+
+/**
+ * ==========================================================================
+ * SMARTTRADE NETWORK - SETTINGS INTERACTION ENGINE (CLIPBOARD API V2)
+ * ==========================================================================
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const copyBtn = document.getElementById('btnCopyRef');
+        const refInput = document.getElementById('refLink');
+
+        if (copyBtn && refInput) {
+            copyBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                const linkValue = refInput.value.trim();
+                if (!linkValue) return;
+
+                try {
+                    // استفاده از Clipboard API مدرن و بومی مرورگرها به جای دپیکیت شده‌های قدیمی
+                    await navigator.clipboard.writeText(linkValue);
+                    
+                    // مدیریت لایه بصری فیدبک به کاربر
+                    const originalHtml = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `<i class="bi bi-check-lg text-info"></i> <span class="text-info">Copied!</span>`;
+                    copyBtn.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalHtml;
+                        copyBtn.style.pointerEvents = 'auto';
+                    }, 2200);
+
+                } catch (err) {
+                    // فول‌بک امنیتی در صورت عدم ساپورت پروتکل امنیتی مرورگرهای قدیمی
+                    refInput.select();
+                    refInput.setSelectionRange(0, 99999);
+                    document.execCommand("copy");
+                    
+                    const originalHtml = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `<span class="text-info">Copied!</span>`;
+                    setTimeout(() => { copyBtn.innerHTML = originalHtml; }, 2200);
+                }
+            });
+        }
+
+        // انیمیشن ملایم سابمیت دکمه ثبت تغییرات ساختار هسته
+        const settingsForm = document.querySelector('form');
+        if (settingsForm) {
+            settingsForm.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('.btn-submit-settings');
+                if (submitBtn) {
+                    submitBtn.style.pointerEvents = 'none';
+                    submitBtn.style.opacity = '0.7';
+                    const textSpan = submitBtn.querySelector('span');
+                    if (textSpan) textSpan.innerText = 'Syncing Parameters...';
+                }
+            });
+        }
+
+    } catch (error) {
+        console.warn("Settings interface thread caught exception.", error);
+    }
+});
