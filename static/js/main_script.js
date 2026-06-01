@@ -635,3 +635,121 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Critical recovery protocol engaged. Portfolio Core Isolated: ", globalError);
     }
 });
+
+
+/**
+ * ==========================================================================
+ * SMARTTRADE PREMIUM AUTH LAYER - ISOLATED PROTOCOL
+ * ==========================================================================
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const forgotBtn = document.getElementById('forgot-password-btn');
+        const modalElement = document.getElementById('forgotModal');
+        const modalBody = document.getElementById('forgotModalBody');
+
+        if (!forgotBtn || !modalElement || !modalBody) return;
+
+        // وهله‌سازی اصولی کامپوننت مودال بوت‌استرپ
+        const bootstrapForgotModal = new bootstrap.Modal(modalElement);
+
+        forgotBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // همگام‌سازی استخراج فیلد نام کاربری یا ایمیل
+            const accountInput = document.querySelector('input[name*="username"]') || 
+                                 document.querySelector('input[name*="email"]') || 
+                                 document.querySelector('input[type="text"]');
+            
+            const accountValue = accountInput ? accountInput.value.trim() : "";
+
+            // ایمن‌سازی درخت DOM: انتقال لایه مودال به روت بادی برای فرار از z-index کانتینرها
+            if (modalElement.parentElement !== document.body) {
+                document.body.appendChild(modalElement);
+            }
+
+            if (accountValue === "") {
+                // رندر حالت خطای عدم وارد کردن شناسه کاربری
+                modalBody.innerHTML = `
+                    <div class="mb-4 d-inline-flex align-items-center justify-content-center" 
+                         style="width: 74px; height: 74px; background: rgba(255, 51, 102, 0.1); color: #ff3366; border-radius: 50%; font-size: 2rem; border: 1px solid rgba(255, 51, 102, 0.2);">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Identifier Required</h4>
+                    <p class="text-muted small mb-4" style="line-height: 1.6;">Please input your network account email or username inside the login field first to request a recovery link.</p>
+                    <button type="button" class="btn btn-premium-submit w-100 py-2.5 rounded-pill" data-bs-dismiss="modal" style="background: #ff3366; box-shadow: 0 10px 25px rgba(255, 51, 102, 0.3);">
+                        Return to Authentication
+                    </button>
+                `;
+            } else {
+                // رندر تاییدیه ارسال موفق لینک ریکاوری به مقصد کاربر
+                modalBody.innerHTML = `
+                    <div class="mb-4 d-inline-flex align-items-center justify-content-center" 
+                         style="width: 74px; height: 74px; background: rgba(0, 163, 255, 0.1); color: #00a3ff; border-radius: 50%; font-size: 2rem; border: 1px solid rgba(0, 163, 255, 0.2);">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Transmission Dispatched</h4>
+                    <p class="text-muted small mb-4" style="line-height: 1.6;">Secure link assigned. If an account matches, recovery data will route to:<br><span class="fw-bold text-info" style="word-break: break-all;">${escapeHtml(accountValue)}</span></p>
+                    <button type="button" class="btn btn-premium-submit w-100 py-2.5 rounded-pill" data-bs-dismiss="modal">
+                        Acknowledge Protocol
+                    </button>
+                `;
+            }
+
+            bootstrapForgotModal.show();
+        });
+
+        // تابع کمکی برای پاکسازی استرینگ ورودی و جلوگیری از XSS در جاوااسکریپت تکست پرووایدر
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+    } catch (err) {
+        console.error("Auth UI interaction module halted.", err);
+    }
+});
+
+/**
+ * ==========================================================================
+ * SMARTTRADE - PREMIUM INTERACTION SECURITY MODULE
+ * ==========================================================================
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const registerForm = document.getElementById('premium-register-form');
+        const passwordFields = document.querySelectorAll('input[type="password"]');
+
+        if (!registerForm) return;
+
+        // ماژول امنیتی ۱: بهبود تعامل بصری زمان تایپ پسورد (میتوان در صورت نیاز دکمه چشمک اضافه کرد)
+        passwordFields.forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentElement.style.boxShadow = "0 0 15px rgba(0, 163, 255, 0.08)";
+            });
+            
+            field.addEventListener('blur', function() {
+                this.parentElement.style.boxShadow = "none";
+            });
+        });
+
+        // ماژول امنیتی ۲: انیمیشن کلیک نرم روی دکمه سابمیت برای ملو کردن فرآیند پردازش شبکه
+        registerForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('.btn-register-action');
+            if (submitBtn) {
+                submitBtn.style.pointerEvents = 'none';
+                submitBtn.style.opacity = '0.85';
+                const labelSpan = submitBtn.querySelector('span');
+                if (labelSpan) {
+                    labelSpan.innerText = 'Syncing Node Framework...';
+                }
+            }
+        });
+
+    } catch (error) {
+        console.warn("Register UI enhancement caught localized exception.", error);
+    }
+});

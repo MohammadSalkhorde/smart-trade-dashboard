@@ -1592,3 +1592,775 @@ html, body, .cyber-matrix-bg {
     .responsive-tr td.asset-td::before,
     .responsive-tr td.action-td::before { display: none; }
 }
+
+/* ==========================================================================
+   PREMIUM GLASSMORPHISM AUTHENTICATION STYLES
+   ========================================================================== */
+
+:root {
+    --bg-dark-base: #070b12;
+    --card-glass-bg: rgba(13, 20, 35, 0.65);
+    --card-border: rgba(255, 255, 255, 0.07);
+    --accent-blue: #0052ff;
+    --accent-cyan: #00a3ff;
+    --text-pure-white: #ffffff;
+    --text-muted-silver: #94a3b8;
+    --error-neon: #ff3366;
+}
+
+body {
+    background-color: var(--bg-dark-base) !important;
+    overflow-x: hidden;
+}
+
+/* کانتینر اصلی و امبینت بک‌گراند */
+.auth-matrix-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg-dark-base);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.auth-matrix-wrapper .content-layer {
+    position: relative;
+    z-index: 5;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.ambient-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.22;
+    pointer-events: none;
+    z-index: 1;
+    animation: ambientPulse 8s ease-in-out infinite alternate;
+}
+
+.glow-blue {
+    width: 450px;
+    height: 450px;
+    background: var(--accent-blue);
+    top: -10%;
+    left: -10%;
+}
+
+.glow-cyan {
+    width: 400px;
+    height: 400px;
+    background: var(--accent-cyan);
+    bottom: -5%;
+    right: -5%;
+    animation-delay: -4s;
+}
+
+@keyframes ambientPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.18; }
+    100% { transform: scale(1.15) translate(30px, 20px); opacity: 0.26; }
+}
+
+/* بدنه اصلی کارت شیشه‌ای */
+.premium-auth-card {
+    background: var(--card-glass-bg);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--card-border);
+    border-radius: 32px;
+    padding: 48px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* هدر کارت */
+.card-brand-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-logo-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.logo-inner-glow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--accent-blue);
+    filter: blur(15px);
+    opacity: 0.4;
+    z-index: -1;
+}
+
+.auth-title {
+    color: var(--text-pure-white);
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    color: var(--text-muted-silver);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* فیلدهای ورودی هوشمند */
+.custom-field-wrapper {
+    margin-bottom: 24px;
+}
+
+.custom-input-label {
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.premium-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.input-icon-slot {
+    padding-left: 18px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+/* بازنویسی ویجت پیش‌فرض جنگو */
+.premium-input-group input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: 100%;
+    padding: 15px 16px;
+    color: var(--text-pure-white) !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* استایل دهی به Placeholder */
+.premium-input-group input::placeholder {
+    color: #475569 !important;
+}
+
+.input-focus-border {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-input-group:focus-within {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.premium-input-group:focus-within .input-icon-slot {
+    color: var(--accent-cyan);
+}
+
+.premium-input-group:focus-within .input-focus-border {
+    left: 0;
+    width: 100%;
+}
+
+/* چک‌باکس مینی‌مال */
+.premium-checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.premium-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    height: 18px;
+    width: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.premium-checkbox-container:hover input ~ .checkmark {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.premium-checkbox-container input:checked ~ .checkmark {
+    background: var(--accent-blue);
+    border-color: transparent;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.premium-checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.label-text {
+    color: var(--text-muted-silver);
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+/* دکمه‌های اکشن */
+.forgot-password-link {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+}
+
+.forgot-password-link:hover {
+    opacity: 0.8;
+}
+
+.btn-premium-submit {
+    position: relative;
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    color: var(--text-pure-white);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 15px 35px rgba(0, 82, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.btn-premium-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 82, 255, 0.45);
+}
+
+.btn-premium-submit:active {
+    transform: translateY(1px);
+}
+
+/* فوتر کارت */
+.auth-card-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.footer-text {
+    color: var(--text-muted-silver);
+}
+
+.footer-action-link {
+    color: var(--text-pure-white);
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 6px;
+    transition: color 0.2s;
+}
+
+.footer-action-link:hover {
+    color: var(--accent-cyan);
+}
+
+/* خطاها */
+.field-error-msg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--error-neon);
+    font-size: 0.78rem;
+    margin-top: 8px;
+    padding-left: 4px;
+    font-weight: 500;
+}
+
+/* استایل مودال شیشه‌ای پریمیوم */
+.premium-modal-content {
+    background: rgba(10, 16, 28, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8) !important;
+}
+
+@media (max-width: 576px) {
+    .premium-auth-card {
+        padding: 32px 24px;
+        border-radius: 24px;
+    }
+}
+
+/* ==========================================================================
+   SMARTTRADE TRADING NETWORK - PREMIUM REGISTER COMPONENT
+   ========================================================================== */
+
+:root {
+    --dark-void: #060913;
+    --glass-hull: rgba(11, 18, 33, 0.7);
+    --border-line: rgba(255, 255, 255, 0.06);
+    --blue-core: #0052ff;
+    --cyan-core: #00a3ff;
+    --purple-neon: #7c3aed;
+    --silver-text: #94a3b8;
+    --signal-red: #ff3366;
+}
+
+body {
+    background-color: var(--dark-void) !important;
+}
+
+/* کانتینر اصلی و ایجاد اتمسفر نئونی */
+.premium-register-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 60px 0;
+}
+
+.register-container-layer {
+    position: relative;
+    z-index: 10;
+    max-width: 1150px;
+    width: 100%;
+}
+
+.ambient-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(150px);
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.glow-blue {
+    width: 500px;
+    height: 500px;
+    background: var(--blue-core);
+    top: -10%;
+    left: -5%;
+}
+
+.glow-purple {
+    width: 450px;
+    height: 450px;
+    background: var(--purple-neon);
+    bottom: -10%;
+    right: -5%;
+}
+
+/* ساختار کارت کلی شیشه‌ای دو لایه */
+.auth-card-premium {
+    background: var(--glass-hull);
+    backdrop-filter: blur(25px) saturate(170%);
+    -webkit-backdrop-filter: blur(25px) saturate(170%);
+    border: 1px solid var(--border-line);
+    border-radius: 36px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   بخش چپ: بنر مارکتینگ تعاملی و برداری
+   ========================================================================== */
+.auth-banner-side {
+    position: relative;
+    width: 45%;
+    background: linear-gradient(145deg, rgba(7, 11, 22, 0.8) 0%, rgba(13, 23, 42, 0.9) 100%);
+    border-right: 1px solid var(--border-line);
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-top-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.brand-name-text {
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+/* آرت‌ورک هندسی شناور */
+.vector-art-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.floating-crypto-svg {
+    animation: masterFloat 6s ease-in-out infinite;
+}
+
+@keyframes masterFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+.banner-marketing-content {
+    margin-top: auto;
+    margin-bottom: 30px;
+}
+
+.banner-main-title {
+    color: white;
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+}
+
+.banner-sub-text {
+    color: var(--silver-text);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* لیست ویژگی‌های پلتفرم */
+.banner-perks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.perk-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.perk-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(0, 82, 255, 0.15);
+    color: var(--cyan-core);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border: 1px solid rgba(0, 82, 255, 0.25);
+    flex-shrink: 0;
+}
+
+.perk-text-group h6 {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.perk-text-group p {
+    color: #64748b;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* ==========================================================================
+   بخش راست: بدنه فرم اصلی ورودی‌ها
+   ========================================================================== */
+.auth-form-side {
+    width: 55%;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-section-header {
+    margin-bottom: 35px;
+}
+
+.form-primary-title {
+    color: white;
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.form-secondary-subtitle {
+    color: var(--silver-text);
+    font-size: 0.88rem;
+}
+
+/* فیلدها و کانتینرهای ایمن جنگو */
+.field-spacing {
+    margin-bottom: 22px;
+}
+
+.premium-field-label {
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.premium-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.input-icon-left {
+    padding-left: 18px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+/* استایل‌دهی مستقیم به تگ اینپوت خروجی جنگو */
+.premium-input-container input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    width: 100%;
+    padding: 14px 16px;
+    color: white !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.premium-input-container input::placeholder {
+    color: #334155 !important;
+}
+
+.focus-indicator-bar {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue-core), var(--cyan-core));
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-input-container:focus-within {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.premium-input-container:focus-within .input-icon-left {
+    color: var(--cyan-core);
+}
+
+.premium-input-container:focus-within .focus-indicator-bar {
+    left: 0;
+    width: 100%;
+}
+
+/* کامپوننت کاستوم متریال چکت باکس قوانین */
+.custom-terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-terms-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.custom-checkmark {
+    height: 18px;
+    width: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    margin-right: 12px;
+    margin-top: 2px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.custom-terms-checkbox input:checked ~ .custom-checkmark {
+    background: var(--blue-core);
+    border-color: transparent;
+}
+
+.custom-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.custom-terms-checkbox input:checked ~ .custom-checkmark:after {
+    display: block;
+}
+
+.terms-text-label {
+    color: var(--silver-text);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.terms-text-label a {
+    color: var(--cyan-core);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* دکمه اکشن ثبت نام */
+.btn-register-action {
+    position: relative;
+    width: 100%;
+    background: linear-gradient(135deg, var(--blue-core) 0%, #1d4ed8 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 15px 35px rgba(0, 82, 255, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.btn-register-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 82, 255, 0.4);
+}
+
+/* فوتر جابجایی */
+.form-redirect-footer {
+    margin-top: 35px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.footer-prompt-text {
+    color: var(--silver-text);
+}
+
+.footer-redirect-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 6px;
+    transition: color 0.2s;
+}
+
+.footer-redirect-link:hover {
+    color: var(--cyan-core);
+}
+
+/* پیغام‌های اعتبارسنجی خطا */
+.validation-error-alert {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--signal-red);
+    font-size: 0.76rem;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   طراحی ریسپانسیو پویا برای نمایشگرهای کوچک
+   ========================================================================== */
+@media (max-width: 991px) {
+    .auth-banner-side {
+        display: none !important;
+    }
+    .auth-form-side {
+        width: 100%;
+        padding: 45px 30px;
+    }
+    .auth-card-premium {
+        border-radius: 24px;
+    }
+    .premium-register-wrapper {
+        padding: 20px 10px;
+    }
+}

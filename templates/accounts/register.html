@@ -1,152 +1,146 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<style>
-    body {
-        background: #f4f7ff;
-    }
-    .register-container {
-        min-height: 90vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px 0;
-    }
-    .auth-card {
-        border: none;
-        border-radius: 40px;
-        background: #ffffff;
-        box-shadow: 0 40px 80px rgba(0, 82, 255, 0.08);
-        overflow: hidden;
-        display: flex;
-    }
-    .auth-banner {
-        background: linear-gradient(135deg, #0052ff 0%, #003db3 100%);
-        padding: 60px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        color: white;
-        width: 40%;
-    }
-    .auth-form-side {
-        padding: 60px;
-        width: 60%;
-    }
-    .input-group-custom {
-        background-color: #f8fafc;
-        border-radius: 18px;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-    }
-    .input-group-custom:focus-within {
-        border-color: #0052ff;
-        background-color: #fff;
-        box-shadow: 0 10px 25px rgba(0, 82, 255, 0.06);
-    }
-    .input-group-custom input {
-        background: transparent !important;
-        border: none !important;
-        padding: 14px 15px !important;
-        font-weight: 500;
-    }
-    .input-group-custom input:focus {
-        box-shadow: none !important;
-    }
-    .input-group-custom i {
-        color: #64748b;
-        padding-left: 20px;
-    }
-    .btn-register {
-        background: #0052ff;
-        border: none;
-        border-radius: 18px;
-        padding: 16px;
-        font-weight: 700;
-        box-shadow: 0 15px 30px rgba(0, 82, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-    .btn-register:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 20px 40px rgba(0, 82, 255, 0.3);
-    }
-    /* Responsive Fix */
-    @media (max-width: 991px) {
-        .auth-banner { display: none; }
-        .auth-form-side { width: 100%; padding: 40px; }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/register-premium.css' %}">
 
-<div class="register-container container">
-    <div class="auth-card w-100 shadow-lg">
-        
-        <div class="auth-banner d-none d-lg-flex">
-            <div class="mb-5">
-                <svg width="50" height="50" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="48" height="48" rx="12" fill="white" fill-opacity="0.2"/>
-                    <path d="M16 28L24 20L32 28" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <h1 class="display-5 fw-bold mb-4">Start Your Trading Journey</h1>
-            <p class="opacity-75 lead mb-5">Join 120,000+ traders and start copying professional strategies in minutes.</p>
+<div class="premium-register-wrapper">
+    <div class="ambient-glow glow-blue"></div>
+    <div class="ambient-glow glow-purple"></div>
+
+    <div class="container register-container-layer">
+        <div class="auth-card-premium shadow-lg">
             
-            <div class="mt-auto">
-                <div class="d-flex align-items-center mb-3">
-                    <i class="bi bi-check-circle-fill text-info me-3 fs-4"></i>
-                    <span>Real-time Strategy Copying</span>
-                </div>
-                <div class="d-flex align-items-center mb-3">
-                    <i class="bi bi-check-circle-fill text-info me-3 fs-4"></i>
-                    <span>Secure Asset Management</span>
-                </div>
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-check-circle-fill text-info me-3 fs-4"></i>
-                    <span>No Prior Knowledge Needed</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="auth-form-side">
-            <div class="mb-5">
-                <h2 class="fw-bold text-dark">Create Free Account</h2>
-                <p class="text-muted">Experience the future of social trading today.</p>
-            </div>
-
-            <form method="post">
-                {% csrf_token %}
-                <div class="row">
-                    {% for field in form %}
-                    <div class="col-12 mb-4">
-                        <label class="form-label small fw-bold text-secondary ms-2 mb-2">{{ field.label }}</label>
-                        <div class="input-group-custom d-flex align-items-center">
-                            <i class="bi {% if 'email' in field.name %}bi-envelope{% elif 'user' in field.name %}bi-person{% else %}bi-key{% endif %} fs-5"></i>
-                            {{ field }}
-                        </div>
-                        {% if field.errors %}
-                            <div class="text-danger small mt-2 ps-2"><i class="bi bi-exclamation-circle me-1"></i> {{ field.errors.0 }}</div>
-                        {% endif %}
+            <div class="auth-banner-side d-none d-lg-flex">
+                <div class="banner-glass-overlay"></div>
+                
+                <div class="brand-top-header">
+                    <div class="mini-logo-box">
+                        <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+                            <rect width="48" height="48" rx="12" fill="url(#mini-gradient)"/>
+                            <path d="M16 28L24 20L32 28" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            <defs>
+                                <linearGradient id="mini-gradient" x1="0" y1="0" x2="48" y2="48">
+                                    <stop offset="0%" stop-color="#0052ff" />
+                                    <stop offset="100%" stop-color="#00a3ff" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
                     </div>
-                    {% endfor %}
+                    <span class="brand-name-text">SmartTrade Network</span>
+                </div>
+                
+                <div class="vector-art-container">
+                    <svg class="floating-crypto-svg" width="280" height="280" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="80" stroke="url(#circle-grad)" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.6"/>
+                        <path d="M50 130L80 100L110 115L150 70" stroke="url(#chart-grad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="150" cy="70" r="5" fill="#00a3ff" class="pulse-dot"/>
+                        <circle cx="50" cy="130" r="4" fill="#0052ff" opacity="0.8"/>
+                        <circle cx="80" cy="100" r="4" fill="#7c3aed" opacity="0.8"/>
+                        <circle cx="110" cy="115" r="4" fill="#00a3ff" opacity="0.8"/>
+                        <defs>
+                            <linearGradient id="circle-grad" x1="20" y1="20" x2="180" y2="180">
+                                <stop offset="0%" stop-color="#0052ff"/>
+                                <stop offset="100%" stop-color="#7c3aed"/>
+                            </linearGradient>
+                            <linearGradient id="chart-grad" x1="50" y1="130" x2="150" y2="70">
+                                <stop offset="0%" stop-color="#0052ff"/>
+                                <stop offset="50%" stop-color="#7c3aed"/>
+                                <stop offset="100%" stop-color="#00a3ff"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
                 </div>
 
-                <div class="form-check mb-4 ms-2">
-                    <input class="form-check-input" type="checkbox" id="terms" required>
-                    <label class="form-check-label small text-muted" for="terms">
-                        I agree to the <a href="#" class="text-primary fw-bold text-decoration-none">Terms of Service</a> and <a href="#" class="text-primary fw-bold text-decoration-none">Privacy Policy</a>.
-                    </label>
+                <div class="banner-marketing-content">
+                    <h1 class="banner-main-title">Start Your Trading Journey</h1>
+                    <p class="banner-sub-text">Join 120,000+ traders and auto-copy institutional-grade portfolio strategies in real-time.</p>
                 </div>
-
-                <button type="submit" class="btn btn-primary btn-register w-100 text-white">
-                    Create My Account <i class="bi bi-rocket-takeoff ms-2"></i>
-                </button>
-            </form>
-
-            <div class="mt-5 text-center">
-                <span class="text-muted small">Already have an account?</span>
-                <a href="{% url 'accounts:login' %}" class="ms-2 text-primary fw-bold text-decoration-none">Sign In Here</a>
+                
+                <div class="banner-perks-list">
+                    <div class="perk-item">
+                        <div class="perk-icon-wrapper"><i class="bi bi-lightning-charge-fill"></i></div>
+                        <div class="perk-text-group">
+                            <h6>Real-time Strategy Copying</h6>
+                            <p>Sub-second execution mapping via ultra-low latency nodes.</p>
+                        </div>
+                    </div>
+                    <div class="perk-item">
+                        <div class="perk-icon-wrapper"><i class="bi bi-shield-lock-fill"></i></div>
+                        <div class="perk-text-group">
+                            <h6>Secure Non-Custodial Sync</h6>
+                            <p>Your API keys remain encrypted with end-to-end military protocols.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
+            <div class="auth-form-side">
+                <div class="form-section-header">
+                    <h2 class="form-primary-title">Create Free Account</h2>
+                    <p class="form-secondary-subtitle">Setup your institutional node access in less than 2 minutes.</p>
+                </div>
+
+                <form method="post" id="premium-register-form">
+                    {% csrf_token %}
+                    
+                    <div class="row m-0">
+                        {% for field in form %}
+                        <div class="col-12 p-0 field-spacing">
+                            <label class="premium-field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            
+                            <div class="premium-input-container">
+                                <div class="input-icon-left">
+                                    {% if 'email' in field.name %}
+                                        <i class="bi bi-envelope-at"></i>
+                                    {% elif 'user' in field.name %}
+                                        <i class="bi bi-person-badge"></i>
+                                    {% else %}
+                                        <i class="bi bi-key-fill"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                {{ field }}
+                                
+                                <div class="focus-indicator-bar"></div>
+                            </div>
+
+                            {% if field.errors %}
+                            <div class="validation-error-alert">
+                                <i class="bi bi-exclamation-square-fill"></i>
+                                <span>{{ field.errors.0 }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-12 p-0 mb-4 mt-2">
+                        <label class="custom-terms-checkbox">
+                            <input type="checkbox" id="terms" required name="terms_agreement">
+                            <span class="custom-checkmark"></span>
+                            <span class="terms-text-label">
+                                I verify alignment with the <a href="#">Terms of Service</a> and <a href="#">Privacy Framework</a>.
+                            </span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-register-action">
+                        <span>Initialize Account</span>
+                        <div class="button-hover-shimmer"></div>
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                    </button>
+                </form>
+
+                <div class="form-redirect-footer">
+                    <span class="footer-prompt-text">Already registered in the pool?</span>
+                    <a href="{% url 'accounts:login' %}" class="footer-redirect-link">Sign In</a>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
+
+<script src="{% static 'js/register-premium.js' %}"></script>
 {% endblock %}
