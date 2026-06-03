@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartTrade Core | Institutional Copy Trading Platform</title>
+    <title>CopyTrade | Premium Financial Copy Trading</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,45 +12,78 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
 </head>
-<body class="cyber-body">
+<body class="trading-dark-body">
 
-    <nav class="navbar navbar-expand-lg cyber-navbar sticky-top">
+    <nav class="navbar navbar-expand-lg premium-trading-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand-crypto" href="/">
-                <i class="bi bi-terminal-fill brand-icon"></i>SMART<span class="brand-dot">TRADE</span>
+            <a class="navbar-brand-trading" href="/">
+                <i class="bi bi-graph-up-arrow brand-icon-blue"></i>COPY<span class="brand-accent">TRADE</span>
             </a>
             
-            <button class="cyber-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#quantumNavbar">
-                <i class="bi bi-grid-fill"></i>
+            <button class="trading-menu-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#tradingNavbar" aria-controls="tradingNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list"></i>
             </button>
             
-            <div class="collapse navbar-collapse" id="quantumNavbar">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 target-nav-gap">
+            <div class="collapse navbar-collapse" id="tradingNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 trading-nav-gap header-nav-flat">
                     <li class="nav-item">
-                        <a class="cyber-nav-link active" href="/"><i class="bi bi-speedometer2 link-icon"></i> Dashboard</a>
+                        <a class="trading-nav-link" href="{% url 'accounts:dashboard' %}"><i class="bi bi-grid-1x2-fill link-icon"></i> Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="cyber-nav-link" href="{% url 'trading:copy_list' %}"><i class="bi bi-lightning-charge link-icon"></i> Elite Traders</a>
+                        <a class="trading-nav-link" href="{% url 'trading:copy_list' %}"><i class="bi bi-person-lines-fill link-icon"></i> Elite Traders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="cyber-nav-link" href="#"><i class="bi bi-shield-shaded link-icon"></i> Risk Matrix</a>
+                        <a class="trading-nav-link" href="{% url 'trading:market_list' %}"><i class="bi bi-currency-bitcoin link-icon"></i> Markets</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="cyber-nav-link" href="#"><i class="bi bi-cpu link-icon"></i> AI Analytics</a>
+                    
+                    <li class="nav-item dropdown custom-dropdown-wrapper">
+                        <a class="trading-nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-wallet2 link-icon"></i> Wallet
+                        </a>
+                        <ul class="dropdown-menu premium-trading-dropdown">
+                            <li><a class="dropdown-item" href="{% url 'transactions:deposit' %}"><i class="bi bi-arrow-down-left-circle me-2 text-success"></i> Deposit Funds</a></li>
+                            <li><a class="dropdown-item" href="{% url 'transactions:withdraw' %}"><i class="bi bi-arrow-up-right-circle me-2 text-danger"></i> Withdraw Capital</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'transactions:history' %}"><i class="bi bi-clock-history me-2 text-muted"></i> Transaction History</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown custom-dropdown-wrapper">
+                        <a class="trading-nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-headset link-icon"></i> Support
+                        </a>
+                        <ul class="dropdown-menu premium-trading-dropdown">
+                            <li><a class="dropdown-item" href="{% url 'accounts:ticket_list' %}"><i class="bi bi-ticket-detailed me-2 text-primary"></i> My Tickets</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:create_ticket' %}"><i class="bi bi-plus-circle me-2 text-success"></i> Open New Ticket</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:contact_us' %}"><i class="bi bi-envelope me-2"></i> Contact Office</a></li>
+                        </ul>
                     </li>
                 </ul>
                 
-                <div class="navbar-actions-wrapper">
+                <div class="navbar-actions-wrapper ms-auto">
                     {% if user.is_authenticated %}
-                        <div class="user-balance-badge d-none d-xl-inline-flex">
-                            <i class="bi bi-wallet2 balance-icon"></i> 
-                            <span class="balance-label">Balance:</span> 
-                            <strong class="balance-amount">${{ user.profile.balance|default:"0.00" }}</strong>
+                        <div class="trading-balance-badge">
+                            <span class="balance-label">Balance</span> 
+                            <strong class="balance-amount">${{ user.balance|default:"0.00"|floatformat:2 }}</strong>
                         </div>
-                        <a href="#" class="btn btn-cyber-outline">Console</a>
+                        
+                        <div class="dropdown custom-dropdown-wrapper">
+                            <a class="trading-nav-link dropdown-toggle account-premium-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle link-icon"></i> Account
+                            </a>
+                            <ul class="dropdown-menu premium-trading-dropdown dropdown-menu-end profile-dropdown-dark">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile_dashboard' %}"><i class="bi bi-sliders me-2"></i> Profile Settings</a></li>
+                                {% if user.is_staff %}
+                                    <li><a class="dropdown-item text-warning" href="{% url 'accounts:admin_ticket_list' %}"><i class="bi bi-shield-lock me-2"></i> Admin Panel</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i> Log Out</a></li>
+                            </ul>
+                        </div>
                     {% else %}
-                        <a href="#" class="auth-text-link">Sign In</a>
-                        <a href="{% url 'accounts:register' %}" class="btn btn-cyber-primary">Deploy Account</a>
+                        <a href="{% url 'accounts:login' %}" class="auth-minimal-link">Sign In</a>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-trading-primary">Open Account</a>
                     {% endif %}
                 </div>
             </div>
@@ -62,45 +95,37 @@
         {% endblock %}
     </main>
 
-    <footer class="cyber-footer">
+    <footer class="premium-trading-footer">
         <div class="container">
             <div class="row footer-grid-gap">
                 <div class="col-lg-4 footer-brand-section">
-                    <a class="navbar-brand-crypto mb-3 d-inline-block" href="#">
-                        SMART<span class="brand-dot">TRADE</span>
+                    <a class="navbar-brand-trading mb-3 d-inline-block" href="#">
+                        COPY<span class="brand-accent">TRADE</span>
                     </a>
                     <p class="footer-description-text">
-                        The ultimate algorithmic nexus bridging decentralized liquidity providers with microsecond trade replication protocols. Secure. Fully Audited. Automated.
+                        High-fidelity infrastructure engineered for real-time trade synchronization. Providing quantitative copy-trading capabilities at institutional-grade latency.
                     </p>
-                    <div class="footer-social-row">
-                        <a href="#" class="social-icon-link"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" class="social-icon-link"><i class="bi bi-telegram"></i></a>
-                        <a href="#" class="social-icon-link"><i class="bi bi-discord"></i></a>
-                        <a href="#" class="social-icon-link"><i class="bi bi-github"></i></a>
-                    </div>
                 </div>
                 
                 <div class="col-6 col-md-3 col-lg-2 footer-nav-column">
-                    <h5 class="footer-heading">Infrastructure</h5>
-                    <a href="#" class="footer-link">Liquidity Node</a>
-                    <a href="#" class="footer-link">API Webhooks</a>
-                    <a href="#" class="footer-link">Execution Logs</a>
-                    <a href="#" class="footer-link">Latency Statistics</a>
+                    <h5 class="footer-heading">Trading Hub</h5>
+                    <a href="{% url 'accounts:dashboard' %}" class="footer-link">Control Dashboard</a>
+                    <a href="{% url 'trading:copy_list' %}" class="footer-link">Elite Leaders</a>
+                    <a href="{% url 'trading:market_list' %}" class="footer-link">Market Watch</a>
                 </div>
                 
                 <div class="col-6 col-md-3 col-lg-2 footer-nav-column">
-                    <h5 class="footer-heading">Risk Control</h5>
-                    <a href="#" class="footer-link">Drawdown Limits</a>
-                    <a href="#" class="footer-link">Slippage Shield</a>
-                    <a href="#" class="footer-link">Margin Guard</a>
-                    <a href="#" class="footer-link">Hedging Protocol</a>
+                    <h5 class="footer-heading">Capital</h5>
+                    <a href="{% url 'transactions:deposit' %}" class="footer-link">Deposit Gateway</a>
+                    <a href="{% url 'transactions:withdraw' %}" class="footer-link">Withdraw Funds</a>
+                    <a href="{% url 'transactions:history' %}" class="footer-link">Ledger Statements</a>
                 </div>
 
                 <div class="col-md-6 col-lg-4 footer-status-column">
-                    <h5 class="footer-heading">System Status</h5>
-                    <div class="status-telemetry-card">
+                    <h5 class="footer-heading">Infrastructure Status</h5>
+                    <div class="trading-telemetry-card">
                         <div class="status-header-meta">
-                            <span class="status-text-summary">All Systems Operational</span>
+                            <span class="status-text-summary"><span class="pulse-indicator-green"></span> Core Engines Active</span>
                             <span class="status-percentage-badge">99.98%</span>
                         </div>
                         <div class="status-progress-track">
@@ -110,16 +135,17 @@
                 </div>
             </div>
             
-            <div class="footer-copyright-divider">
-                <p class="copyright-text">&copy; 2026 SmartTrade Core Network. Engineered for high-fidelity asset management.</p>
+            <div class="footer-copyright-divider d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <p class="copyright-text mb-0">&copy; 2026 CopyTrade Network. All rights reserved.</p>
+                <div class="footer-legal-links d-flex gap-4">
+                    <a href="{% url 'accounts:about_us' %}" class="small text-muted text-decoration-none hover-cyan">About Ecosystem</a>
+                    <a href="{% url 'accounts:terms_conditions' %}" class="small text-muted text-decoration-none hover-cyan">Terms of Engagement</a>
+                </div>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/main_script.js' %}"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2.2.4/dist/chartjs-plugin-dragdata.min.js"></script>
 </body>
 </html>

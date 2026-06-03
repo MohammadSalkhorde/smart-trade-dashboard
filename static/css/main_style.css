@@ -3936,3 +3936,671 @@ body {
     max-width: 380px !important;
     text-align: center !important;
 }
+
+/* ==========================================================================
+   SMARTTRADE PREMIUM FINANCIAL DARK THEME VARIABLES & BASE
+   ========================================================================== */
+:root {
+    --bg-trading-dark: #060b0e;
+    --navbar-trading-dark: #0a1117;
+    --card-trading-glass: rgba(13, 22, 28, 0.7);
+    --border-trading: rgba(255, 255, 255, 0.05);
+    --trading-blue: #0052ff;
+    --trading-cyan: #00a3ff;
+    --trading-green: #10b981;
+    --trading-red: #f43f5e;
+    --text-main: #b7bdc6;
+    --text-muted: #64748b;
+}
+
+/* اعمال فونت مدرن و تصحیح بادی */
+body.trading-dark-body {
+    background-color: var(--bg-trading-dark) !important;
+    color: #ffffff !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   NAVIGATION BAR (صرافی تراز اول)
+   ========================================================================== */
+.premium-trading-navbar {
+    background-color: rgba(10, 17, 23, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid var(--border-trading);
+    padding: 20px 0;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand-trading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon-blue {
+    color: var(--trading-blue);
+    font-size: 1.4rem;
+}
+
+.brand-accent {
+    color: var(--trading-cyan);
+}
+
+/* دکمه منوی موبایل */
+.trading-menu-toggler {
+    background: transparent;
+    border: 1px solid var(--border-trading);
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    transition: all 0.2s ease;
+}
+.trading-menu-toggler:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 82, 255, 0.2);
+}
+
+/* فاصله بین منوها */
+.trading-nav-gap {
+    gap: 12px;
+}
+
+/* لینک‌های ناوبری اصلی */
+.trading-nav-link {
+    color: var(--text-main) !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 10px 18px !important;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trading-nav-link:hover, .trading-nav-link.active {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.trading-nav-link .link-icon {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.trading-nav-link:hover .link-icon, .trading-nav-link.active .link-icon {
+    color: var(--trading-cyan);
+}
+
+/* ==========================================================================
+   DROPDOWN MENUS (منوهای کشویی لوکس شیشه‌ای)
+   ========================================================================== */
+.premium-trading-dropdown {
+    background: #0d161d !important;
+    border: 1px solid var(--border-trading) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+    padding: 10px !important;
+    margin-top: 10px !important;
+}
+
+.premium-trading-dropdown .dropdown-item {
+    color: var(--text-main) !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease;
+}
+
+.premium-trading-dropdown .dropdown-item:hover {
+    background: rgba(0, 82, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+.premium-trading-dropdown .dropdown-divider {
+    border-top: 1px solid var(--border-trading);
+    margin: 8px 0;
+}
+
+/* ==========================================================================
+   ACTIONS & BADGES (بخش اکشن‌ها و دکمه‌های ناوبار)
+   ========================================================================== */
+.navbar-actions-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* باکس نمایش موجودی ولت کاربر */
+.trading-balance-badge {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-trading);
+    padding: 8px 18px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.balance-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.balance-amount {
+    font-size: 1rem;
+    color: var(--trading-green);
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* دکمه اکانت لاگین شده */
+.btn-trading-profile {
+    background: rgba(0, 82, 255, 0.06) !important;
+    border: 1px solid rgba(0, 82, 255, 0.15) !important;
+    color: #ffffff !important;
+    padding: 10px 20px !important;
+    border-radius: 14px !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-trading-profile:hover, .btn-trading-profile:focus {
+    background: rgba(0, 82, 255, 0.12) !important;
+    border-color: rgba(0, 82, 255, 0.3) !important;
+    box-shadow: none !important;
+}
+
+/* دکمه‌های ورود و ثبت نام عمومی */
+.auth-minimal-link {
+    color: var(--text-main) !important;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+.auth-minimal-link:hover {
+    color: #ffffff !important;
+}
+
+.btn-trading-primary {
+    background: var(--trading-blue) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 12px 26px !important;
+    border-radius: 14px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+}
+.btn-trading-primary:hover {
+    background: #1a66ff !important;
+    box-shadow: 0 10px 25px rgba(0, 82, 255, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   VIEWPORT CAPACITY
+   ========================================================================== */
+.main-viewport {
+    min-height: calc(100vh - 300px);
+}
+
+/* ==========================================================================
+   PREMIUM FINANCIAL FOOTER
+   ========================================================================== */
+.premium-trading-footer {
+    background-color: #030608;
+    border-top: 1px solid var(--border-trading);
+    padding: 80px 0 40px 0;
+    margin-top: auto;
+}
+
+.footer-grid-gap {
+    row-gap: 40px;
+}
+
+.footer-description-text {
+    color: var(--text-main);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin-top: 15px;
+    opacity: 0.8;
+}
+
+.footer-social-row {
+    display: flex;
+    gap: 14px;
+    margin-top: 25px;
+}
+
+.social-icon-link {
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-trading);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.social-icon-link:hover {
+    background: var(--trading-blue);
+    border-color: var(--trading-blue);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.footer-heading {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 22px;
+    letter-spacing: -0.2px;
+}
+
+.footer-nav-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer-link {
+    color: var(--text-main);
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+    color: var(--trading-cyan);
+}
+
+/* کارت وضعیت موتورهای پلتفرم */
+.trading-telemetry-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-trading);
+    padding: 20px;
+    border-radius: 18px;
+}
+
+.status-header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.status-text-summary {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* پالس چشمک‌زن ملایم سبز موتور صرافی */
+.pulse-indicator-green {
+    width: 6px;
+    height: 6px;
+    background-color: var(--trading-green);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px var(--trading-green);
+    animation: tradingPulse 2s infinite ease-in-out;
+}
+
+@keyframes tradingPulse {
+    0% { transform: scale(0.95); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 12px var(--trading-green); }
+    100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.status-percentage-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--trading-green);
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.status-progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.status-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--trading-blue), var(--trading-cyan));
+    border-radius: 10px;
+}
+
+/* بخش کپی رایت فوتر */
+.footer-copyright-divider {
+    border-top: 1px solid var(--border-trading);
+    margin-top: 60px;
+    padding-top: 30px;
+}
+
+.copyright-text {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* ریسپانسیو و بهینه‌سازی موبایل */
+@media (max-width: 991.98px) {
+    .premium-trading-navbar { padding: 15px 0; }
+    .trading-nav-gap { gap: 4px; margin-top: 15px; }
+    .navbar-actions-wrapper { margin-top: 15px; width: 100%; justify-content: space-between; }
+    .premium-trading-dropdown { margin-top: 2px !important; box-shadow: none !important; background: rgba(0, 0, 0, 0.2) !important; }
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS OVERHAUL (اصلاحات تخصصی ریسپانسیو موبایل)
+   ========================================================================== */
+
+@media (max-width: 991.98px) {
+    /* شیشه‌ای کردن پس‌زمینه کلی منو هنگام باز شدن در موبایل */
+    .navbar-collapse {
+        background: rgba(13, 22, 28, 0.98);
+        border: 1px solid var(--border-trading);
+        border-radius: 20px;
+        padding: 25px;
+        margin-top: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(15px);
+    }
+
+    /* مرتب‌سازی آیتم‌های منو در موبایل */
+    .trading-nav-gap {
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .trading-nav-link {
+        width: 100%;
+        padding: 12px 16px !important;
+        justify-content: flex-start;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* فیکس کردن دراپ‌داون‌های تودرتو در حالت منوی موبایل */
+    .dropdown-mobile-fix .dropdown-menu {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        margin-top: 5px !important;
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+    }
+
+    /* راست‌چین کردن مجدد متون داخل دراپ‌داون موبایل */
+    .dropdown-mobile-fix .dropdown-item {
+        padding: 10px 20px !important;
+    }
+
+    /* اصلاح کانتینر دکمه‌ها و موجودی در موبایل */
+    .navbar-actions-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 12px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-trading);
+    }
+
+    .trading-balance-badge {
+        align-items: center;
+        padding: 12px;
+        background: rgba(16, 185, 129, 0.05);
+        border-color: rgba(16, 185, 129, 0.15);
+    }
+
+    .w-100-mobile {
+        width: 100% !important;
+    }
+
+    .auth-minimal-link {
+        text-align: center;
+        padding: 10px 0;
+    }
+}
+
+/* استایل دکمه منو همبرگری جدید (Grid Style) */
+.trading-menu-toggler {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-trading);
+    color: #ffffff;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.trading-menu-toggler:hover {
+    background: rgba(0, 82, 255, 0.1);
+    border-color: var(--trading-blue);
+    color: var(--trading-cyan);
+}
+
+.hover-cyan:hover {
+    color: var(--trading-cyan) !important;
+}
+
+/* ==========================================================================
+   ADVANCED FIN-TECH NAV STRUCTURE (قفل زوایای استایل دراپ‌داون‌ها)
+   ========================================================================== */
+.trading-dark-body {
+    background-color: #060b0e !important;
+}
+.premium-trading-navbar {
+    background-color: rgba(10, 17, 23, 0.85) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+
+/* رنگ‌بندی متمایز و لوکس منوی اکانت نسبت به بقیه گزینه‌ها */
+.account-premium-link {
+    background: rgba(0, 82, 255, 0.06) !important;
+    border: 1px solid rgba(0, 82, 255, 0.2) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+.account-premium-link:hover {
+    background: rgba(0, 82, 255, 0.12) !important;
+    border-color: rgba(0, 82, 255, 0.4) !important;
+}
+.profile-dropdown-dark {
+    border-color: rgba(0, 82, 255, 0.3) !important;
+}
+
+/* ==========================================================================
+   CRITICAL RESPONSIVE REPAIR (رفع کامل باگ تداخل روی آیتم‌ها در موبایل)
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: #090f14 !important;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        padding: 24px;
+        margin-top: 12px;
+        backdrop-filter: blur(20px);
+    }
+
+    /* تبدیل ساختار دراپ‌داون‌ها به زیرمنوی عمودی بازشونده طبیعی جهت جلوگیری از قرارگیری روی بقیه ردیف‌ها */
+    .custom-dropdown-wrapper .dropdown-menu {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.25) !important;
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+        margin-top: 6px !important;
+        margin-bottom: 6px !important;
+        display: none; /* پنهان به صورت پیش‌فرض جهت مهار فضا */
+        padding: 8px !important;
+    }
+    
+    /* باز شدن روان به کمک معماری بومی بوت‌استرپ کلاس شو در موبایل */
+    .custom-dropdown-wrapper .dropdown-menu.show {
+        display: block !important;
+    }
+
+    .trading-nav-gap {
+        gap: 8px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .trading-nav-link {
+        width: 100%;
+        padding: 12px 16px !important;
+        background: rgba(255, 255, 255, 0.01);
+        border-radius: 12px;
+    }
+
+    .account-premium-link {
+        border-left: 3px solid var(--trading-blue) !important;
+    }
+
+    .navbar-actions-wrapper {
+        width: 100%;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: center;
+    }
+
+    .trading-balance-badge {
+        width: 100%;
+        align-items: center;
+        background: rgba(16, 185, 129, 0.04);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+}
+
+/* ==========================================================================
+   ULTRA-COMPACT DESKTOP GRID SYSTEM (مهار ۱۰۰٪ فضاهای عرضی در لپ‌تاپ)
+   ========================================================================== */
+@media (min-width: 992px) {
+    /* جلوگیری از شکستن خط ناوبار در هر شرایطی */
+    .navbar-collapse {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: justify !important;
+        width: 100% !important;
+    }
+
+    /* فشرده‌سازی فواصل منوهای اصلی دسکتاپ */
+    .header-nav-flat {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 4px !important; 
+        margin-bottom: 0 !important;
+    }
+
+    /* پدینگ‌های بهینه برای لینک‌ها جهت جلوگیری از کمبود عرض پلتفرم */
+    .trading-nav-link {
+        padding: 6px 12px !important;
+        font-size: 0.9rem !important;
+        white-space: nowrap !important; /* مهار شکستن کلمات */
+    }
+
+    /* تراز و فیکس کردن بخش اکشن‌های سمت راست (موجودي و دکمه اکانت) */
+    .navbar-actions-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        gap: 12px !important;
+        margin-top: 0 !important;
+    }
+
+    /* بهینه‌سازی کادر موجودی برای گرفتن حداقل عرض */
+    .trading-balance-badge {
+        padding: 4px 12px !important;
+        border-radius: 10px !important;
+        min-width: 110px;
+        align-items: flex-start !important;
+    }
+    
+    .balance-label {
+        font-size: 0.65rem !important;
+        line-height: 1 !important;
+        margin-bottom: 2px;
+    }
+
+    .balance-amount {
+        font-size: 0.9rem !important;
+        line-height: 1 !important;
+    }
+
+    /* متمایز کردن دکمه دراپ‌داون اکانت در دسکتاپ */
+    .account-premium-link {
+        background: rgba(0, 82, 255, 0.08) !important;
+        border: 1px solid rgba(0, 82, 255, 0.2) !important;
+        padding: 6px 14px !important;
+        border-radius: 10px !important;
+    }
+
+    /* تنظیم دقیق پوزیشن پاپ‌آپ‌های دراپ‌داون بر اساس والد */
+    .custom-dropdown-wrapper {
+        position: relative !important;
+    }
+
+    .custom-dropdown-wrapper .premium-trading-dropdown {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: auto !important;
+        min-width: 200px !important;
+        margin-top: 8px !important;
+        display: none;
+    }
+
+    /* راست‌چین کردن دقیق منوی کاربری چسبیده به لبه سمت راست */
+    .custom-dropdown-wrapper .premium-trading-dropdown.dropdown-menu-end {
+        right: 0 !important;
+        left: auto !important;
+    }
+
+    /* نمایش روان در هنگام کلیک دسکتاپ */
+    .custom-dropdown-wrapper .dropdown-menu.show {
+        display: block !important;
+    }
+}
+
+/* اصلاح تگ گمشده پدینگ کلی بدنه */
+.main-viewport {
+    padding: 40px 0;
+}
