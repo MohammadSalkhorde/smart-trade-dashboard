@@ -3,19 +3,28 @@
 {% block content %}
 <style>
     :root {
-        --primary-glow: radial-gradient(circle, rgba(0, 82, 255, 0.15) 0%, rgba(0, 82, 255, 0) 70%);
-        --accent-color: #0052ff;
+        --bg-deep-premium: #060b0e;
+        --card-dark-glass: rgba(13, 22, 28, 0.75);
+        --border-premium-glass: rgba(255, 255, 255, 0.05);
+        --premium-blue: #0052ff;
+        --premium-cyan: #00a3ff;
+        --text-ready: #10b981;
+    }
+
+    body {
+        background-color: var(--bg-deep-premium) !important;
+        overflow-x: hidden !important;
     }
 
     .contact-wrapper {
         min-height: 100vh;
-        background: #ffffff;
+        background: var(--bg-deep-premium);
         position: relative;
         overflow: hidden;
-        padding: 100px 0;
+        padding: 120px 0;
     }
 
-    /* افکت گرادینت متحرک در پس‌زمینه */
+    /* افکت گرادینت امب things در پس‌زمینه */
     .contact-wrapper::before {
         content: '';
         position: absolute;
@@ -23,8 +32,9 @@
         right: -10%;
         width: 600px;
         height: 600px;
-        background: var(--primary-glow);
+        background: radial-gradient(circle, rgba(0, 82, 255, 0.1) 0%, transparent 70%);
         z-index: 0;
+        pointer-events: none;
     }
 
     .contact-wrapper::after {
@@ -34,69 +44,84 @@
         left: -10%;
         width: 600px;
         height: 600px;
-        background: var(--primary-glow);
+        background: radial-gradient(circle, rgba(0, 163, 255, 0.06) 0%, transparent 70%);
         z-index: 0;
+        pointer-events: none;
     }
 
+    /* کانتینر شیشه‌ای تاریک و سنگین */
     .glass-container {
         position: relative;
         z-index: 1;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(238, 242, 247, 0.8);
+        background: rgba(13, 22, 28, 0.65);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--border-premium-glass);
         border-radius: 40px;
-        box-shadow: 0 40px 100px rgba(0, 82, 255, 0.08);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
         overflow: hidden;
     }
 
+    /* پنل اطلاعات سمت چپ */
     .info-panel {
-        background: linear-gradient(160deg, #0052ff 0%, #003db3 100%);
+        background: linear-gradient(160deg, #0d1620 0%, #050a0e 100%);
+        border-right: 1px solid var(--border-premium-glass);
         color: #ffffff;
         padding: 60px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        height: 100%;
     }
 
+    /* پنل فرم سمت راست */
     .form-panel {
         padding: 60px;
+        background: rgba(10, 17, 23, 0.3);
     }
 
     .modern-label {
+        font-family: 'Courier New', monospace;
         font-size: 0.75rem;
-        font-weight: 800;
+        font-weight: 700;
         letter-spacing: 1.5px;
         text-transform: uppercase;
-        color: #929aa5;
+        color: #64748b;
         margin-bottom: 12px;
         display: block;
     }
 
+    /* اینپوت‌های تاریک فوق مدرن */
     .minimal-input {
         width: 100%;
-        background: #f8faff;
-        border: 2px solid transparent;
-        border-radius: 20px;
+        background: #090f14 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px;
         padding: 18px 24px;
         font-weight: 500;
-        color: #1e2329;
+        color: #ffffff !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    .minimal-input::placeholder {
+        color: #475569;
+    }
+
     .minimal-input:focus {
-        background: #ffffff;
-        border-color: #0052ff;
-        box-shadow: 0 10px 30px rgba(0, 82, 255, 0.05);
+        background: #0d151c !important;
+        border-color: var(--premium-blue) !important;
+        box-shadow: 0 0 20px rgba(0, 82, 255, 0.15) !important;
         outline: none;
         transform: translateY(-2px);
     }
 
+    /* دکمه اطلاعات تماس */
     .contact-method {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.02);
         padding: 24px;
         border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        transition: all 0.3s ease;
+        border: 1px solid var(--border-premium-glass);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         text-decoration: none;
         color: white;
         display: flex;
@@ -106,99 +131,134 @@
     }
 
     .contact-method:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateX(10px);
+        background: rgba(0, 82, 255, 0.08);
+        border-color: rgba(0, 82, 255, 0.3);
+        transform: translateX(8px);
         color: white;
     }
 
     .submit-btn {
-        background: #0052ff;
+        background: linear-gradient(135deg, var(--premium-blue), #0046d6);
         color: white;
-        border: none;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         padding: 20px 40px;
-        border-radius: 20px;
+        border-radius: 18px;
         font-weight: 700;
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 12px;
-        transition: all 0.4s ease;
-        box-shadow: 0 15px 35px rgba(0, 82, 255, 0.2);
+        transition: all 0.3s ease;
+        box-shadow: 0 15px 35px rgba(0, 82, 255, 0.25);
     }
 
     .submit-btn:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 45px rgba(0, 82, 255, 0.3);
-        background: #0046d6;
+        transform: translateY(-3px);
+        box-shadow: 0 20px 45px rgba(0, 82, 255, 0.4);
+        background: linear-gradient(135deg, #1a66ff, var(--premium-blue));
     }
 
     .section-tag {
-        background: #eef4ff;
-        color: #0052ff;
-        padding: 8px 20px;
+        font-family: 'Courier New', monospace;
+        background: rgba(0, 82, 255, 0.08);
+        color: var(--premium-cyan);
+        border: 1px solid rgba(0, 82, 255, 0.2);
+        padding: 6px 16px;
         border-radius: 100px;
         font-weight: 700;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         margin-bottom: 24px;
         display: inline-block;
     }
 
+    /* نوتیفیکیشن مِسیج‌های جنگو ست شده با تم دارک */
     .django-messages .alert {
-        border-radius: 20px;
-        border: none;
-        padding: 15px 25px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 18px 25px;
         margin-bottom: 30px;
         font-weight: 600;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .django-messages .alert-success {
+        background-color: rgba(16, 185, 129, 0.1) !important;
+        color: #10b981 !important;
+        border-color: rgba(16, 185, 129, 0.2) !important;
+    }
+    .django-messages .alert-danger {
+        background-color: rgba(244, 63, 94, 0.1) !important;
+        color: #f43f5e !important;
+        border-color: rgba(244, 63, 94, 0.2) !important;
+    }
+
+    /* چراغ وضعیت تونل امن شبکه */
+    .live-status-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        color: #64748b;
+    }
+    .live-dot-green {
+        width: 6px;
+        height: 6px;
+        background: var(--text-ready);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--text-ready);
+        display: inline-block;
+    }
+
+    /* استایل انتخابی برای منوی سلکت آپشن */
+    select.minimal-input option {
+        background: #090f14;
+        color: #fff;
     }
 
     @media (max-width: 992px) {
         .info-panel, .form-panel { padding: 40px; }
-        .contact-wrapper { padding: 40px 0; }
+        .contact-wrapper { padding: 60px 0; }
+        .info-panel { border-right: none; border-bottom: 1px solid var(--border-premium-glass); }
     }
 
-    /* استایل اصلاح شده برای جلوگیری از بیرون زدگی در موبایل */
-.contact-method {
-    flex-wrap: wrap; /* در موبایل آیکون و متن می‌توانند زیر هم بروند */
-    padding: 20px;
-    height: auto;
-    min-width: 0; /* برای مدیریت بهتر عرض در فلکس‌باکس */
-}
-
-.contact-method div {
-    flex: 1;
-    min-width: 200px; /* اگر عرض کمتر از این شد، به خط بعد می‌رود */
-}
-
-.contact-method .fw-bold {
-    word-break: break-all; /* شکستن ایمیل‌های طولانی */
-    font-size: clamp(0.85rem, 3.5vw, 1.05rem); /* سایز داینامیک */
-    display: block;
-    line-height: 1.4;
-}
-
-@media (max-width: 480px) {
     .contact-method {
-        gap: 12px;
-        padding: 15px;
+        flex-wrap: wrap;
+        padding: 20px;
+        height: auto;
+        min-width: 0;
     }
-    
-    .info-panel {
-        padding: 30px 20px;
+
+    .contact-method div {
+        flex: 1;
+        min-width: 200px;
     }
-}
+
+    .contact-method .fw-bold {
+        word-break: break-all;
+        font-size: clamp(0.85rem, 3.5vw, 1.05rem);
+        display: block;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+        .contact-method { gap: 12px; padding: 15px; }
+        .info-panel { padding: 40px 20px; }
+        .form-panel { padding: 40px 20px; }
+    }
 </style>
 
 <div class="contact-wrapper">
     <div class="container">
+        
+        <!-- پیام‌های جنگو سیستم -->
         {% if messages %}
         <div class="row justify-content-center django-messages">
             <div class="col-12">
                 {% for message in messages %}
                 <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <span class="font-mono me-2">[{% if message.tags == 'error' %}SYSTEM_ERR{% else %}SUCCESS_PRTCL{% endif %}]</span> {{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endfor %}
             </div>
@@ -207,71 +267,70 @@
 
         <div class="glass-container">
             <div class="row g-0">
+                
+                <!-- سمت چپ: دپارتمان اطلاعات و تونل ارتباطی -->
                 <div class="col-lg-5">
                     <div class="info-panel">
                         <div>
-                            <h2 class="display-5 fw-bold mb-4">Let's build the <br>future of trading.</h2>
-                            <p class="opacity-75 fs-5 mb-5">Have a technical question or want to explore partnership opportunities? We're here to help.</p>
+                            <h2 class="display-6 fw-bold mb-4 text-light">Secure Node <br>Communications.</h2>
+                            <p class="text-muted fs-6 mb-5">Have an infrastructure inquiry, enterprise integration proposal, or need premium routing assistance? Initialize a ticket.</p>
                             
                             <a href="mailto:support@smartercopytrade.com" class="contact-method">
-                                <i class="bi bi-envelope-at fs-3"></i>
+                                <i class="bi bi-envelope-at fs-3 text-primary"></i>
                                 <div>
-                                    <div class="small opacity-50">Email us</div>
-                                    <div class="fw-bold text-break">support@smartercopytrade.com</div>    
+                                    <div class="small text-secondary font-mono">// SECURE_EMAIL</div>
+                                    <div class="fw-bold text-light text-break">support@smartercopytrade.com</div>    
                                 </div>
                             </a>
-
-                            {% comment %} <a href="https://t.me/SmartTrade_Sync" target="_blank" class="contact-method">
-                                <i class="bi bi-telegram fs-3"></i>
-                                <div>
-                                    <div class="small opacity-50">Telegram Support</div>
-                                    <div class="fw-bold">@SmartTrade_Sync</div>
-                                </div>
-                            </a> {% endcomment %}
                         </div>
 
-                        <div class="pt-5 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center">
-                            <span class="small opacity-50">Active 24/7 for VIP users</span>
-                            <div class="d-flex gap-3">
-                                <i class="bi bi-shield-check fs-5"></i>
-                                <i class="bi bi-cpu fs-5"></i>
+                        <div class="pt-5 border-top border-secondary border-opacity-10 d-flex justify-content-between align-items-center">
+                            <div class="live-status-bar">
+                                <span class="live-dot-green"></span>
+                                <span>SECURE TUNNEL: ACTIVE</span>
+                            </div>
+                            <div class="d-flex gap-3 text-secondary">
+                                <i class="bi bi-shield-lock-fill fs-5"></i>
+                                <i class="bi bi-terminal-fill fs-5"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- سمت راست: فرم پیام بدون تغییر فیلدهای بک‌اند -->
                 <div class="col-lg-7">
                     <div class="form-panel">
-                        <span class="section-tag">Direct Inquiry</span>
-                        <h3 class="fw-bold mb-5 text-dark">Send us a message</h3>
+                        <span class="section-tag">// END-TO-END ENCRYPTED INQUIRY</span>
+                        <h3 class="fw-bold mb-5 text-light">Transmit Gateway Message</h3>
                         
                         <form action="{% url 'accounts:contact_us' %}" method="POST">
                             {% csrf_token %}
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <span class="modern-label">Full Name</span>
-                                    <input type="text" name="full_name" required class="minimal-input shadow-none" placeholder="Enter your name">
+                                    <span class="modern-label">> IDENTIFICATION_NAME</span>
+                                    <input type="text" name="full_name" required class="minimal-input shadow-none" placeholder="e.g. John Doe">
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="modern-label">Email Address</span>
-                                    <input type="email" name="email" required class="minimal-input shadow-none" placeholder="name@company.com">
+                                    <span class="modern-label">> ROUTING_EMAIL_ADDRESS</span>
+                                    <input type="email" name="email" required class="minimal-input shadow-none" placeholder="name@domain.com">
                                 </div>
                                 <div class="col-12">
-                                    <span class="modern-label">Subject</span>
+                                    <span class="modern-label">> ROUTING_SUBJECT_CLASSIFICATION</span>
+                                    <!-- گزینه‌ها را دهن‌پرکن‌تر کردیم اما مقادیر value دقیقاً همان مقادیر قبلی بک‌اند شماست -->
                                     <select name="subject" class="minimal-input shadow-none" style="appearance: none; cursor: pointer;">
-                                        <option value="Technical Support">Technical Support</option>
-                                        <option value="Investment Inquiry">Investment Inquiry</option>
-                                        <option value="Account Issues">Account Issues</option>
-                                        <option value="Feedback">Feedback</option>
+                                        <option value="Technical Support">> Technical Infrastructure & API Support</option>
+                                        <option value="Investment Inquiry">> Institutional Asset & Liquidity Inquiry</option>
+                                        <option value="Account Issues">> Node Architecture & Terminal Issues</option>
+                                        <option value="Feedback">> Core Engine Performance Feedback</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <span class="modern-label">Message</span>
-                                    <textarea name="message" required class="minimal-input shadow-none" rows="5" placeholder="Tell us how we can help..."></textarea>
+                                    <span class="modern-label">> MESSAGE_PAYLOAD_DATA</span>
+                                    <textarea name="message" required class="minimal-input shadow-none" rows="5" placeholder="Write your transmission payload here..."></textarea>
                                 </div>
                                 <div class="col-12 pt-4">
-                                    <button type="submit" class="submit-btn">
-                                        Submit Request
+                                    <button type="submit" class="submit-btn font-mono text-uppercase">
+                                        Execute Stream Transmission
                                         <i class="bi bi-arrow-right-short fs-4"></i>
                                     </button>
                                 </div>
@@ -279,6 +338,7 @@
                         </form>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

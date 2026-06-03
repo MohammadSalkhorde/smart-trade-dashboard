@@ -1,148 +1,281 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/about-premium.css' %}">
+
+<div class="cyber-modal-overlay" id="securityModal">
+    <div class="cyber-modal-card animate-shake">
+        <div class="modal-cyber-header">
+            <span class="text-danger fw-bold font-mono">[!!] ACCESS TERMINATED</span>
+            <button class="close-modal-btn" onclick="closeCyberModal()">&times;</button>
+        </div>
+        <div class="modal-cyber-body text-center py-4">
+            <div class="lock-icon-wrap mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h5 class="text-light fw-bold mb-2">RESTRICTED REGION DETECTION</h5>
+            <p class="text-muted small px-3">
+                Your current IP routing originates from a jurisdiction with regulatory framework limitations. Enterprise API bridges and Institutional High-Frequency copying modules are locked for your node.
+            </p>
+            <div class="cyber-panel-error-code font-mono">
+                ERROR_CODE: 403_REGIONAL_COMPLIANCE_LOCK
+            </div>
+        </div>
+        <div class="modal-cyber-footer text-center">
+            <button class="btn btn-premium-outline w-100" onclick="closeCyberModal()">Acknowledge & Exit</button>
+<!-- پاپ‌آپ اختصاصی هشدار امنیتی سیستم (Modal) -->
+<div class="cyber-modal-overlay" id="securityModal">
+    <div class="cyber-modal-card animate-shake">
+        <div class="modal-cyber-header">
+            <span class="text-danger fw-bold font-mono">[!!] ACCESS TERMINATED</span>
+            <button class="close-modal-btn" onclick="closeCyberModal()">&times;</button>
+        </div>
+        <div class="modal-cyber-body text-center py-4">
+            <div class="lock-icon-wrap mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h5 class="text-light fw-bold mb-2">RESTRICTED REGION DETECTION</h5>
+            <p class="text-muted small px-3">
+                Your current IP routing originates from a jurisdiction with regulatory framework limitations. Enterprise API bridges and Institutional High-Frequency copying modules are locked for your node.
+            </p>
+            <!-- اصلاح رنگ پس‌زمینه و متن کد خطا برای خوانایی ۱۰۰٪ -->
+            <div class="cyber-error-badge font-mono">
+                ERROR_CODE: 403_REGIONAL_COMPLIANCE_LOCK
+            </div>
+        </div>
+        <div class="modal-cyber-footer text-center">
+            <button class="btn btn-premium-outline w-100" onclick="closeCyberModal()">Acknowledge & Exit</button>
+        </div>
+    </div>
+</div>        </div>
+    </div>
+</div>
+
+<section class="about-hero-section position-relative overflow-hidden">
+    <div class="absolute-blur-glow"></div>
+    <div class="container position-relative z-index-2 text-center text-lg-start">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7 animate-slide-up">
+                <span class="badge badge-tech-premium mb-3">
+                    <span class="live-dot-green"></span> NODE: ACTIVE // SECURE ARCHITECTURE
+                </span>
+                <h1 class="premium-hero-title mb-4">
+                    Architecting the Next Era of <br>
+                    <span class="text-gradient-premium">Quantitative Intelligence</span>
+                </h1>
+                <p class="premium-hero-lead text-muted mb-4">
+                    SmartTrade operation began with a fundamental paradigm shift: eliminating human latency and emotional bias from asset management through high-frequency neural networks and verified cryptographic ledgers.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a href="#matrix-terminal" class="btn btn-premium-primary">View Grid Infrastructure</a>
+                    <button onclick="triggerCyberModal()" class="btn btn-premium-outline">Request API License Key</button>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block animate-fade-in-right">
+                <div class="tech-stack-visual">
+                    <div class="stack-layer layer-1" onclick="triggerCyberModal()"><span>CORE API ENGINE // L-01</span><span class="badge-status-lock">LOCKED</span></div>
+                    <div class="stack-layer layer-2"><span>NEURAL PARSING ROUTER [ACTIVE]</span></div>
+                    <div class="stack-layer layer-3" onclick="triggerCyberModal()"><span>HFT ORDER EXECUTION MATRIX</span><span class="badge-status-lock">REGIONAL LOCK</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="metrics-bar-section">
+    <div class="container">
+        <div class="metrics-inner-wrapper">
+            <div class="row g-4 text-center">
+                <div class="col-6 col-md-3 metric-item-box">
+                    <h3 class="metric-number font-mono">$420M+</h3>
+                    <p class="metric-label font-mono">// TOTAL ASSETS UNDER MANAGEMENT</p>
+                </div>
+                <div class="col-6 col-md-3 metric-item-box">
+                    <h3 class="metric-number font-mono">Sub-1ms</h3>
+                    <p class="metric-label font-mono">// SIGNAL REPLICATION LATENCY</p>
+                </div>
+                <div class="col-6 col-md-3 metric-item-box">
+                    <h3 class="metric-number font-mono">14.8M+</h3>
+                    <p class="metric-label font-mono">// AUTOMATED POSITIONS EXECUTED</p>
+                </div>
+                <div class="col-6 col-md-3 metric-item-box">
+                    <h3 class="metric-number font-mono">99.98%</h3>
+                    <p class="metric-label font-mono">// INFRASTRUCTURE UPTIME SLA</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="matrix-terminal" class="py-5 node-matrix-section">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="text-gradient-premium font-mono fw-bold d-block mb-2">// LATENCY MONITORING</span>
+            <h2 class="premium-section-title">Interconnected Proxy Routing</h2>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="node-status-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="font-mono text-light fw-bold">SG-SINGAPORE-01</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle font-mono small px-2">ONLINE</span>
+                    </div>
+                    <div class="node-meta mt-3 font-mono">
+                        <div>PING: <span class="text-success">0.45ms</span></div>
+                        <div>LOAD: <span class="text-muted">14% / 100%</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="node-status-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="font-mono text-light fw-bold">UK-LONDON-CORE</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle font-mono small px-2">ONLINE</span>
+                    </div>
+                    <div class="node-meta mt-3 font-mono">
+                        <div>PING: <span class="text-success">0.82ms</span></div>
+                        <div>LOAD: <span class="text-muted">32% / 100%</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" onclick="triggerCyberModal()">
+                <div class="node-status-card proxy-locked-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="font-mono text-secondary fw-bold">US-NY-WALLSTREET</span>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono small px-2">BLOCKED</span>
+                    </div>
+                    <div class="node-meta mt-3 font-mono text-danger">
+                        <div>GEO_IP: <span class="fw-bold">UNAUTHORIZED</span></div>
+                        <div>REASON: <span class="small">REGULATORY LAWS</span></div>
+                    </div>
+                    <div class="lock-overlay-text font-mono">CLICK TO RESOLVE PROXY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="philosophy" class="pillars-section py-5 position-relative">
+    <div class="container py-5">
+        <div class="text-center mb-5 max-w-600 mx-auto">
+            <h2 class="premium-section-title">The Operational Manifesto</h2>
+            <p class="text-muted font-mono">// Three pillars governing every transaction routing on our grid.</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-xl-4 col-md-6">
+                <div class="premium-pillar-card">
+                    <div class="pillar-icon-wrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                    </div>
+                    <h4 class="pillar-title font-mono">> NEURAL VERIFICATION</h4>
+                    <p class="pillar-desc text-muted mb-0">
+                        We deploy proprietary deep-learning scrapers to historical datasets. Every strategy on board is stress-tested against severe market drawdowns before public deployment.
+                    </p>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="premium-pillar-card">
+                    <div class="pillar-icon-wrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <h4 class="pillar-title font-mono">> CRYPTOGRAPHIC INTEGRITY</h4>
+                    <p class="pillar-desc text-muted mb-0">
+                        Absolute elimination of operational opacity. Performance validation occurs via immutable execution histories, guaranteeing zero manual reporting manipulation.
+                    </p>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-12">
+                <div class="premium-pillar-card" onclick="triggerCyberModal()">
+                    <div class="pillar-icon-wrap border-danger-subtle text-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <h4 class="pillar-title font-mono text-danger">> INSTITUTIONAL CO-LOCATION [LOCKED]</h4>
+                    <p class="pillar-desc text-muted mb-0">
+                        Direct server matching with dark pools via sub-nanosecond physical fiber lines. <span class="text-danger fw-bold">Unavailable for public retail traders.</span> Click to request special corporate onboarding documentation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 career-terminal-section">
+    <div class="container py-4">
+        <div class="career-inner-box">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="badge badge-tech-premium mb-3">// JOIN THE QUANT SYNDICATE</span>
+                    <h2 class="premium-section-title mb-3">Remote Engineering & Mathematics Careers</h2>
+                    <p class="text-muted small">
+                        We are perpetually scouting for elite Rust/Python back-end engineers, data scientists, and risk architects. Our production core operates outside standard geographic boundaries.
+                    </p>
+                    <div class="mt-4 font-mono small text-terminal-muted">
+                        <div>> CURRENT REQ: <span class="text-warning">0 OPENINGS AVAILABLE</span></div>
+                        <div>> ACTIVE SYNC PROTOCOL: <span class="text-light">ENCRYPTED END-TO-END</span></div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="career-fake-form" onclick="triggerCyberModal()">
+                        <div class="mb-3">
+                            <label class="form-label font-mono small text-secondary">> SECURE_IDENTIFICATION_NAME</label>
+                            <input type="text" class="form-control career-input" placeholder="e.g. Developer #8812" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label font-mono small text-secondary">> DEFINE_CORE_EXPERTISE</label>
+                            <select class="form-select career-input" disabled>
+                                <option>High-Frequency Algorithm (Rust/C++)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-premium-primary w-100 mt-2 font-mono" type="button">SUBMIT APPLICATION ARCHIVE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="premium-cta-section py-5 my-5">
+    <div class="container text-center position-relative overflow-hidden rounded-5 cta-blur-box py-5 px-4">
+        <div class="position-relative z-index-2 py-4">
+            <h2 class="premium-cta-title mb-3">Initiate System Integration</h2>
+            <p class="text-muted mx-auto mb-4 max-w-500">
+                Deploy your capital alongside market structures designed by top quantitative specialists. Registration takes less than three minutes.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'accounts:register' %}" class="btn btn-premium-primary px-4 py-2">Create Terminal Account</a>
+                <a href="{% url 'accounts:contact_us' %}" class="btn btn-premium-outline px-4 py-2">Consult Operations</a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <style>
-    .about-hero {
-        padding: 100px 0;
-        background: radial-gradient(circle at bottom left, #f8faff, #ffffff);
-        border-bottom: 1px solid #f0f3f9;
-    }
-    .text-gradient {
-        background: linear-gradient(135deg, #0052ff, #00a3ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .section-title {
-        font-size: 2.8rem;
-        font-weight: 800;
-        color: #1e2329;
-        letter-spacing: -0.5px;
-    }
-    .glass-card {
-        border: 1px solid #f0f0f0;
-        border-radius: 32px;
-        background: #ffffff;
-        padding: 40px;
-        height: 100%;
-        transition: transform 0.3s ease;
-    }
-    .glass-card:hover {
-        border-color: #0052ff20;
-        box-shadow: 0 20px 40px rgba(0, 82, 255, 0.05);
-    }
-    .vision-box {
-        background: #0052ff;
-        border-radius: 40px;
-        padding: 60px;
-        color: #ffffff;
-        position: relative;
-        overflow: hidden;
-    }
-    .vision-box::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-    }
-    .core-value-icon {
-        width: 64px;
-        height: 64px;
-        background: #f0f5ff;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #0052ff;
-        font-size: 1.5rem;
-        margin-bottom: 24px;
-    }
-    @media (max-width: 768px) {
-        .about-hero { padding: 60px 0; }
-        .section-title { font-size: 2rem; }
-        .vision-box { padding: 30px; }
-    }
+    /* باکس اختصاصی نمایش کد خطای سیستم */
+.cyber-error-badge {
+    background: rgba(244, 63, 94, 0.1) !important;
+    border: 1px solid rgba(244, 63, 94, 0.2) !important;
+    color: #f43f5e !important;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: bold;
+}
 </style>
-
-<div class="about-hero">
-    <div class="container text-center">
-        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">Our Story</span>
-        <h1 class="section-title mb-4">Driving the Future of <br><span class="text-gradient">Financial Autonomy</span></h1>
-        <p class="lead text-muted mx-auto" style="max-width: 700px;">SmartTrade was founded with a singular mission: to democratize high-performance trading through collective intelligence and neural-driven automation.</p>
-    </div>
-</div>
-
-<div class="container py-5 my-5">
-    <div class="row align-items-center g-5">
-        <div class="col-lg-6">
-            <h2 class="fw-bold mb-4">The Bridge Between Data <br>and Execution</h2>
-            <p class="text-muted mb-4 fs-5">In an era of market noise, SmartTrade filters the chaos. We've built an infrastructure that connects ambitious investors with elite trading minds, powered by a core engine that prioritizes speed, security, and absolute transparency.</p>
-            <div class="row g-4">
-                <div class="col-6">
-                    <h3 class="stat-number mb-0">99.9%</h3>
-                    <p class="text-muted small fw-bold">UPTIME SLA</p>
-                </div>
-                <div class="col-6">
-                    <h3 class="stat-number mb-0">500TB+</h3>
-                    <p class="text-muted small fw-bold">MARKET DATA PROCESSED</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="vision-box shadow-lg">
-                <h3 class="fw-bold mb-3">Our Core Vision</h3>
-                <p class="opacity-75 fs-5">To create a borderless ecosystem where sophisticated trading strategies are not limited to institutional boardrooms, but are available to every digital asset holder globally.</p>
-                <hr class="my-4 border-white opacity-25">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 fw-bold fs-4">2026</div>
-                    <div class="ms-3 small opacity-75">Global leader in AI-integrated copy trading solutions.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container py-5">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold">Our Philosophical Pillars</h2>
-        <p class="text-muted">Built on trust, fueled by innovation.</p>
-    </div>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="glass-card">
-                <div class="core-value-icon"><i class="bi bi-cpu"></i></div>
-                <h4 class="fw-bold mb-3">Intelligence First</h4>
-                <p class="text-muted">We leverage machine learning to verify trader performance history, ensuring that luck is distinguished from true strategic skill.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="glass-card">
-                <div class="core-value-icon"><i class="bi bi-intersect"></i></div>
-                <h4 class="fw-bold mb-3">Radical Clarity</h4>
-                <p class="text-muted">Every trade, every fee, and every drawdown is visible. We believe that trust is earned through unalterable on-chain data reporting.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="glass-card">
-                <div class="core-value-icon"><i class="bi bi-lightning-charge"></i></div>
-                <h4 class="fw-bold mb-3">Frictionless Flow</h4>
-                <p class="text-muted">Our proprietary synchronization engine mirrors trades across global exchanges with sub-millisecond latency to eliminate slippage.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container py-5 my-5 text-center">
-    <div class="py-5 px-4 rounded-5" style="background: #f8faff; border: 1px solid #eef2f7;">
-        <h2 class="fw-bold mb-3">Ready to Join the Revolution?</h2>
-        <p class="text-muted mb-4">Start your journey with the world's most advanced social trading community.</p>
-        <div class="d-flex justify-content-center gap-3">
-            <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-hero-primary text-white">Open Account</a>
-            <a href="{% url 'accounts:contact_us' %}" class="btn btn-hero-outline text-dark">Contact Support</a>
-        </div>
-    </div>
-</div>
+<script>
+    function triggerCyberModal() {
+        document.getElementById('securityModal').classList.add('active');
+    }
+    function closeCyberModal() {
+        document.getElementById('securityModal').classList.remove('active');
+    }
+    // بستن با کلیک روی پس‌زمینه خارج از باکس
+    document.getElementById('securityModal').addEventListener('click', function(e) {
+        if(e.target === this) closeCyberModal();
+    });
+</script>
 {% endblock %}

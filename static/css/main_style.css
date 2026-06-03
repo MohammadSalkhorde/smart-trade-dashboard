@@ -3732,3 +3732,207 @@ body {
         margin-right: 6px !important;
     }
 }
+
+:root {
+    --bg-deep-premium: #060b0e;
+    --card-dark-glass: rgba(13, 22, 28, 0.75);
+    --border-premium-glass: rgba(255, 255, 255, 0.05);
+    --text-ready: #10b981;
+    --text-terminal-muted: #475569;
+    --premium-blue: #0052ff;
+    --premium-cyan: #00a3ff;
+    --cyber-red: #f43f5e;
+}
+
+body {
+    background-color: var(--bg-deep-premium) !important;
+    overflow-x: hidden !important;
+}
+
+/* انیمیشن‌های روان ورود */
+.animate-slide-up { animation: slideUpFX 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in-right { animation: fadeInRightFX 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-shake { animation: alertShake 0.4s ease-in-out; }
+
+@keyframes slideUpFX { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInRightFX { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes alertShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+.font-mono { font-family: 'Courier New', monospace; }
+.z-index-2 { position: relative; z-index: 2; }
+.max-w-600 { max-width: 600px; }
+.max-w-500 { max-width: 500px; }
+
+/* ==========================================================================
+   طراحی اختصاصی سیستم پاپ‌آپ محدودیت منطقه‌ای (Cyber Compliance Modal)
+   ========================================================================== */
+.cyber-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(3, 7, 10, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    z-index: 9999; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.cyber-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.cyber-modal-card {
+    background: #0d141a; border: 1px solid rgba(244, 63, 94, 0.3);
+    width: 90%; max-width: 460px; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 25px 60px rgba(244, 63, 94, 0.15);
+}
+.modal-cyber-header {
+    background: rgba(244, 63, 94, 0.05); padding: 16px 20px;
+    border-bottom: 1px solid rgba(244, 63, 94, 0.15); display: flex; justify-content: space-between; align-items: center;
+}
+.close-modal-btn { background: none; border: none; color: #64748b; font-size: 1.5rem; cursor: pointer; }
+.close-modal-btn:hover { color: #fff; }
+.lock-icon-wrap {
+    width: 70px; height: 70px; background: rgba(244, 63, 94, 0.08); border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center; margin: 15px auto;
+}
+.sub-err-code { font-size: 11px; letter-spacing: 1px; display: inline-block; width: auto; margin-top: 10px; }
+.modal-cyber-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.03); }
+
+/* ========================================================================== */
+
+/* بخش هیرو درباره ما */
+.about-hero-section { padding: 140px 0 100px 0; background: #060c11; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+.absolute-blur-glow {
+    position: absolute; bottom: -10%; left: -5%; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0, 82, 255, 0.08) 0%, transparent 70%); pointer-events: none;
+}
+.badge-tech-premium {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07);
+    color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 8px;
+}
+.live-dot-green { width: 6px; height: 6px; background: var(--text-ready); border-radius: 50%; box-shadow: 0 0 8px var(--text-ready); }
+.premium-hero-title { font-size: 3.2rem; font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.15; }
+.text-gradient-premium {
+    background: linear-gradient(135deg, var(--premium-blue), var(--premium-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.premium-hero-lead { font-size: 1.1rem; max-width: 620px; line-height: 1.6; color: #94a3b8 !important; }
+
+/* استایل دکمه‌ها */
+.btn-premium-primary {
+    background: var(--premium-blue); color: #ffffff; font-weight: 600; padding: 12px 28px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; font-size: 0.95rem;
+}
+.btn-premium-primary:hover { background: #1a66ff; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 82, 255, 0.3); color: #fff; }
+.btn-premium-outline {
+    background: rgba(255, 255, 255, 0.02); color: #cbd5e1; font-weight: 600; padding: 12px 28px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s ease; font-size: 0.95rem;
+}
+.btn-premium-outline:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.15); color: #fff; transform: translateY(-2px); }
+
+/* لایه‌های شبکه متصل سمت راست */
+.tech-stack-visual { display: flex; flex-direction: column; gap: 15px; padding-left: 40px; }
+.stack-layer {
+    background: var(--card-dark-glass); border: 1px solid var(--border-premium-glass); border-radius: 14px;
+    padding: 22px; color: #64748b; font-family: 'Courier New', monospace; font-size: 0.75rem; font-weight: 700;
+    position: relative; transition: all 0.3s ease; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.badge-status-lock { background: rgba(244, 63, 94, 0.1); color: var(--cyber-red); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(244, 63, 94, 0.15); }
+.stack-layer::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: transparent; transition: all 0.3s ease; }
+.tech-stack-visual .stack-layer:hover { transform: translateX(5px) scale(1.02); border-color: rgba(0, 82, 255, 0.3); color: #fff; }
+
+/* نوار آمار و ارقام سراسری */
+.metrics-bar-section { margin-top: -40px; position: relative; z-index: 4; }
+.metrics-inner-wrapper {
+    background: linear-gradient(135deg, rgba(10, 18, 23, 0.95), rgba(6, 12, 17, 0.95)); border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+.metric-item-box { border-right: 1px solid rgba(255, 255, 255, 0.04); }
+.metric-item-box:last-child { border-right: none; }
+.metric-number { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 5px; }
+.metric-label { font-size: 9px; color: #64748b; letter-spacing: 0.5px; margin-bottom: 0; font-weight: 700; }
+
+/* بخش پروکسی مانیتورینگ الکی */
+.node-matrix-section { background: #04080a; }
+.node-status-card {
+    background: rgba(13, 22, 28, 0.5); border: 1px solid var(--border-premium-glass); padding: 24px; border-radius: 16px; position: relative; overflow: hidden;
+}
+.node-meta { font-size: 11px; line-height: 1.8; color: #94a3b8; }
+.proxy-locked-card { cursor: pointer; border-color: rgba(244, 63, 94, 0.1) !important; }
+.lock-overlay-text {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(244, 63, 94, 0.02);
+    display: flex; align-items: center; justify-content: center; color: var(--cyber-red); font-weight: 700;
+    font-size: 11px; opacity: 0; transition: opacity 0.2s ease;
+}
+.proxy-locked-card:hover .lock-overlay-text { opacity: 1; backdrop-filter: blur(4px); }
+
+/* کارت‌های ستون فلسفی کارفرما پسند */
+.pillars-section { background: #060b0e; }
+.premium-section-title { font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.premium-pillar-card {
+    background: var(--card-dark-glass); border: 1px solid var(--border-premium-glass); border-radius: 24px;
+    padding: 40px; height: 100%; position: relative; overflow: hidden; transition: all 0.3s ease; cursor: pointer;
+}
+.pillar-icon-wrap {
+    width: 54px; height: 54px; background: rgba(0, 82, 255, 0.06); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; color: var(--premium-blue); margin-bottom: 24px; border: 1px solid rgba(0, 82, 255, 0.15);
+}
+.pillar-title { font-size: 0.95rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.5px; margin-bottom: 15px; }
+.pillar-desc { font-size: 0.9rem; line-height: 1.6; color: #94a3b8; }
+.premium-pillar-card:hover { transform: translateY(-4px); border-color: rgba(0, 82, 255, 0.25); }
+
+/* بخش فرم شبیه‌سازی استخدام */
+.career-terminal-section { background: #04080a; }
+.career-inner-box {
+    background: linear-gradient(135deg, rgba(13, 22, 28, 0.8), rgba(6, 11, 15, 0.8));
+    border: 1px solid var(--border-premium-glass); border-radius: 28px; padding: 50px;
+}
+.career-fake-form { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.03); padding: 30px; border-radius: 18px; cursor: pointer; }
+.career-input {
+    background: rgba(5, 10, 15, 0.8) !important; border: 1px solid rgba(255,255,255,0.06) !important;
+    color: #475569 !important; padding: 12px !important; font-size: 0.85rem !important;
+}
+
+/* کادر نهایی فراخوانی اقدام */
+.cta-blur-box { background: linear-gradient(135deg, rgba(0, 82, 255, 0.04), rgba(0, 163, 255, 0.02)); border: 1px solid rgba(0, 82, 255, 0.15); backdrop-filter: blur(10px); }
+.premium-cta-title { font-size: 2rem; font-weight: 800; color: #fff; }
+
+/* مهار کامل اسکرول افقی سیستم در رزولوشن‌های گوناگون */
+@media (max-width: 991.98px) {
+    .premium-hero-title { font-size: 2.3rem; }
+    .tech-stack-visual { padding-left: 0; margin-top: 30px; }
+    .metric-item-box { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.04); padding-bottom: 15px; }
+    .metric-item-box:last-child { border-bottom: none; padding-bottom: 0; }
+    .career-inner-box { padding: 30px; }
+}
+@media (max-width: 575.98px) {
+    .about-hero-section { padding: 100px 0 60px 0; }
+    .premium-hero-title { font-size: 1.9rem; }
+    .premium-section-title { font-size: 1.7rem; }
+    .premium-pillar-card { padding: 30px; }
+}
+
+/* باکس اختصاصی نمایش کد خطای سیستم */
+.cyber-error-badge {
+    background: rgba(244, 63, 94, 0.1) !important;
+    border: 1px solid rgba(244, 63, 94, 0.2) !important;
+    color: #f43f5e !important;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* باکس فوق امنیتی نمایش کد خطای سیستم با پس‌زمینه قفل‌شده تیره */
+.cyber-panel-error-code {
+    background-color: #05080b !important; /* پس‌زمینه کاملاً تیره و دارک */
+    border: 1px solid rgba(244, 63, 94, 0.3) !important; /* حاشیه قرمز ملایم */
+    color: #f43f5e !important; /* رنگ متن قرمز نئونی کاملاً واضح */
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    display: inline-block !important;
+    margin-top: 15px !important;
+    box-shadow: inset 0 0 10px rgba(244, 63, 94, 0.05) !important;
+    width: 100% !important; /* برای فیت شدن کامل در لایه پاپ‌آپ */
+    max-width: 380px !important;
+    text-align: center !important;
+}

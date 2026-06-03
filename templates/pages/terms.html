@@ -2,127 +2,239 @@
 
 {% block content %}
 <style>
-    /* حذف پس‌زمینه سفید هیرو و یکپارچه سازی با بدنه */
+    :root {
+        --bg-trading-dark: #060b0e;
+        --card-trading-glass: rgba(13, 22, 28, 0.7);
+        --border-trading: rgba(255, 255, 255, 0.05);
+        --trading-blue: #0052ff;
+        --trading-cyan: #00a3ff;
+        --warning-gold: #f0b90b;
+        --text-main: #94a3b8;
+    }
+
+    body {
+        background-color: var(--bg-trading-dark) !important;
+    }
+
     .terms-wrapper {
-        padding: 60px 0 100px 0;
-        background: #f8fafc; /* یک رنگ بسیار ملایم برای تمایز باکس با پس‌زمینه */
         min-height: 100vh;
+        background: var(--bg-trading-dark);
+        padding: 120px 0 60px 0;
+        position: relative;
     }
-    .terms-container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-    .terms-card {
-        border: 1px solid #f0f3f9;
+
+    /* کانتینر اصلی با ساختار دو ستونه مدرن */
+    .split-terms-container {
+        background: rgba(13, 22, 28, 0.45);
+        border: 1px solid var(--border-trading);
         border-radius: 32px;
-        background: #ffffff;
-        padding: 50px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        overflow: hidden;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
     }
+
+    /* ستون ثابت سمت چپ (راهنما و چارت گرافیکی ملایم) */
+    .terms-sidebar {
+        background: linear-gradient(160deg, #0b1219 0%, #05090d 100%);
+        padding: 50px;
+        border-right: 1px solid var(--border-trading);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        min-height: 500px;
+    }
+
+    /* ستون اسکرول‌شونده سمت راست (متن اصلی قوانین) */
+    .terms-content-body {
+        padding: 50px;
+        max-height: 75vh;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+
+    /* سفارشی‌سازی اسکرول‌بار سمت راست برای زیبایی بیشتر */
+    .terms-content-body::-webkit-scrollbar {
+        width: 6px;
+    }
+    .terms-content-body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .terms-content-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    .terms-content-body::-webkit-scrollbar-thumb:hover {
+        background: var(--trading-blue);
+    }
+
     .text-gradient {
-        background: linear-gradient(135deg, #0052ff, #00a3ff);
+        background: linear-gradient(135deg, var(--trading-blue), var(--trading-cyan));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
-    .terms-section {
-        margin-bottom: 40px;
-    }
-    .terms-section h4 {
+
+    .legal-doc-title {
+        font-size: 2.2rem;
         font-weight: 800;
-        color: #1e2329;
-        margin-bottom: 18px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        color: #ffffff;
+        line-height: 1.2;
     }
-    .terms-section h4 i {
-        color: #0052ff;
-        font-size: 1.2rem;
-    }
-    .terms-section p, .terms-section li {
-        color: #474d57;
-        line-height: 1.8;
-        font-size: 1.05rem;
-    }
-    .last-updated {
-        color: #929aa5;
-        font-size: 0.85rem;
+
+    .legal-badge {
+        background: rgba(0, 82, 255, 0.1);
+        color: var(--trading-cyan);
+        border: 1px solid rgba(0, 82, 255, 0.2);
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.75rem;
         font-weight: 700;
-        letter-spacing: 1px;
+        display: inline-block;
     }
-    .important-notice {
-        background: #fff9f0;
-        border-left: 4px solid #f0b90b;
-        padding: 24px;
+
+    /* بخش‌بندی متون با استایل صرافی‌های بزرگ */
+    .legal-clause-block {
+        margin-bottom: 35px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        padding-bottom: 25px;
+    }
+    .legal-clause-block:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .legal-clause-block h4 {
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+        letter-spacing: -0.3px;
+    }
+
+    .legal-clause-block p, .legal-clause-block li {
+        color: var(--text-main);
+        font-size: 0.95rem;
+        line-height: 1.75;
+    }
+
+    /* باکس افشای ریسک فوق حرفه‌ای */
+    .risk-disclosure-box {
+        background: rgba(240, 185, 11, 0.04);
+        border: 1px solid rgba(240, 185, 11, 0.12);
         border-radius: 16px;
-        margin-bottom: 40px;
+        padding: 20px;
+        margin-bottom: 30px;
     }
-    @media (max-width: 768px) {
-        .terms-wrapper { padding-top: 30px; }
-        .terms-card { padding: 30px; border-radius: 24px; }
-        .hero-title { font-size: 2rem; }
+
+    .btn-action-premium {
+        background: var(--trading-blue);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-action-premium:hover {
+        background: #1a66ff;
+        box-shadow: 0 10px 20px rgba(0, 82, 255, 0.25);
+        color: white;
+    }
+
+    @media (max-width: 991.98px) {
+        .terms-sidebar { border-right: none; border-bottom: 1px solid var(--border-trading); min-height: auto; padding: 40px 30px; }
+        .terms-content-body { max-height: none; overflow-y: visible; padding: 40px 30px; }
     }
 </style>
 
 <div class="terms-wrapper">
-    <div class="container terms-container">
-        <div class="terms-card">
-            <div class="text-center mb-5">
-                <p class="last-updated mb-2 text-uppercase">Last Updated: February 2026</p>
-                <h1 class="hero-title fw-bold">Terms of <span class="text-gradient">Service</span></h1>
-                <div class="mx-auto mt-3" style="width: 60px; hieght: 4px; background: #0052ff; border-radius: 2px; height: 4px;"></div>
-            </div>
+    <div class="container">
+        <div class="split-terms-container">
+            <div class="row g-0">
+                
+                <div class="col-lg-4">
+                    <div class="terms-sidebar">
+                        <div>
+                            <span class="legal-badge mb-3">SYSTEM DOCUMENTATION</span>
+                            <h1 class="legal-doc-title mb-3">Regulatory <br>Framework & <br><span class="text-gradient">Legal Terms</span></h1>
+                            <p class="text-muted small mt-4">Review the institutional protocols governing the execution bridges, capital aggregation modules, and automated ledger operations of the platform.</p>
+                        </div>
+                        
+                        <div class="pt-5 border-top border-secondary border-opacity-10">
+                            <div class="d-flex justify-content-between align-items-center small text-secondary">
+                                <span>REVISION: v2.4.0</span>
+                                <span>FEB 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="important-notice">
-                <h5 class="fw-bold text-dark mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Risk Warning</h5>
-                <p class="mb-0 small">Trading digital assets involves significant risk. Our copy-trading service automates execution but does not guarantee profits. Past performance of lead traders is not an indicator of future results.</p>
-            </div>
+                <div class="col-lg-8">
+                    <div class="terms-content-body">
+                        
+                        <div class="risk-disclosure-box">
+                            <h6 class="text-warning fw-bold mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Risk Disclosure & Capital Volatility Statement
+                            </h6>
+                            <p class="mb-0 text-warning opacity-75 small">
+                                Deploying digital assets into market structures involves high exposure to financial drawdown. Automated trade allocation tools function as execution mirrors and are highly contingent upon underlying exchange API stability. Positive historical trajectories do not ensure replicated financial performance.
+                            </p>
+                        </div>
 
-            <div class="terms-section">
-                <h4><i class="bi bi-1-circle-fill"></i> Acceptance of Terms</h4>
-                <p>By accessing the SmartTrade platform, creating an account, or using our automated copy-trading synchronization services, you agree to be bound by these Terms of Service and all applicable laws and regulations in your jurisdiction.</p>
-            </div>
+                        <div class="legal-clause-block">
+                            <h4>01. Definitive Architecture & Service Provision</h4>
+                            <p>
+                                By accessing the system interface or provisions of this network, you enter a binding technical utility contract. The platform provides algorithmic trade execution mirroring, serving as an immutable data pipeline between designated master strategic portfolios and connected user terminal configurations.
+                            </p>
+                        </div>
 
-            <div class="terms-section">
-                <h4><i class="bi bi-2-circle-fill"></i> User Eligibility</h4>
-                <p>To use our services, you must:</p>
-                <ul>
-                    <li>Be at least 18 years of age or the legal age of majority.</li>
-                    <li>Not be a resident of any restricted jurisdictions or prohibited countries.</li>
-                    <li>Have the legal capacity to enter into a binding contract.</li>
-                </ul>
-            </div>
+                        <div class="legal-clause-block">
+                            <h4>02. Jurisdictional Limitations & Eligibility Check</h4>
+                            <p>
+                                Access to automated capital routing queues is restricted by global compliance boundaries. To utilize these ledger protocols, users must explicitly confirm they possess full legal majority capacity and do not operate from or route traffic through restricted sovereign boundaries or sanctioned geographic zones.
+                            </p>
+                        </div>
 
-            <div class="terms-section">
-                <h4><i class="bi bi-3-circle-fill"></i> Copy-Trading Automation</h4>
-                <p>Our technology provides real-time synchronization of trades. However, you acknowledge that:</p>
-                <ul>
-                    <li>Slippage may occur due to market volatility and exchange latency.</li>
-                    <li>The "Lead Trader" has full control over their own strategy; SmartTrade acts only as a technical bridge.</li>
-                    <li>Service interruptions may occur due to exchange API downtime or maintenance.</li>
-                </ul>
-            </div>
+                        <div class="legal-clause-block">
+                            <h4>03. Execution Performance, Slippage & Latency Protocols</h4>
+                            <p>
+                                Automated account synchronization relies on complex external infrastructure routing. You acknowledge that during extreme directional volume expansions, execution slippage might manifest across distributed nodes. The network accounts for processing time variance but disclaims control over exchange order-book queues.
+                            </p>
+                        </div>
 
-            <div class="terms-section">
-                <h4><i class="bi bi-4-circle-fill"></i> Fees and Commissions</h4>
-                <p>SmartTrade may charge a percentage of successful profit-sharing or a fixed subscription fee as outlined in your dashboard. These fees are non-refundable once the service has been successfully initiated.</p>
-            </div>
+                        <div class="legal-clause-block">
+                            <h4>04. Asset Allocation, Invoicing & Performance Settlements</h4>
+                            <p>
+                                Service access terms depend on active subscription tiers or performance-based asset sharing distributions displayed on your dashboard interface. Settlements are definitive and processed via integrated smart contracts; capital allocations used for service access remain non-reversible once deployment sequences launch.
+                            </p>
+                        </div>
 
-            <div class="terms-section">
-                <h4><i class="bi bi-5-circle-fill"></i> Intellectual Property</h4>
-                <p>The algorithms, dashboard interfaces, and proprietary Smart-Sync technology are the exclusive property of SmartTrade. Users are prohibited from reverse-engineering, scraping, or attempting to exploit the platform's codebase.</p>
-            </div>
+                        <div class="legal-clause-block">
+                            <h4>05. Proprietary IP Integrity & Data Mirroring Controls</h4>
+                            <p>
+                                The software architecture, layout pipelines, execution scripts, and analytics systems remain exclusive corporate properties. Deploying custom reverse engineering mechanisms, automation scrapers, or structural duplication of codebases is prohibited and voids terminal access keys.
+                            </p>
+                        </div>
 
-            <div class="terms-section">
-                <h4><i class="bi bi-6-circle-fill"></i> Limitation of Liability</h4>
-                <p>SmartTrade shall not be liable for any financial losses, indirect damages, or loss of data resulting from market movements, technical failures of third-party exchanges, or unauthorized access to user accounts caused by negligence in securing private keys or passwords.</p>
-            </div>
+                        <div class="legal-clause-block">
+                            <h4>06. Comprehensive Disclaimer & Indemnification Boundaries</h4>
+                            <p>
+                                The platform, its developers, and network node providers assume no liability for market losses, balance variations, or data corruption derived from regional network dropouts, exchange side modifications, or negligence in maintaining secure authorization setups.
+                            </p>
+                        </div>
 
-            <hr class="my-5 opacity-10">
+                        <div class="pt-4 text-center text-lg-start">
+                            <p class="text-muted small mb-3">Require tailored corporate legal arrangements or custom asset tier onboarding?</p>
+                            <a href="{% url 'accounts:contact_us' %}" class="btn btn-action-premium">Open Legal Consulting Ticket</a>
+                        </div>
 
-            <div class="text-center">
-                <p class="text-muted mb-4">Questions regarding our terms?</p>
-                <a href="{% url 'accounts:contact_us' %}" class="btn btn-outline-primary rounded-pill px-5">Contact Legal Team</a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
