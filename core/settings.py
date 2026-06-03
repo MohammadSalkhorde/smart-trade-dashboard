@@ -44,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.accounts.middleware.ForceEnglishMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -59,7 +60,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'apps.accounts.views.user_notifications'
+                'apps.accounts.views.user_notifications',
+                "apps.accounts.context_processors.user_ban_status",
             ],
         },
     },
@@ -86,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # --- Internationalization ---
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
-USE_I18N = True
+USE_I18N = False  # تغییر از True به False
 USE_TZ = True
 
 # --- Static & Media Files ---

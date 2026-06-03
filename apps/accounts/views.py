@@ -8,6 +8,7 @@ from apps.transactions.models import Transaction
 from apps.trading.models import LeadTrader, FollowedTrader
 from django.contrib.auth import get_user_model
 from .models import *
+from .decorators import block_banned_users
 
 User = get_user_model()
 
@@ -205,12 +206,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Ticket, TicketMessage
 
+from django.http import JsonResponse
+
 @login_required
 def ticket_list(request):
     # دریافت تمام تیکت‌های کاربر
     tickets = Ticket.objects.filter(user=request.user).order_by('-updated_at')
     
-    # محاسبه تعداد تیکت‌های باز در ویو (برای جلوگیری از ارور در تمپلیت)
+    # محاسبه تعداد تیکت‌های باز در ویو
     open_tickets_count = tickets.filter(status='open').count()
     
     context = {
@@ -219,9 +222,10 @@ def ticket_list(request):
     }
     return render(request, 'accounts/tickets/ticket_list.html', context)
 
+
 @login_required
 def ticket_detail(request, ticket_id):
-    """نمایش چت تیکت و ارسال پاسخ جدید"""
+    """نمایش چت تیکت و ارسال پاسخ جدید با پشتیبانی کامل از AJAX"""
     ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
     
     if request.method == 'POST':
@@ -233,8 +237,13 @@ def ticket_detail(request, ticket_id):
                 text=message_text,
                 is_admin_reply=False
             )
-            ticket.status = 'open' # اگر بسته بود دوباره باز شود یا آپدیت شود
+            ticket.status = 'open'  # اگر بسته بود دوباره باز شود یا آپدیت شود
             ticket.save()
+            
+            # بررسی اینکه آیا درخواست از طرف جاوااسکریپت (بدون رفرش) آمده است یا خیر
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success', 'message': 'Message sent successfully.'})
+                
             return redirect('accounts:ticket_detail', ticket_id=ticket.id)
 
     messages = ticket.messages.all()
@@ -243,9 +252,10 @@ def ticket_detail(request, ticket_id):
         'messages': messages
     })
 
+
 @login_required
 def create_ticket(request):
-    """ایجاد تیکت جدید"""
+    """ایجاد تیکت جدید با پشتیبانی از هندل AJAX بدون رفرش"""
     if request.method == 'POST':
         subject = request.POST.get('subject')
         urgency = request.POST.get('urgency')
@@ -262,10 +272,16 @@ def create_ticket(request):
                 sender=request.user,
                 text=initial_message
             )
+            
+            # اگر درخواست AJAX بود، آدرس جدید چت را می‌فرستیم تا کدهای فرانت‌اند کاربر را خودکار به چت جدید ببرند
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                # ایجاد آدرس داینامیک لیست به همراه پارامتر اکتیو بودن چت جدید
+                redirect_url = f"/accounts/tickets/?active_id={ticket.id}"
+                return JsonResponse({'status': 'success', 'redirect_url': redirect_url})
+                
             return redirect('accounts:ticket_list')
             
     return render(request, 'accounts/tickets/create_ticket.html')
-
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import user_passes_test

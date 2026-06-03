@@ -2,31 +2,88 @@
 
 {% block content %}
 <style>
+    /* ==========================================================================
+       CYBER OPERATIONS DASHBOARD (CORE INFRASTRUCTURE)
+       ========================================================================== */
     :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --glass-bg: rgba(255, 255, 255, 0.95);
+        --core-bg: #0b0f19;
+        --panel-bg: rgba(19, 26, 42, 0.8);
+        --neon-primary: #00f2fe;
+        --neon-success: #00e676;
+        --neon-warning: #ffb300;
+        --neon-danger: #ff1744;
+        --text-main: #f1f5f9;
+        --text-muted: #64748b;
+        --border-cyber: rgba(0, 242, 254, 0.15);
+        --cyber-gradient: linear-gradient(135deg, #091026 0%, #0d1b3e 100%);
     }
 
-    body { background-color: #f8f9fa; }
+    body { 
+        background-color: var(--core-bg); 
+        color: var(--text-main);
+    }
 
-    /* هدر جذاب صفحه */
-    .admin-header {
-        background: var(--primary-gradient);
-        padding: 40px 0 80px 0;
+    /* هدر فرماندهی و نظارت */
+    .admin-command-header {
+        background: var(--cyber-gradient);
+        background-image: radial-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 0);
+        background-size: 24px 24px;
+        padding: 50px 0 90px 0;
         color: white;
-        border-radius: 0 0 40px 40px;
-        margin-bottom: -60px;
+        border-bottom: 2px solid rgba(0, 242, 254, 0.2);
+        border-radius: 0 0 35px 35px;
+        margin-bottom: -50px;
+        position: relative;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
 
-    .stats-card {
-        background: var(--glass-bg);
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease;
+    .admin-command-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--neon-primary), transparent);
     }
 
-    /* استایل تیکت‌ها در موبایل (تبدیل جدول به کارت) */
+    /* کارت‌های مانیتورینگ پیشرفته */
+    .monitor-card {
+        background: var(--panel-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-cyber);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .monitor-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--neon-primary);
+        box-shadow: 0 12px 40px rgba(0, 242, 254, 0.15);
+    }
+
+    /* پالس زنده سیستم */
+    .live-pulse {
+        width: 8px;
+        height: 8px;
+        background-color: var(--neon-success);
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7);
+        animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+    }
+
+    /* استایل دیتای مانیتورینگ تیکت‌ها در موبایل */
     @media (max-width: 767.98px) {
         .hide-on-mobile { display: none !important; }
         .ticket-table thead { display: none; }
@@ -35,164 +92,239 @@
             width: 100%;
         }
         .ticket-table tr {
-            background: white;
+            background: rgba(19, 26, 42, 0.9);
             margin-bottom: 15px;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .ticket-table td {
-            padding: 8px 0;
+            padding: 10px 0;
             border: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
         }
         .ticket-table td:last-child {
-            margin-top: 10px;
+            margin-top: 12px;
             padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid rgba(0, 242, 254, 0.1);
+            border-bottom: none;
             display: block;
             text-align: center;
         }
         .mobile-label {
             font-weight: 700;
-            color: #6b7280;
-            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-size: 0.78rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .btn-mobile-full { width: 100%; padding: 10px; border-radius: 12px; }
+        .btn-mobile-full { width: 100%; padding: 11px; border-radius: 12px; }
     }
 
-    /* نشان‌های وضعیت نرم */
-    .badge-soft {
-        padding: 6px 12px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.75rem;
+    /* نشان‌های وضعیت سایبر */
+    .badge-cyber {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
-    .bg-danger-soft { background: #fff1f2; color: #e11d48; }
-    .bg-warning-soft { background: #fffbeb; color: #d97706; }
-    .bg-info-soft { background: #f0f9ff; color: #0284c7; }
-    .bg-success-soft { background: #f0fdf4; color: #16a34a; }
-    .bg-secondary-soft { background: #f4f4f5; color: #71717a; }
+    .bg-cyber-danger { background: rgba(255, 23, 68, 0.1); color: var(--neon-danger); border: 1px solid rgba(255, 23, 68, 0.2); }
+    .bg-cyber-warning { background: rgba(255, 179, 0, 0.1); color: var(--neon-warning); border: 1px solid rgba(255, 179, 0, 0.2); }
+    .bg-cyber-info { background: rgba(0, 242, 254, 0.1); color: var(--neon-primary); border: 1px solid rgba(0, 242, 254, 0.2); }
+    .bg-cyber-success { background: rgba(0, 230, 118, 0.1); color: var(--neon-success); border: 1px solid rgba(0, 230, 118, 0.2); }
+    .bg-cyber-secondary { background: rgba(100, 116, 139, 0.1); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.2); }
 
-    .ticket-row:hover { background-color: #fcfcfd; }
-    .user-avatar {
-        width: 40px;
-        height: 40px;
+    .ticket-row {
+        transition: background-color 0.2s;
+        border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+    }
+    .ticket-row:hover { 
+        background-color: rgba(0, 242, 254, 0.02); 
+    }
+
+    .cyber-avatar {
+        width: 42px;
+        height: 42px;
         border-radius: 12px;
-        background: #e2e8f0;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        border: 1px solid rgba(255,255,255,0.1);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        color: #475569;
+        color: var(--neon-primary);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* استایل‌های اختصاصی جدول تیره */
+    .table { color: var(--text-main); }
+    .table-responsive { background: var(--panel-bg); border-radius: 0 0 18px 18px; }
+    .custom-table-header {
+        background: rgba(14, 20, 33, 0.9) !important;
+        border-bottom: 1px solid rgba(0, 242, 254, 0.15) !important;
+        color: var(--text-muted) !important;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .cyber-btn-primary {
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        color: #0b0f19 !important;
+        font-weight: 700;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        transition: all 0.2s;
+    }
+    .cyber-btn-primary:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
     }
 </style>
 
-<div class="admin-header">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-2">Support Center</h2>
-        <p class="opacity-75">Welcome back, Admin. You have {{ open_count }} tickets to answer.</p>
+<div class="admin-command-header">
+    <div class="container text-center position-relative">
+        <div class="mb-2">
+            <span class="badge bg-cyber-success px-3 py-2 rounded-pill">
+                <span class="live-pulse me-1"></span> HQ CORE INTERFACE ACTIVATED
+            </span>
+        </div>
+        <h2 class="fw-bold mb-2" style="letter-spacing: 1px; text-shadow: 0 0 15px rgba(0,242,254,0.4);">
+            SYSTEM MONITORING & CONTROL
+        </h2>
+        <p class="text-muted small mb-0">
+            Welcome, Administrator. Global operations are stable. You have <span class="text-warning fw-bold">{{ open_count }} active intercept tickets</span> awaiting response.
+        </p>
     </div>
 </div>
 
 <div class="container mb-5">
+    
     <div class="row g-3 mb-4">
-        <div class="col-4 col-md-4">
-            <div class="stats-card text-center p-3">
-                <div class="text-muted small mb-1">Total</div>
-                <div class="h4 fw-bold text-primary mb-0">{{ total_count }}</div>
+        <div class="col-6 col-md-3">
+            <div class="monitor-card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="text-muted small text-uppercase fw-bold">Live Users</span>
+                    <span class="live-pulse"></span>
+                </div>
+                <div class="h3 fw-bold mb-0 text-success" style="text-shadow: 0 0 10px rgba(0,230,118,0.2);">
+                    Active
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem;">All nodes operating normally</div>
             </div>
         </div>
-        <div class="col-4 col-md-4">
-            <div class="stats-card text-center p-3">
-                <div class="text-muted small mb-1">Open</div>
-                <div class="h4 fw-bold text-success mb-0">{{ open_count }}</div>
+
+        <div class="col-6 col-md-3">
+            <div class="monitor-card p-3">
+                <div class="text-muted small text-uppercase fw-bold mb-1">Total Payload</div>
+                <div class="h3 fw-bold mb-0" style="color: var(--neon-primary);">{{ total_count }}</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Tickets logged in database</div>
             </div>
         </div>
-        <div class="col-4 col-md-4">
-            <div class="stats-card text-center p-3">
-                <div class="text-muted small mb-1">Closed</div>
-                <div class="h4 fw-bold text-secondary mb-0">{{ closed_count }}</div>
+
+        <div class="col-6 col-md-3">
+            <div class="monitor-card p-3">
+                <div class="text-muted small text-uppercase fw-bold mb-1">Pending Action</div>
+                <div class="h3 fw-bold mb-0 text-warning">{{ open_count }}</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Requiring core root reply</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="monitor-card p-3">
+                <div class="text-muted small text-uppercase fw-bold mb-1">Archived/Resolved</div>
+                <div class="h3 fw-bold mb-0 text-secondary">{{ closed_count }}</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Successfully closed nodes</div>
             </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0 fw-bold"><i class="bi bi-list-stars me-2 text-primary"></i>Tickets List</h5>
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background: transparent;">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <h6 class="mb-0 fw-bold text-uppercase tracking-wider text-white">
+                <i class="bi bi-shield-lock-fill me-2" style="color: var(--neon-primary);"></i> User Transmission Feed
+            </h6>
+            <span class="badge bg-dark text-muted border border-secondary font-monospace" style="font-size: 0.75rem;">SECURE-SESSION-CONNECTED</span>
         </div>
+        
         <div class="table-responsive">
             <table class="table ticket-table align-middle mb-0">
-                <thead class="bg-light">
+                <thead>
                     <tr>
-                        <th class="ps-4">Ticket</th>
-                        <th>User</th>
-                        <th>Subject</th>
-                        <th>Urgency</th>
-                        <th>Status</th>
-                        <th class="hide-on-mobile">Last Update</th>
-                        <th class="text-end pe-4">Action</th>
+                        <th class="ps-4 custom-table-header">NODE ID</th>
+                        <th class="custom-table-header">USER INJECTOR</th>
+                        <th class="custom-table-header">SUBJECT</th>
+                        <th class="custom-table-header">CRITICALITY</th>
+                        <th class="custom-table-header">STATUS</th>
+                        <th class="hide-on-mobile custom-table-header">TIMESTAMP</th>
+                        <th class="text-end pe-4 custom-table-header">OPERATION</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for ticket in tickets %}
                     <tr class="ticket-row">
                         <td class="ps-4">
-                            <span class="mobile-label">Ticket ID</span>
-                            <span class="fw-bold text-dark">#{{ ticket.id }}</span>
+                            <span class="mobile-label">Node ID</span>
+                            <span class="font-monospace fw-bold" style="color: var(--neon-primary);">#{{ ticket.id }}</span>
                         </td>
                         <td>
-                            <span class="mobile-label">User</span>
+                            <span class="mobile-label">User Injector</span>
                             <div class="d-flex align-items-center">
-                                <div class="user-avatar me-2 hide-on-mobile">
+                                <div class="cyber-avatar me-2 hide-on-mobile">
                                     {{ ticket.user.username|slice:":1"|upper }}
                                 </div>
                                 <div>
-                                    <div class="fw-bold" style="font-size: 0.9rem;">{{ ticket.user.username }}</div>
-                                    <div class="text-muted hide-on-mobile" style="font-size: 0.75rem;">{{ ticket.user.email }}</div>
+                                    <div class="fw-bold" style="font-size: 0.9rem; color: var(--text-main);">{{ ticket.user.username }}</div>
+                                    <div class="text-muted hide-on-mobile font-monospace" style="font-size: 0.72rem;">{{ ticket.user.email }}</div>
                                 </div>
                             </div>
                         </td>
                         <td>
                             <span class="mobile-label">Subject</span>
-                            <span class="fw-medium">{{ ticket.subject }}</span>
+                            <span class="fw-medium text-light">{{ ticket.subject }}</span>
                         </td>
                         <td>
-                            <span class="mobile-label">Urgency</span>
+                            <span class="mobile-label">Criticality</span>
                             {% if ticket.urgency == 'high' %}
-                                <span class="badge-soft bg-danger-soft text-danger">High</span>
+                                <span class="badge-cyber bg-cyber-danger"><i class="bi bi-exclamation-triangle-fill"></i> High</span>
                             {% elif ticket.urgency == 'medium' %}
-                                <span class="badge-soft bg-warning-soft text-warning">Medium</span>
+                                <span class="badge-cyber bg-cyber-warning"><i class="bi bi-shield-fill-exclamation"></i> Medium</span>
                             {% else %}
-                                <span class="badge-soft bg-info-soft text-info">Low</span>
+                                <span class="badge-cyber bg-cyber-info"><i class="bi bi-info-circle-fill"></i> Low</span>
                             {% endif %}
                         </td>
                         <td>
                             <span class="mobile-label">Status</span>
                             {% if ticket.status == 'open' %}
-                                <span class="badge-soft bg-success-soft text-success"><i class="bi bi-patch-check-fill me-1"></i> Open</span>
+                                <span class="badge-cyber bg-cyber-success"><i class="bi bi-activity"></i> Active Feed</span>
                             {% else %}
-                                <span class="badge-soft bg-secondary-soft text-secondary">Closed</span>
+                                <span class="badge-cyber bg-cyber-secondary"><i class="bi bi-lock-fill"></i> Encrypted</span>
                             {% endif %}
                         </td>
-                        <td class="hide-on-mobile text-muted small">
+                        <td class="hide-on-mobile text-muted small font-monospace">
                             {{ ticket.updated_at|date:"M d, H:i" }}
                         </td>
                         <td class="text-end pe-4">
-                            <a href="{% url 'accounts:admin_ticket_detail' ticket.id %}" class="btn btn-primary btn-mobile-full shadow-sm rounded-pill px-4">
-                                <i class="bi bi-chat-left-dots-fill me-1"></i> Answer
+                            <a href="{% url 'accounts:admin_ticket_detail' ticket.id %}" class="btn cyber-btn-primary btn-mobile-full rounded-pill px-4 btn-sm">
+                                <i class="bi bi-terminal-fill me-1"></i> Intercept & Reply
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center py-5">
-                            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" style="width: 80px; opacity: 0.5;" class="mb-3">
-                            <p class="text-muted">No tickets found in the database.</p>
+                        <td colspan="7" class="text-center py-5" style="background: var(--panel-bg);">
+                            <div class="mb-3 opacity-50">
+                                <i class="bi bi-database-exclamation" style="font-size: 3rem; color: var(--neon-primary);"></i>
+                            </div>
+                            <p class="text-muted font-monospace small">NO EXTERNAL INJECTIONS OR TICKETS DETECTED IN THE LOGS.</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -201,5 +333,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

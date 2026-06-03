@@ -331,4 +331,42 @@
         text-shadow: 0 0 12px rgba(255, 51, 102, 0.4), 0 0 25px rgba(255, 51, 102, 0.15);
     }
 </style>
+
+<script>
+    function forceUnlockScroll() {
+        // ۱. حذف کلاس‌های قفل کننده بوت‌استرپ از body
+        document.body.classList.remove('modal-open');
+        
+        // ۲. پاک کردن استایل‌های مستقیم (Inline Styles) که بوت‌استرپ تزریق می‌کند
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+        document.body.style.overflow = 'auto'; // اجبار به اسکرول
+        
+        // ۳. حذف تمام سایه‌ها (Backdrops) از صفحه
+        const backdrops = document.querySelectorAll('.modal-backdrop, .fade.show');
+        backdrops.forEach(backdrop => backdrop.remove());
+    }
+
+    // گوش دادن به کلیک روی دکمه‌های بستن
+    document.addEventListener('click', function(e) {
+        // دکمه‌هایی که وظیفه بستن دارند
+        if (e.target.closest('[data-bs-dismiss="modal"]') || 
+            e.target.closest('.btn-close-cyber-modal') || 
+            e.target.textContent.toLowerCase().includes('acknowledge')) {
+            
+            // اجرای فوری
+            forceUnlockScroll();
+            
+            // اجرای مجدد با تاخیر برای اطمینان از پاک شدن اثرات انیمیشن بوت‌استرپ
+            setTimeout(forceUnlockScroll, 500);
+        }
+    });
+</script>
+
+<style>
+    /* این بخش تضمین می‌کند که اگر سایه‌ای باقی ماند، قابلیت کلیک نداشته باشد */
+    .modal-backdrop {
+        display: none !important;
+    }
+</style>
 {% endblock %}

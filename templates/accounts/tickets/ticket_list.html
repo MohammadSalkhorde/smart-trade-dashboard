@@ -2,247 +2,593 @@
 
 {% block content %}
 <style>
+    /* ==========================================================================
+       TELEGRAM PREMIUM DYNAMIC FLEX INFRASTRUCTURE
+       ========================================================================== */
     :root {
-        --user-primary: #0052ff;
-        --user-bg: #f4f7fe;
-        --card-border: #edf2f7;
-        --high-priority: #ff4d4d;
-        --medium-priority: #ffa500;
-        --low-priority: #00c853;
+        --tg-bg: #0e1621;
+        --tg-sidebar: #17212b;
+        --tg-active: #2b5278;
+        --tg-text: #f5f5f5;
+        --tg-muted: #7f91a4;
+        --tg-primary: #5288c1;
+        --tg-primary-hover: #6396cd;
+        --tg-success: #4fae4e;
+        --tg-danger: #ec5b5b;
+        --tg-warning: #e5a93b;
+        --tg-border: #101921;
+        --tg-input-dark: #24313f;
+        --tg-modal-bg: #182533;
     }
 
-    body { background-color: var(--user-bg); font-family: 'Inter', sans-serif; }
+    /* کانتینر اصلی: فیت شدن دقیق با باقی‌مانده صفحه بدون اسکرول خوردن Body */
+    .telegram-ui-container {
+        display: flex;
+        /* این مقدار به طور خودکار فضا را تا انتهای صفحه نمایش کاربر پر می‌کند */
+        height: calc(100vh - 80px); 
+        height: calc(100dvh - 80px);
+        margin: 0;
+        padding: 0;
+        background-color: var(--tg-bg);
+        color: var(--tg-text);
+        overflow: hidden;
+        position: relative;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
 
-    .user-welcome-section {
-        background: linear-gradient(135deg, #0052ff 0%, #003db3 100%);
-        padding: 50px 0 100px 0;
+    /* ==========================================================================
+       SIDEBAR (LEFT COLUMN)
+       ========================================================================== */
+    .tg-sidebar {
+        width: 350px;
+        background: var(--tg-sidebar);
+        border-right: 1px solid var(--tg-border);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        flex-shrink: 0;
+        z-index: 10;
+    }
+
+    .tg-sidebar-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--tg-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .tg-search-bar {
+        padding: 8px 16px;
+        background: var(--tg-sidebar);
+        flex-shrink: 0;
+    }
+
+    .tg-search-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .tg-search-wrapper i {
+        position: absolute;
+        left: 12px;
+        color: var(--tg-muted);
+        font-size: 0.9rem;
+    }
+
+    .tg-search-input {
+        width: 100%;
+        background: var(--tg-bg);
+        border: 1px solid transparent;
+        border-radius: 22px;
+        padding: 6px 12px 6px 36px;
+        color: var(--tg-text);
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+    .tg-search-input:focus {
+        outline: none;
+        border-color: var(--tg-primary);
+    }
+
+    .tg-meta-counters {
+        display: flex;
+        padding: 6px 16px;
+        justify-content: space-between;
+        background: rgba(0, 0, 0, 0.15);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--tg-muted);
+        flex-shrink: 0;
+    }
+
+    .tg-chat-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* استایل آیتم‌های چت */
+    .tg-chat-item {
+        display: flex;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(16, 25, 33, 0.3);
+        cursor: pointer;
+        transition: background 0.15s;
+        text-decoration: none !important;
+        color: inherit !important;
+    }
+    .tg-chat-item:hover { background: rgba(255, 255, 255, 0.02); }
+    .tg-chat-item.active { background: var(--tg-active); }
+
+    .tg-avatar-wrapper { position: relative; margin-right: 12px; flex-shrink: 0; }
+    .tg-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4fae4e, #2f7e30);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
         color: white;
-        border-radius: 0 0 30px 30px;
-        margin-bottom: -70px;
+        font-size: 1rem;
+    }
+    .tg-avatar.high { background: linear-gradient(135deg, var(--tg-danger), #af3b3b); }
+    .tg-avatar.medium { background: linear-gradient(135deg, var(--tg-warning), #bc8622); }
+
+    .tg-status-dot {
+        position: absolute;
+        bottom: 1px;
+        right: 1px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid var(--tg-sidebar);
+    }
+    .status-dot-open { background-color: var(--tg-success); }
+    .status-dot-closed { background-color: var(--tg-muted); }
+
+    .tg-chat-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+    .tg-chat-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .tg-chat-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tg-chat-time { font-size: 0.75rem; color: var(--tg-muted); }
+    .tg-chat-preview { font-size: 0.8rem; color: var(--tg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ==========================================================================
+       CHAT VIEW (RIGHT COLUMN)
+       ========================================================================== */
+    .tg-chat-view {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        background-color: var(--tg-bg);
+        height: 100%;
+        position: relative;
     }
 
-    /* کانتینر کارت‌ها در موبایل */
-    .ticket-container-mobile {
-        display: none; /* در حالت دسکتاپ مخفی */
+    .tg-chat-header {
+        background: var(--tg-sidebar);
+        padding: 0 20px;
+        border-bottom: 1px solid var(--tg-border);
+        display: flex;
+        align-items: center;
+        height: 57px;
+        flex-shrink: 0;
+    }
+    .tg-header-title { font-weight: 600; font-size: 0.95rem; }
+    .tg-header-status { font-size: 0.78rem; color: var(--tg-primary); }
+
+    .tg-history-box { 
+        flex: 1; 
+        padding: 20px; 
+        overflow-y: auto; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px;
+    }
+    
+    .tg-message-bubble {
+        max-width: 65%;
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .incoming .tg-message-bubble { background: var(--tg-sidebar); color: var(--tg-text); border-radius: 4px 12px 12px 12px; }
+    .outgoing .tg-message-bubble { background: #2b5278; color: var(--tg-text); border-radius: 12px 4px 12px 12px; }
+    .tg-msg-time { font-size: 0.68rem; color: var(--tg-muted); float: right; margin-top: 5px; margin-left: 10px; }
+
+    .tg-chat-footer { background: var(--tg-sidebar); padding: 10px 20px; border-top: 1px solid var(--tg-border); flex-shrink: 0; }
+    .tg-input-group { display: flex; gap: 12px; align-items: center; background: var(--tg-bg); border-radius: 22px; padding: 4px 16px; border: 1px solid var(--tg-border); }
+    .tg-chat-input { flex: 1; background: transparent; border: none; color: var(--tg-text); padding: 8px 0; font-size: 0.92rem; }
+    .tg-chat-input:focus { outline: none; }
+    .tg-btn-send { background: transparent; border: none; color: var(--tg-primary); font-size: 1.2rem; cursor: pointer; }
+
+    .tg-no-chat-selected { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--tg-muted); }
+    .tg-pill-notice { background: rgba(0,0,0,0.35); padding: 5px 14px; border-radius: 20px; font-size: 0.82rem; }
+
+    /* ==========================================================================
+       PREMIUM MODAL VIEW (FOR NEW CHATS) - تنظیم z-index بالاتر برای موبایل
+       ========================================================================== */
+    .tg-modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 15, 23, 0.8);
+        backdrop-filter: blur(6px);
+        z-index: 150; /* بالاتر از چت ویو قرار گرفت */
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: tgFadeIn 0.15s ease-out;
     }
 
-    @media (max-width: 767.98px) {
-        .desktop-view { display: none; }
-        .ticket-container-mobile { display: block; }
-        
-        .mobile-ticket-card {
-            background: white;
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 15px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            position: relative;
-            transition: transform 0.2s;
-        }
-
-        .mobile-ticket-card:active { transform: scale(0.98); }
-
-        .card-header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .ticket-id-tag {
-            font-size: 0.7rem;
-            background: #f1f5f9;
-            color: #64748b;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 700;
-        }
-
-        .ticket-subject-mobile {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #1e293b;
-            display: block;
-            margin-top: 5px;
-            line-height: 1.4;
-        }
-
-        .card-meta-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f8fafc;
-        }
-
-        .meta-item { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; color: #64748b; }
-        
-        /* دایره وضعیت اولویت */
-        .priority-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .footer-action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .status-badge-mobile {
-            padding: 5px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .status-open { background: #ecfdf5; color: #10b981; }
-        .status-closed { background: #f1f5f9; color: #64748b; }
-
-        .btn-view-mobile {
-            background: #f0f7ff;
-            color: var(--user-primary);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-decoration: none;
-        }
+    .tg-modal-card {
+        background: var(--tg-modal-bg);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        width: 420px;
+        max-width: 90%;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        overflow: hidden;
+        animation: tgScaleUp 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* دسکتاپ همچنان جدول بماند */
-    @media (min-width: 768px) {
-        .glass-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .badge-user { padding: 6px 14px; border-radius: 12px; font-weight: 600; font-size: 0.8rem; }
-        .badge-open { background: #e6fffa; color: #00c853; border: 1px solid #b2f5ea; }
-        .badge-closed { background: #f7fafc; color: #718096; border: 1px solid #edf2f7; }
+    .tg-modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .tg-modal-header h6 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+
+    .tg-modal-body { padding: 20px; }
+    .tg-form-group { margin-bottom: 16px; }
+    .tg-form-label { font-size: 0.75rem; font-weight: 700; color: var(--tg-primary); margin-bottom: 6px; display: block; text-transform: uppercase; }
+    
+    .tg-form-input {
+        width: 100%;
+        background: var(--tg-input-dark);
+        border: 1px solid var(--tg-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: var(--tg-text);
+        font-size: 0.92rem;
+    }
+    .tg-form-input:focus { outline: none; border-color: var(--tg-primary); }
+
+    /* رادیو کارت‌های تلگرام */
+    .tg-urgency-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+    .tg-urgency-node input { position: absolute; opacity: 0; }
+    .tg-urgency-lbl {
+        display: block;
+        text-align: center;
+        padding: 10px 5px;
+        background: var(--tg-input-dark);
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--tg-muted);
+        border: 1px solid transparent;
+    }
+    .tg-urgency-node input:checked + .tg-urgency-lbl {
+        background: var(--tg-active);
+        border-color: var(--tg-primary);
+        color: var(--tg-text);
     }
 
-    .btn-create {
-        background: #ffffff; color: var(--user-primary); font-weight: 700;
-        border: none; border-radius: 15px; padding: 12px 25px; transition: all 0.3s ease;
+    .tg-btn-submit {
+        background: var(--tg-primary);
+        color: white;
+        border: none;
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .tg-btn-submit:hover { background: var(--tg-primary-hover); }
+
+    @keyframes tgFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes tgScaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* ==========================================================================
+       RESPONSIVE ENGINE (MOBILE)
+       ========================================================================== */
+    @media (max-width: 991.98px) {
+        .tg-sidebar { width: 100%; }
+        .tg-chat-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; display: none; }
+        .tg-chat-view.mobile-active { display: flex !important; }
+        .tg-back-btn { display: inline-block !important; margin-right: 14px; color: var(--tg-primary); font-size: 1.3rem; cursor: pointer; }
     }
 </style>
 
-<div class="user-welcome-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-7 col-md-7 text-start mb-0">
-                <h1 class="fw-bold mb-1 fs-3">Support</h1>
-                <p class="opacity-75 small">Help is available 24/7</p>
-            </div>
-            <div class="col-5 col-md-5 text-end">
-                <a href="{% url 'accounts:create_ticket' %}" class="btn btn-create shadow-sm py-2 px-3 small">
-                    <i class="bi bi-plus-lg"></i> <span class="d-none d-md-inline">New Ticket</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="container mb-5 mt-2">
-    <div class="row g-2 mb-4 mt-2">
-        <div class="col-6">
-            <div class="p-3 bg-white rounded-4 border-0 shadow-sm text-center">
-                <div class="text-muted" style="font-size: 10px; font-weight: 800; text-uppercase: uppercase;">Active</div>
-                <div class="h4 fw-bold text-primary mb-0">{{ open_count }}</div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="p-3 bg-white rounded-4 border-0 shadow-sm text-center">
-                <div class="text-muted" style="font-size: 10px; font-weight: 800; text-uppercase: uppercase;">Total</div>
-                <div class="h4 fw-bold text-dark mb-0">{{ tickets.count }}</div>
-            </div>
-        </div>
-    </div>
+<div class="container py-2 px-md-3">
+    <div class="telegram-ui-container">
+        
+        <!-- مکان جدید پاپ‌آپ: برای دسترسی سراسری و بدون باگ در موبایل و دسکتاپ -->
+        <div class="tg-modal-overlay" id="newTicketModal">
+            <div class="tg-modal-card">
+                <div class="tg-modal-header">
+                    <h6>📝 Create New Conversation</h6>
+                    <button type="button" class="btn-close btn-close-white" onclick="closeNewTicketModal()"></button>
+                </div>
+                <div class="tg-modal-body">
+                    <form id="ajaxTicketForm" onsubmit="handleTicketSubmit(event)">
+                        {% csrf_token %}
+                        <div class="tg-form-group">
+                            <label class="tg-form-label">📌 Subject</label>
+                            <input type="text" id="modalSubject" name="subject" class="tg-form-input" placeholder="What is this about?" required>
+                        </div>
 
-    <div class="ticket-container-mobile">
-        <h6 class="fw-bold text-dark mb-3 px-1">Recent Conversations</h6>
-        {% for ticket in tickets %}
-        <div class="mobile-ticket-card">
-            <div class="card-header-flex">
-                <span class="ticket-id-tag">#{{ ticket.id }}</span>
-                <span class="text-muted" style="font-size: 0.7rem;">{{ ticket.updated_at|date:"M d, H:i" }}</span>
+                        <div class="tg-form-group">
+                            <label class="tg-form-label">⚡ Priority Level</label>
+                            <div class="tg-urgency-box">
+                                <div class="tg-urgency-node">
+                                    <input type="radio" name="urgency" value="low" id="l-btn">
+                                    <label for="l-btn" class="tg-urgency-lbl">Low</label>
+                                </div>
+                                <div class="tg-urgency-node">
+                                    <input type="radio" name="urgency" value="medium" id="m-btn" checked>
+                                    <label for="m-btn" class="tg-urgency-lbl">Medium</label>
+                                </div>
+                                <div class="tg-urgency-node">
+                                    <input type="radio" name="urgency" value="high" id="h-btn">
+                                    <label for="h-btn" class="tg-urgency-lbl">High</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tg-form-group">
+                            <label class="tg-form-label">💬 Message</label>
+                            <textarea id="modalMessage" name="message" rows="4" class="tg-form-input" placeholder="Describe your issue..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="tg-btn-submit" id="modalSubmitBtn">🚀 Start Conversation</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tg-sidebar" id="sidebarNode">
+            <div class="tg-sidebar-header">
+                <h5 class="mb-0 fw-bold d-flex align-items-center gap-2" style="font-size: 1rem;">
+                    💬 Support Hub
+                </h5>
+                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" onclick="openNewTicketModal()">
+                    ➕ New Chat
+                </button>
             </div>
             
-            <a href="{% url 'accounts:ticket_detail' ticket.id %}" class="text-decoration-none">
-                <span class="ticket-subject-mobile">{{ ticket.subject }}</span>
-            </a>
-
-            <div class="card-meta-row mt-2">
-                <div class="meta-item">
-                    <span class="priority-dot {% if ticket.urgency == 'high' %}bg-danger shadow-sm{% elif ticket.urgency == 'medium' %}bg-warning{% else %}bg-success{% endif %}"></span>
-                    <span>{{ ticket.get_urgency_display }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="bi bi-clock"></i>
-                    <span>Updated Recently</span>
+            <div class="tg-search-bar">
+                <div class="tg-search-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="tg-search-input" id="chatSearchInput" placeholder="Search chats..." onkeyup="filterChats()">
                 </div>
             </div>
 
-            <div class="footer-action-row">
-                <div class="status-badge-mobile {% if ticket.status == 'open' %}status-open{% else %}status-closed{% endif %}">
-                    <i class="bi {% if ticket.status == 'open' %}bi-patch-check-fill{% else %}bi-lock-fill{% endif %}"></i>
-                    {{ ticket.get_status_display }}
-                </div>
-                <a href="{% url 'accounts:ticket_detail' ticket.id %}" class="btn-view-mobile">
-                    Open Chat <i class="bi bi-chevron-right ms-1"></i>
-                </a>
+            <div class="tg-meta-counters">
+                <span>OPEN: {{ open_count }}</span>
+                <span>TOTAL: {{ tickets.count }}</span>
+            </div>
+
+            <div class="tg-chat-list">
+                {% for item in tickets %}
+                    <a href="?active_id={{ item.id }}" class="tg-chat-item {% if item.id|slugify == request.GET.active_id %}active{% endif %}">
+                        <div class="tg-avatar-wrapper">
+                            <div class="tg-avatar {% if item.urgency == 'high' %}high{% elif item.urgency == 'medium' %}medium{% endif %}">
+                                {{ item.subject|slice:":1"|upper }}
+                            </div>
+                            <span class="tg-status-dot {% if item.status == 'open' %}status-dot-open{% else %}status-dot-closed{% endif %}"></span>
+                        </div>
+                        <div class="tg-chat-info">
+                            <div class="tg-chat-meta">
+                                <span class="tg-chat-title">{{ item.subject }}</span>
+                                <span class="tg-chat-time">{{ item.updated_at|date:"H:i" }}</span>
+                            </div>
+                            <div class="tg-chat-preview">
+                                #ID-{{ item.id }} • {{ item.get_urgency_display }}
+                            </div>
+                        </div>
+                    </a>
+                {% empty %}
+                    <div class="text-center py-5 opacity-25">
+                        <p class="small">No conversations found📪</p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-        {% empty %}
-        <div class="text-center py-5 bg-white rounded-4 border">
-            <i class="bi bi-chat-left-dots text-muted fs-1 opacity-25"></i>
-            <p class="mt-3 text-muted">No support requests yet.</p>
-        </div>
-        {% endfor %}
-    </div>
 
-    <div class="desktop-view glass-card overflow-hidden">
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <thead class="bg-light">
-                    <tr style="height: 60px;">
-                        <th class="ps-4 text-muted small fw-bold">SUBJECT</th>
-                        <th class="text-center text-muted small fw-bold">PRIORITY</th>
-                        <th class="text-center text-muted small fw-bold">STATUS</th>
-                        <th class="text-muted small fw-bold">LAST UPDATE</th>
-                        <th class="pe-4 text-end text-muted small fw-bold">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ticket in tickets %}
-                    <tr>
-                        <td class="ps-4">
-                            <div class="fw-bold text-dark">{{ ticket.subject }}</div>
-                            <small class="text-muted">#ID-{{ ticket.id }}</small>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge {% if ticket.urgency == 'high' %}bg-danger{% elif ticket.urgency == 'medium' %}bg-warning text-dark{% else %}bg-info{% endif %} rounded-pill px-3 py-1">
-                                {{ ticket.urgency|upper }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge-user {% if ticket.status == 'open' %}badge-open{% else %}badge-closed{% endif %}">
-                                {{ ticket.get_status_display }}
-                            </span>
-                        </td>
-                        <td>{{ ticket.updated_at|date:"M d, Y H:i" }}</td>
-                        <td class="pe-4 text-end">
-                            <a href="{% url 'accounts:ticket_detail' ticket.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">View Details</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="tg-chat-view {% if request.GET.active_id %}mobile-active{% endif %}" id="chatViewNode">
+            {% if request.GET.active_id %}
+                {% for item in tickets %}
+                    {% if item.id|slugify == request.GET.active_id %}
+                        
+                        <div class="tg-chat-header">
+                            <div class="tg-back-btn" style="display: none;" onclick="closeMobileChat()">
+                                <i class="bi bi-arrow-left"></i>
+                            </div>
+                            <div class="tg-header-details">
+                                <div class="tg-header-title">📂 {{ item.subject }}</div>
+                                <div class="tg-header-status">
+                                    {% if item.status == 'open' %}
+                                        <span class="text-success">🟢 Specialist Online</span>
+                                    {% else %}
+                                        <span class="text-muted">🔒 Closed Ticket</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tg-history-box" id="historyBox">
+                            {% for msg in item.messages.all %}
+                                <div class="tg-message-row {% if msg.sender == request.user %}outgoing{% else %}incoming{% endif %}">
+                                    <div class="tg-message-bubble">
+                                        {% if msg.is_admin_reply %}
+                                            <small class="d-block text-warning fw-bold mb-1" style="font-size: 0.7rem;">🛡️ Support Reply</small>
+                                        {% endif %}
+                                        {{ msg.text }}
+                                        <span class="tg-msg-time">{{ msg.created_at|date:"H:i" }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="tg-chat-footer">
+                            {% if item.status == 'open' %}
+                                <form id="instantMessageForm" onsubmit="handleMessageSubmit(event, '{{ item.id }}')">
+                                    {% csrf_token %}
+                                    <div class="tg-input-group">
+                                        <input type="text" id="instantMessageInput" name="message" class="tg-chat-input" placeholder="Write a message..." required autocomplete="off">
+                                        <button type="submit" class="tg-btn-send">
+                                            <i class="bi bi-send-fill"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <div class="text-center text-muted small py-1">🔒 Conversation is archived.</div>
+                            {% endif %}
+                        </div>
+
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="tg-no-chat-selected">
+                    <span class="tg-pill-notice" style="color: black;">✈️ Select a chat or create a new one to begin</span>
+                </div>
+            {% endif %}
         </div>
+
     </div>
 </div>
+
+<script>
+    function scrollBoxToBottom() {
+        const box = document.getElementById('historyBox');
+        if (box) { box.scrollTop = box.scrollHeight; }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        scrollBoxToBottom();
+    });
+
+    function openNewTicketModal() {
+        document.getElementById('newTicketModal').style.display = 'flex';
+    }
+    
+    function closeNewTicketModal() {
+        document.getElementById('newTicketModal').style.display = 'none';
+    }
+
+    function closeMobileChat() {
+        document.getElementById('chatViewNode').classList.remove('mobile-active');
+        const url = new URL(window.location);
+        url.searchParams.delete('active_id');
+        window.history.pushState({}, '', url);
+    }
+
+    function handleTicketSubmit(event) {
+        event.preventDefault();
+        
+        const form = document.getElementById('ajaxTicketForm');
+        const formData = new FormData(form);
+        const submitBtn = document.getElementById('modalSubmitBtn');
+        
+        submitBtn.innerText = "Creating...";
+        submitBtn.disabled = true;
+
+        fetch("{% url 'accounts:create_ticket' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.redirect_url) {
+                window.location.href = data.redirect_url;
+            } else {
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error("Error creating ticket:", error);
+            submitBtn.innerText = "🚀 Start Conversation";
+            submitBtn.disabled = false;
+        });
+    }
+
+    function filterChats() {
+        let input = document.getElementById('chatSearchInput').value.toLowerCase();
+        let items = document.getElementsByClassName('tg-chat-item');
+        for (let i = 0; i < items.length; i++) {
+            let title = items[i].querySelector('.tg-chat-title').innerText.toLowerCase();
+            if (title.includes(input)) {
+                items[i].style.display = "flex";
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+    }
+
+    function handleMessageSubmit(event, ticketId) {
+        event.preventDefault(); 
+        
+        const inputField = document.getElementById('instantMessageInput');
+        const msgText = inputField.value.trim();
+        if (!msgText) return;
+
+        const form = document.getElementById('instantMessageForm');
+        const formData = new FormData(form);
+        
+        inputField.value = '';
+
+        const targetUrl = `/accounts/tickets/${ticketId}/`; 
+
+        fetch(targetUrl, {
+            method: "POST",
+            body: formData,
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(response => {
+            if (response.ok) {
+                const historyBox = document.getElementById('historyBox');
+                if (historyBox) {
+                    const now = new Date();
+                    const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    
+                    const msgRow = document.createElement('div');
+                    msgRow.className = 'tg-message-row outgoing';
+                    const safeText = msgText.replace(/\n/g, '<br>');
+                    
+                    msgRow.innerHTML = `
+                        <div class="tg-message-bubble">
+                            ${safeText}
+                            <span class="tg-msg-time">
+                                ${timeString} <i class="bi bi-check2-all"></i>
+                            </span>
+                        </div>
+                    `;
+                    historyBox.appendChild(msgRow);
+                    scrollBoxToBottom();
+                }
+            } else {
+                alert("خطا در ارسال پیام. لطفا اتصال خود را بررسی کنید.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>
 {% endblock %}

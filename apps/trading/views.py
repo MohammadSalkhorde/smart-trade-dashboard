@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from apps.accounts.models import User
+from apps.accounts.decorators import block_banned_users
 
 @csrf_exempt 
 @login_required
@@ -32,7 +33,7 @@ def update_pnl_ajax(request):
     return JsonResponse({'status': 'fail'}, status=400)
 
 
-
+@block_banned_users
 @login_required
 def copy_action(request, trader_id):
     """شروع کپی یا افزایش موجودی با حفظ دقیق درصد سود (PnL%) قبلی"""
