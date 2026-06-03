@@ -7,13 +7,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # امنیت: حتماً در محیط سرور یک کلید اختصاصی تعریف کن، در غیر این صورت از این دیفالت استفاده می‌شود
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-prod-smarter-copy-trade-key-2026')
 
-# غیرفعال کردن دیباگ برای امنیت و کارایی
-DEBUG = True
+# غیرفعال کردن دیباگ برای امنیت و کارایی در محیط سرور اصلی (Production)
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    'smartercopytrade.com', 
-    'www.smartercopytrade.com',
-    '154.29.76.222',  # آی‌پی جدید شما
+    'platformcopytrade.com', 
+    'www.platformcopytrade.com',
+    '38.18.229.97',  
     '127.0.0.1',
     'localhost',
 ]
@@ -88,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # --- Internationalization ---
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
-USE_I18N = False  # تغییر از True به False
+USE_I18N = False  # قفل روی زبان انگلیسی و غیرفعال‌سازی ترجمه خودکار
 USE_TZ = True
 
 # --- Static & Media Files ---
@@ -112,10 +112,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
 
-# دامنه‌های مورد اعتماد برای CSRF
+# دامنه‌های مورد اعتماد برای خطاهای CSRF در دامنه جدید
 CSRF_TRUSTED_ORIGINS = [
-    'https://smartercopytrade.com',
-    'https://www.smartercopytrade.com',
+    'https://platformcopytrade.com',
+    'https://www.platformcopytrade.com',
 ]
 
 SECURE_SSL_REDIRECT = False 
@@ -129,7 +129,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
 NOWPAYMENTS_API_KEY = "8346Z6K-3G84EJV-K5FN0B7-0RHC4AB"
-NOWPAYMENTS_IPN_SECRET = "1N0CVY6IuAhUVA6D5xRTU5pVBj7bv8QV"  # ← این را هم اضافه کن
+NOWPAYMENTS_IPN_SECRET = "1N0CVY6IuAhUVA6D5xRTU5pVBj7bv8QV"
 
 TRONGRID_API_KEY = "b3694730-c5b2-4639-8248-4e9b98596495"
 TRONGRID_API_URL = "https://api.trongrid.io"
