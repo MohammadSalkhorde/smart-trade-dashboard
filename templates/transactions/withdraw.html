@@ -8,19 +8,19 @@
                 
                 <div class="bg-decoration">
                     <svg width="300" height="300" viewBox="0 0 200 200" class="pos-top-right">
-                        <circle cx="120" cy="80" r="100" fill="rgba(16, 185, 129, 0.07)"/>
+                        <circle cx="120" cy="80" r="100" fill="rgba(16, 185, 129, 0.02)"/>
                     </svg>
                 </div>
 
                 <div class="card-body p-4 p-md-5 position-relative">
-                    <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
                         <div class="d-flex align-items-center">
                             <div class="icon-box-withdrawal shadow-success me-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                             </div>
                             <div>
-                                <h3 class="fw-bold mb-0 text-dark">Withdraw</h3>
-                                <p class="text-muted small mb-0">USDT Secure Exit</p>
+                                <h3 class="fw-bold mb-0 text-light">Withdraw</h3>
+                                <p class="text-ready small mb-0">> Secure Asset Export</p>
                             </div>
                         </div>
                         <div class="balance-display-card">
@@ -33,10 +33,10 @@
                         {% csrf_token %}
 
                         <div class="mb-4">
-                            <label class="form-label small fw-bold text-secondary text-uppercase tracking-widest d-block text-center mb-3">Select Network</label>
+                            <label class="form-label small fw-bold text-uppercase tracking-widest d-block text-center mb-3 text-ready">Select Network</label>
                             
                             <select name="network" id="id_network" style="display:none;">
-                                <option value="TRC20" {% if form.network.value == 'TRC20' %}selected{% endif %}>TRC20</option>
+                                <option value="TRC20" {% if form.network.value == 'TRC20' or not form.network.value %}selected{% endif %}>TRC20</option>
                                 <option value="BEP20" {% if form.network.value == 'BEP20' %}selected{% endif %}>BEP20</option>
                             </select>
 
@@ -46,7 +46,7 @@
                                         <div class="net-icon">
                                             <img src="https://cryptologos.cc/logos/tron-trx-logo.svg?v=024" alt="Tron">
                                         </div>
-                                        <span class="net-name">TRC20</span>
+                                        <span class="net-name d-block mt-2">TRC20</span>
                                         <div class="indicator"></div>
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@
                                         <div class="net-icon">
                                             <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bnb.png" alt="BSC Network">
                                         </div>
-                                        <span class="net-name">BEP20</span>
+                                        <span class="net-name d-block mt-2">BEP20</span>
                                         <div class="indicator"></div>
                                     </div>
                                 </div>
@@ -66,13 +66,13 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label small fw-bold text-secondary">WITHDRAWAL AMOUNT</label>
-                            <div class="glass-input-group shadow-sm {% if form.amount.errors %}is-invalid-group{% endif %}">
+                            <label class="form-label small fw-bold text-uppercase text-secondary">Withdrawal Amount</label>
+                            <div class="glass-input-group {% if form.amount.errors %}is-invalid-group{% endif %}">
                                 <div class="input-prefix text-success">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                                 </div>
                                 {{ form.amount }}
-                                <span class="input-suffix">USDT</span>
+                                <span class="input-suffix fw-bold text-success">USDT</span>
                             </div>
                             {% if form.amount.errors %}
                                 <div class="error-msg animate-shake"><i class="bi bi-exclamation-circle"></i> {{ form.amount.errors.0 }}</div>
@@ -80,9 +80,11 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label small fw-bold text-secondary">RECIPIENT <span id="dynamicNetLabel" class="text-success">{% if form.network.value %}{{ form.network.value }}{% else %}TRC20{% endif %}</span> ADDRESS</label>
-                            <div class="glass-input-group shadow-sm {% if form.tx_hash.errors %}is-invalid-group{% endif %}">
-                                <div class="input-prefix">
+                            <label class="form-label small fw-bold text-uppercase text-secondary">
+                                Recipient <span id="dynamicNetLabel" class="text-success">{% if form.network.value %}{{ form.network.value }}{% else %}TRC20{% endif %}</span> Address
+                            </label>
+                            <div class="glass-input-group {% if form.tx_hash.errors %}is-invalid-group{% endif %}">
+                                <div class="input-prefix text-secondary">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7"></path><path d="M16 19h6"></path><path d="M19 16l3 3-3 3"></path></svg>
                                 </div>
                                 {{ form.tx_hash }}
@@ -90,26 +92,26 @@
                             {% if form.tx_hash.errors %}
                                 <div class="error-msg animate-shake"><i class="bi bi-exclamation-circle-fill"></i> {{ form.tx_hash.errors.0 }}</div>
                             {% endif %}
-                            <p class="text-muted mt-2" style="font-size: 11px;">⚠️ Sending to a wrong network will result in permanent loss of funds.</p>
+                            <p class="text-muted mt-2 mb-0 text-warning-status">⚠️ Sending to a wrong network will result in permanent loss of funds.</p>
                         </div>
 
                         <div class="checkout-summary mb-4">
-                            <div class="summary-item">
-                                <span class="text-muted">Network Fee</span>
-                                <span class="fw-bold text-dark">3.00 USDT</span>
+                            <div class="summary-item d-flex justify-content-between align-items-center">
+                                <span class="text-secondary small fw-bold">Network Fee</span>
+                                <span class="fw-bold text-light">3.00 USDT</span>
                             </div>
-                            <div class="summary-total mt-2 pt-2 border-top">
-                                <span class="fw-bold">Net Receipt</span>
+                            <div class="summary-total mt-2 pt-2 border-terminal d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-ready small">Net Receipt</span>
                                 <div class="text-end">
                                     <span id="final-receive" class="total-amount">0.00</span>
-                                    <span class="total-unit">USDT</span>
+                                    <span class="total-unit fw-bold text-success small">USDT</span>
                                 </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-submit-draw">
-                            <span>CONFIRM WITHDRAWAL</span>
-                            <svg class="ms-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        <button type="submit" id="btnSubmitWithdraw" class="btn-submit-draw">
+                            <span class="btn-text">CONFIRM WITHDRAWAL</span>
+                            <svg class="ms-2 arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </button>
                     </form>
                 </div>
@@ -124,130 +126,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* تنظیمات تم و رنگ */
-    :root {
-        --withdraw-green: #10b981;
-        --withdraw-red: #ef4444;
-        --withdraw-dark: #064e3b;
-        --soft-bg: #f8fafc;
-        --border-color: #e2e8f0;
-    }
-
-    .animate-fade-in { animation: fadeInUp 0.6s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .animate-shake { animation: shake 0.4s ease-in-out; }
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
-    }
-
-    .withdraw-card { background: #ffffff; border-radius: 40px; z-index: 1; }
-    .bg-decoration { position: absolute; top: 0; right: 0; z-index: -1; }
-
-    .icon-box-withdrawal {
-        width: 60px; height: 60px;
-        background: linear-gradient(135deg, var(--withdraw-green), #059669);
-        border-radius: 20px; display: flex; align-items: center; justify-content: center;
-    }
-    .balance-display-card {
-        background: var(--soft-bg); padding: 10px 20px;
-        border-radius: 20px; border: 1px solid var(--border-color); text-align: right;
-    }
-    .balance-display-card .label { display: block; font-size: 10px; color: #64748b; font-weight: 800; text-uppercase: uppercase; }
-    .balance-display-card .amount { color: var(--withdraw-green); font-weight: 800; font-size: 1.2rem; }
-
-    .network-select-card {
-        background: #fff; border: 2.5px solid #f1f5f9; border-radius: 24px;
-        padding: 20px 10px; text-align: center; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
-    }
-    .network-select-card .net-icon img { width: 32px; height: 32px; transition: transform 0.3s; }
-    .network-select-card .net-name { font-weight: 800; font-size: 0.9rem; color: #475569; }
-    
-    .network-select-card.active {
-        border-color: var(--withdraw-green); background: #f0fdf4;
-    }
-    .network-select-card .indicator {
-        position: absolute; top: 12px; right: 12px; width: 8px; height: 8px;
-        background: #cbd5e1; border-radius: 50%;
-    }
-    .network-select-card.active .indicator { background: var(--withdraw-green); box-shadow: 0 0 10px var(--withdraw-green); }
-
-    .glass-input-group {
-        display: flex; align-items: center; background: #fff;
-        border: 2px solid var(--border-color); border-radius: 20px;
-        padding: 0 20px; transition: all 0.3s;
-    }
-    .glass-input-group:focus-within {
-        border-color: var(--withdraw-green); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.05);
-    }
-    .is-invalid-group {
-        border-color: var(--withdraw-red) !important;
-        background: #fffafb;
-    }
-    .glass-input-group input {
-        border: none !important; box-shadow: none !important;
-        padding: 16px 12px; font-weight: 700; flex-grow: 1; font-size: 1.05rem;
-        background: transparent;
-    }
-
-    .checkout-summary {
-        background: #f8fafc; border-radius: 24px; padding: 20px;
-        border: 1px dashed #cbd5e1;
-    }
-    .total-amount { font-weight: 800; font-size: 1.5rem; color: var(--withdraw-green); }
-
-    .btn-submit-draw {
-        width: 100%; padding: 18px; border-radius: 20px; border: none;
-        background: linear-gradient(135deg, var(--withdraw-green), #059669);
-        color: white; font-weight: 800; letter-spacing: 1px;
-        transition: all 0.3s; display: flex; align-items: center; justify-content: center;
-    }
-    .btn-submit-draw:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3); }
-
-    .error-msg { color: var(--withdraw-red); font-size: 0.8rem; margin-top: 8px; font-weight: 600; }
-    .history-link-modern {
-        color: #64748b; text-decoration: none; font-weight: 700; font-size: 0.9rem;
-        transition: all 0.3s; display: inline-flex; align-items: center;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const cards = document.querySelectorAll('.network-select-card');
-        const hiddenSelect = document.getElementById('id_network');
-        const netLabel = document.getElementById('dynamicNetLabel');
-        const amountInp = document.querySelector('input[name="amount"]');
-        const finalDisplay = document.getElementById('final-receive');
-
-        function updateFinalAmount() {
-            let val = parseFloat(amountInp.value);
-            if (!isNaN(val) && val > 3) {
-                finalDisplay.innerText = (val - 3).toFixed(2);
-            } else {
-                finalDisplay.innerText = '0.00';
-            }
-        }
-
-        cards.forEach(card => {
-            card.addEventListener('click', function() {
-                const selectedNet = this.getAttribute('data-net');
-                cards.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                hiddenSelect.value = selectedNet;
-                if(netLabel) netLabel.innerText = selectedNet;
-            });
-        });
-
-        if(amountInp) {
-            amountInp.addEventListener('input', updateFinalAmount);
-            // اجرا برای اولین بار اگر مقداری از قبل (بخاطر ارور) مانده بود
-            updateFinalAmount();
-        }
-    });
-</script>
 {% endblock %}

@@ -3291,3 +3291,444 @@ body {
     .net-ticker { font-size: 0.85rem; }
     .address-string { font-size: 0.78rem; }
 }
+
+:root {
+    --bg-matrix-dark: #0a0f12;
+    --card-cyber-bg: rgba(13, 22, 28, 0.85);
+    --glass-border-cyber: rgba(16, 185, 129, 0.2);
+    --text-ready: #10b981;
+    --text-ready-glow: rgba(16, 185, 129, 0.4);
+    --text-terminal-muted: #64748b;
+    --withdraw-red-alert: #f43f5e;
+    --input-focus-glow: rgba(16, 185, 129, 0.12);
+    --input-bg-dark: rgba(5, 10, 15, 0.6);
+}
+
+/* انیمیشن ورود نرم کارت */
+.animate-fade-in { 
+    animation: withdrawalEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+}
+@keyframes withdrawalEntrance { 
+    from { opacity: 0; transform: translateY(20px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.animate-shake { animation: alertShake 0.4s ease-in-out; }
+@keyframes alertShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ساختار اصلی کارت و هدر */
+.withdraw-card { 
+    background: var(--card-cyber-bg); 
+    border: 1px solid var(--glass-border-cyber) !important; 
+    border-radius: 24px; 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1; 
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+}
+.bg-decoration { position: absolute; top: 0; right: 0; z-index: -1; pointer-events: none; }
+.pos-top-right { position: absolute; top: -50px; right: -50px; }
+
+.icon-box-withdrawal {
+    width: 54px; height: 54px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
+}
+
+.balance-display-card {
+    background: rgba(0, 0, 0, 0.4); padding: 10px 18px;
+    border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: right;
+}
+.balance-display-card .label { display: block; font-size: 10px; color: var(--text-terminal-muted); font-weight: 700; text-uppercase: uppercase; letter-spacing: 0.5px; }
+.balance-display-card .amount { color: var(--text-ready); font-weight: 800; font-size: 1.25rem; font-family: 'Courier New', monospace; text-shadow: 0 0 10px var(--text-ready-glow); }
+
+/* گزینه‌های انتخاب بلاکچین */
+.network-select-card {
+    background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(255, 255, 255, 0.03); border-radius: 16px;
+    padding: 18px 12px; text-align: center; cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
+}
+.network-select-card:hover {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.02);
+}
+.network-select-card .net-icon img { width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+.network-select-card .net-name { font-weight: 700; font-size: 0.9rem; color: #94a3b8; font-family: 'Courier New', monospace; margin-top: 8px; }
+
+.network-select-card.active {
+    border-color: var(--text-ready); background: rgba(16, 185, 129, 0.06);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.05);
+}
+.network-select-card .indicator {
+    position: absolute; top: 12px; right: 12px; width: 8px; height: 8px;
+    background: #1e293b; border-radius: 50%; transition: all 0.2s;
+}
+.network-select-card.active .indicator { background: var(--text-ready); box-shadow: 0 0 10px var(--text-ready); }
+
+/* ==========================================================================
+   حل باگ فیلدهای ورودی (رفع سفیدی در فوکوس و اتوفیل)
+   ========================================================================== */
+.glass-input-group {
+    display: flex; align-items: center; background: var(--input-bg-dark);
+    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px;
+    padding: 0 16px; transition: all 0.25s ease-in-out;
+}
+
+/* تغییر رنگ بوردر گروه زمانی که کاربر داخل فیلد تایپ می‌کند */
+.glass-input-group:focus-within {
+    border-color: var(--text-ready) !important; 
+    box-shadow: 0 0 15px var(--input-focus-glow) !important;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.is-invalid-group {
+    border-color: var(--withdraw-red-alert) !important;
+    background: rgba(244, 63, 94, 0.03) !important;
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.1) !important;
+}
+
+/* استایل‌دهی مستقیم به اینپوت‌های تزریق شده توسط فرم جنگو */
+.glass-input-group input,
+.glass-input-group input:focus,
+.glass-input-group input:active {
+    border: none !important; 
+    box-shadow: none !important; 
+    outline: none !important;
+    padding: 16px 10px; 
+    font-weight: 600; 
+    flex-grow: 1; 
+    font-size: 1rem;
+    color: #f8fafc !important; /* رنگ متن همیشه روشن */
+    background: transparent !important; /* پس‌زمینه همیشه شفاف مایل به تاریک */
+    font-family: 'Courier New', monospace;
+    width: 100%;
+}
+
+/* رفع مشکل استایل مرورگرها موقع اتوفیل (پر شدن خودکار فرم) */
+.glass-input-group input:-webkit-autofill,
+.glass-input-group input:-webkit-autofill:hover, 
+.glass-input-group input:-webkit-autofill:focus, 
+.glass-input-group input:-webkit-autofill:active {
+    -webkit-text-fill-color: #f8fafc !important;
+    transition: background-color 5000s ease-in-out 0s; /* جلوگیری از تغییر رنگ پس‌زمینه به سفید */
+    box-shadow: inset 0 0 0 20px transparent !important;
+}
+
+/* تغییر رنگ متن کم‌رنگ پیش‌فرض (Placeholder) */
+.glass-input-group input::placeholder {
+    color: #475569 !important;
+    opacity: 1;
+}
+
+/* ========================================================================== */
+
+/* فاکتور و باکس خلاصه حساب */
+.checkout-summary {
+    background: rgba(0, 0, 0, 0.3); border-radius: 16px; padding: 16px;
+    border: 1px dashed rgba(16, 185, 129, 0.15);
+}
+.border-terminal { border-top: 1px dashed rgba(255, 255, 255, 0.08) !important; }
+.total-amount { font-weight: 800; font-size: 1.5rem; color: var(--text-ready); font-family: 'Courier New', monospace; text-shadow: 0 0 10px var(--text-ready-glow); }
+.text-warning-status { font-size: 11px; line-height: 1.4; color: #f59e0b; opacity: 0.8; }
+
+/* دکمه‌های با امضای هکری ترمینال */
+.btn-submit-draw {
+    width: 100%; padding: 16px; border-radius: 14px; border: 1px solid rgba(16, 185, 129, 0.4);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05));
+    color: #fff; font-weight: 700; letter-spacing: 1px;
+    transition: all 0.25s ease; display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+}
+.btn-submit-draw:hover { 
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.15));
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+    border-color: var(--text-ready);
+    transform: translateY(-2px);
+}
+.btn-submit-draw:active {
+    transform: translateY(0);
+}
+.btn-submit-draw:disabled {
+    background: rgba(255, 255, 255, 0.02) !important; color: var(--text-terminal-muted) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important; cursor: not-allowed; transform: none !important; box-shadow: none !important;
+}
+
+.error-msg { color: var(--withdraw-red-alert); font-size: 0.8rem; margin-top: 8px; font-weight: 600; text-shadow: 0 0 8px rgba(244, 63, 94, 0.2); }
+.history-link-modern {
+    color: var(--text-terminal-muted); text-decoration: none; font-weight: 600; font-size: 0.88rem; transition: color 0.2s; display: inline-flex; align-items: center;
+}
+.history-link-modern:hover { color: var(--text-ready); text-shadow: 0 0 8px var(--text-ready-glow); }
+
+
+:root {
+    --bg-matrix-dark: #0a0f12;
+    --card-cyber-bg: rgba(13, 22, 28, 0.85);
+    --glass-border-cyber: rgba(16, 185, 129, 0.2);
+    --text-ready: #10b981;
+    --text-ready-glow: rgba(16, 185, 129, 0.3);
+    --text-terminal-muted: #64748b;
+    --cyber-red: #f43f5e;
+    --cyber-warning: #f59e0b;
+}
+
+/* انیمیشن لود ملایم صفحه رسید */
+.animate-fade-in {
+    animation: receiptEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes receiptEntrance {
+    from { opacity: 0; transform: scale(0.97) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.font-mono { font-family: 'Courier New', monospace; }
+
+/* دکمه دایره‌ای بازگشت هکری */
+.btn-back-cyber {
+    width: 40px; height: 40px; background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-terminal-muted);
+    transition: all 0.2s; text-decoration: none;
+}
+.btn-back-cyber:hover {
+    color: var(--text-ready); border-color: var(--text-ready);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+}
+
+/* کارت اصلی رسید */
+.receipt-card {
+    background: var(--card-cyber-bg) !important;
+    border: 1px solid var(--glass-border-cyber) !important;
+    border-radius: 24px !important;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.4) !important;
+}
+
+/* هدرهای وضعیت واریز / برداشت */
+.receipt-header {
+    padding: 35px 20px; position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.header-deposit {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.1), transparent);
+}
+.header-withdraw {
+    background: linear-gradient(180deg, rgba(244, 63, 94, 0.08), transparent);
+}
+
+.receipt-header .small-title {
+    font-size: 0.8rem; text-uppercase: uppercase; letter-spacing: 1px; color: var(--text-terminal-muted); font-weight: 700;
+}
+.receipt-header .amount-display {
+    color: #ffffff; font-family: 'Courier New', monospace; text-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+/* استایل بج‌های وضعیت سایبرپنک */
+.status-badge-cyber {
+    padding: 6px 16px; border-radius: 50px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px; display: inline-block;
+}
+.status-approved { background: rgba(16, 185, 129, 0.15); color: var(--text-ready); border: 1px solid rgba(16, 185, 129, 0.3); }
+.status-pending { background: rgba(245, 158, 11, 0.15); color: var(--cyber-warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+.status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--cyber-red); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+/* برچسب‌ها و مقادیر متنی داخل رسید */
+.info-label { color: var(--text-terminal-muted); font-size: 0.82rem; font-weight: 700; text-uppercase: uppercase; margin-bottom: 4px; }
+.info-value { font-weight: 700; font-size: 1rem; }
+.badge-network-cyber {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8; font-size: 0.75rem; padding: 2px 8px; border-radius: 6px; font-family: monospace;
+}
+.border-bottom-cyber { border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important; }
+
+/* باکس شیشه‌ای تاریک هش هک‌ شده بدون باگ سفیدی */
+.hash-box-cyber {
+    background: rgba(0, 0, 0, 0.3); border: 1px dashed rgba(16, 185, 129, 0.25);
+    border-radius: 12px; padding: 14px; font-family: 'Courier New', monospace;
+    font-size: 0.85rem; color: var(--text-ready); word-break: break-all;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); text-shadow: 0 0 5px rgba(16, 185, 129, 0.2);
+}
+
+/* افکت دندانه‌دار و بریدگی بلیت در تم دارک */
+.divider-dashed {
+    border-top: 2px dashed rgba(255, 255, 255, 0.06); margin: 25px 0; position: relative;
+}
+.divider-dashed::before, .divider-dashed::after {
+    content: ''; position: absolute; top: -11px; width: 22px; height: 22px;
+    background: var(--bg-matrix-dark); border: 1px solid var(--glass-border-cyber); border-radius: 50%;
+}
+.divider-dashed::before { left: -42px; box-shadow: inset -5px 0 8px rgba(0,0,0,0.5); }
+.divider-dashed::after { right: -42px; box-shadow: inset 5px 0 8px rgba(0,0,0,0.5); }
+
+/* دکمه‌های عملیاتی آدرس و کپی */
+.btn-cyber-secondary {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e2e8f0; border-radius: 12px; padding: 10px 16px; font-weight: 600; font-size: 0.88rem;
+    transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+}
+.btn-cyber-secondary:hover {
+    background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.2); color: #fff;
+}
+.btn-cyber-secondary.copied {
+    background: rgba(16, 185, 129, 0.1) !important; border-color: var(--text-ready) !important; color: var(--text-ready) !important;
+}
+
+.btn-cyber-icon {
+    border-radius: 12px; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+    text-decoration: none; transition: all 0.2s;
+}
+.btn-trc { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; }
+.btn-trc:hover { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+
+.btn-bep { background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.btn-bep:hover { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #fff; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
+
+/* باکس متادیتا پایینی */
+.backend-meta-box {
+    background: rgba(0, 0, 0, 0.2); padding: 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.02);
+}
+.border-top-terminal { border-top: 1px dashed rgba(255, 255, 255, 0.06); }
+
+/* استایل‌ پرینت جهت جلوگیری از کثیف شدن فاکتور هنگام چاپ */
+@media print {
+    body { background: #fff !important; color: #000 !important; }
+    .receipt-card { background: #fff !important; border: 1px solid #000 !important; box-shadow: none !important; color: #000 !important; }
+    .hash-box-cyber { background: #fff !important; color: #000 !important; border: 1px dashed #000 !important; }
+    .btn-cyber-secondary, .btn-cyber-icon, .btn-submit-draw, .btn-back-cyber { display: none !important; }
+    .text-light { color: #000 !important; }
+}
+
+:root {
+    --card-cyber-bg: rgba(13, 22, 28, 0.85);
+    --glass-border-cyber: rgba(16, 185, 129, 0.18);
+    --text-ready: #10b981;
+    --text-terminal-muted: #64748b;
+    --cyber-red: #f43f5e;
+    --cyber-warning: #f59e0b;
+    --table-header-bg: rgba(6, 11, 15, 0.9);
+}
+
+.animate-fade-in { animation: historyEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes historyEntrance { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.font-mono { font-family: 'Courier New', monospace; }
+
+/* هدر وضعیت اتصال */
+.system-status-indicator {
+    background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.15);
+    padding: 5px 12px; border-radius: 6px; font-size: 0.7rem; color: var(--text-ready);
+    display: flex; align-items: center; gap: 6px; font-weight: 700;
+}
+.pulse-dot {
+    width: 6px; height: 6px; background: var(--text-ready); border-radius: 50%;
+    box-shadow: 0 0 8px var(--text-ready); animation: simplePulse 1.8s infinite ease-in-out;
+}
+@keyframes simplePulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* ساختار کارت */
+.history-card {
+    background: var(--card-cyber-bg) !important;
+    border: 1px solid var(--glass-border-cyber) !important;
+    border-radius: 18px !important;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;
+    overflow: hidden;
+}
+
+.cyber-table-container {
+    width: 100%;
+    /* حذف اسکرول با ملایم کردن ساختار داخلی */
+    overflow-x: hidden !important; 
+}
+
+.cyber-table {
+    width: 100%; table-layout: fixed; /* قفل کردن پهنای ستون‌ها برای عدم خروج از کادر */
+}
+
+/* پهنای ستون‌ها در دسکتاپ */
+.cyber-table th:nth-child(1) { width: 35%; }
+.cyber-table th:nth-child(2) { width: 20%; }
+.cyber-table th:nth-child(3) { width: 20%; }
+.cyber-table th:nth-child(4) { width: 25%; }
+
+.cyber-table th {
+    background: var(--table-header-bg) !important;
+    color: #94a3b8 !important; font-size: 0.75rem; font-weight: 700;
+    padding: 16px 20px !important; border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.cyber-table td {
+    padding: 16px 20px !important;
+    color: #e2e8f0; border-bottom: 1px solid rgba(255, 255, 255, 0.02) !important;
+}
+
+.row-link-cyber { cursor: pointer; }
+.row-link-cyber:hover { background: rgba(255, 255, 255, 0.015) !important; }
+
+/* افکت لبه‌های نوری تریگر */
+.row-deposit:hover td:first-child { box-shadow: inset 3px 0 0 var(--text-ready); }
+.row-withdraw:hover td:first-child { box-shadow: inset 3px 0 0 var(--cyber-red); }
+
+.icon-badge-table {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.badge-deposit-icon { background: rgba(16, 185, 129, 0.06); color: var(--text-ready); border: 1px solid rgba(16, 185, 129, 0.15); }
+.badge-withdraw-icon { background: rgba(244, 63, 94, 0.06); color: var(--cyber-red); border: 1px solid rgba(244, 63, 94, 0.15); }
+
+.row-deposit .op-type-text { color: var(--text-ready); }
+.row-withdraw .op-type-text { color: var(--cyber-red); }
+
+/* وضعیت‌های اتمام لجر */
+.badge-status-cyber {
+    padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; display: inline-block;
+}
+.status-completed { background: rgba(16, 185, 129, 0.08); color: var(--text-ready); border: 1px solid rgba(16, 185, 129, 0.15); }
+.status-pending { background: rgba(245, 158, 11, 0.08); color: var(--cyber-warning); border: 1px solid rgba(245, 158, 11, 0.15); }
+.status-rejected { background: rgba(244, 63, 94, 0.08); color: var(--cyber-red); border: 1px solid rgba(244, 63, 94, 0.15); }
+
+.mobile-time { font-size: 10px; margin-top: 2px; }
+.empty-state-box { border: 1px dashed rgba(255, 255, 255, 0.04); border-radius: 10px; background: rgba(0, 0, 0, 0.1); }
+
+/* ==========================================================================
+   ریسپانسیو فوق پیشرفته و حذف کامل اسکرول افقی روی دستگاه‌های زیر 768px
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    /* بازتنظیم عرض ستون‌های جدول در موبایل برای فیت شدن ۱۰۰٪ */
+    .cyber-table th:nth-child(1) { width: 50%; }
+    .cyber-table th:nth-child(2) { width: 25%; }
+    .cyber-table th:nth-child(3) { width: 25%; }
+    
+    .cyber-table th {
+        padding: 12px 10px !important;
+        font-size: 0.7rem;
+    }
+    
+    .cyber-table td {
+        padding: 12px 10px !important;
+    }
+
+    .op-type-text {
+        font-size: 0.8rem;
+    }
+    
+    .amount-cell {
+        font-size: 0.85rem;
+    }
+
+    .badge-status-cyber {
+        padding: 4px 6px;
+        font-size: 0.65rem;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .icon-badge-table {
+        width: 24px; height: 24px;
+        margin-right: 6px !important;
+    }
+}

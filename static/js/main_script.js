@@ -910,3 +910,101 @@ function copyAddress() {
         }, 2000);
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.network-select-card');
+    const hiddenSelect = document.getElementById('id_network');
+    const netLabel = document.getElementById('dynamicNetLabel');
+    const withdrawForm = document.getElementById('withdrawForm');
+    const submitBtn = document.getElementById('btnSubmitWithdraw');
+    const amountInp = document.querySelector('input[name="amount"]');
+
+    // تابع اصلی محاسبه‌گر آنلاین کارمزد کسر شده
+    function updateFinalAmount() {
+        if (!amountInp) return;
+        let val = parseFloat(amountInp.value);
+        const finalDisplay = document.getElementById('final-receive');
+        
+        if (!isNaN(val) && val > 3) {
+            finalDisplay.innerText = (val - 3).toFixed(2);
+        } else {
+            finalDisplay.innerText = '0.00';
+        }
+    }
+
+    // هندلر کلیک روی دکمه‌های شبکه کریپتویی
+    cards.forEach(card => {
+        card.addEventListener('click', function() {
+            const selectedNet = this.getAttribute('data-net');
+            cards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            
+            if (hiddenSelect) hiddenSelect.value = selectedNet;
+            if (netLabel) netLabel.innerText = selectedNet;
+        });
+    });
+
+    // مدیریت مبالغ در رویداد ورودی
+    if (amountInp) {
+        amountInp.addEventListener('input', updateFinalAmount);
+        updateFinalAmount(); // برای زمان‌هایی که فرم ارور خورده و مقدار از قبل ریخته شده
+    }
+
+    // لودینگ ارگونومیک دکمه در زمان ارسال جهت جلوگیری از دابل‌کامیت
+    if (withdrawForm && submitBtn) {
+        withdrawForm.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.querySelector('.btn-text').innerText = 'EXECUTING TRANSACTION...';
+            const svgIcon = submitBtn.querySelector('.arrow-icon');
+            if (svgIcon) svgIcon.style.display = 'none';
+        });
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnCopy = document.getElementById('btnCopyAddress');
+
+    if (btnCopy) {
+        btnCopy.addEventListener('click', function(e) {
+            const txHash = this.getAttribute('data-hash');
+            if (!txHash || txHash === 'None' || txHash === '') return;
+
+            navigator.clipboard.writeText(txHash).then(() => {
+                const copyTextSpan = this.querySelector('.copy-text');
+                const originalHtml = this.innerHTML;
+                
+                // تغییر وضعیت دکمه به حالت تایید شده
+                this.classList.add('copied');
+                if (copyTextSpan) copyTextSpan.innerText = 'Copied!';
+                this.innerHTML = `<svg class="me-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span class="copy-text">Copied!</span>`;
+
+                // بازگرداندن دکمه به حالت اول پس از ۲ ثانیه
+                setTimeout(() => {
+                    this.classList.remove('copied');
+                    this.innerHTML = originalHtml;
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // انتخاب تمام ردیف‌های دارای دیتای آدرس دیتایل
+    const rows = document.querySelectorAll('.row-link-cyber');
+    
+    rows.forEach(row => {
+        row.addEventListener('click', function(e) {
+            // دریافت آدرس مقصد از اتریبیوت دیتا
+            const targetUrl = this.getAttribute('data-url');
+            
+            if (targetUrl) {
+                // اعمال یک انیمیشن خروج سریع (اختیاری) و هدایت کاربر
+                this.style.opacity = '0.5';
+                window.location.href = targetUrl;
+            }
+        });
+    });
+});

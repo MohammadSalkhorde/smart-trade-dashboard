@@ -1,51 +1,90 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="card border-0 shadow-sm" style="border-radius: 20px;">
-    <div class="card-body p-4">
-        <h4 class="fw-bold mb-4">Transaction History</h4>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="border-0">Type</th>
-                        <th class="border-0">Amount</th>
-                        <th class="border-0">Status</th>
-                        <th class="border-0">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for tx in transactions %}
-                    <tr onclick="window.location='{% url 'transactions:transaction_detail' tx.id %}'" style="cursor: pointer;">                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="p-2 rounded-circle {% if tx.tx_type == 'deposit' %}bg-success-subtle{% else %}bg-danger-subtle{% endif %} me-2">
-                                    <i class="bi {% if tx.tx_type == 'deposit' %}bi-arrow-down-left text-success{% else %}bi-arrow-up-right text-danger{% endif %}"></i>
+<link rel="stylesheet" href="{% static 'css/history-cyber.css' %}">
+
+<div class="container py-4 px-3 animate-fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h4 class="fw-bold text-light tracking-widest mb-1 fs-5">> TRANSACTION_LOGS</h4>
+            <p class="text-terminal-muted small mb-0 font-mono" style="font-size: 11px;">// Secured ledger index</p>
+        </div>
+        <div class="system-status-indicator font-mono d-none d-sm-flex">
+            <span class="pulse-dot"></span> CONNECTED
+        </div>
+    </div>
+    
+    <div class="card border-0 history-card">
+        <div class="card-body p-0">
+            
+            <div class="cyber-table-container">
+                <table class="table align-middle cyber-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="tracking-wider">Operation</th>
+                            <th class="tracking-wider">Volume</th>
+                            <th class="tracking-wider">Status</th>
+                            <th class="tracking-wider text-end d-none d-md-table-cell">Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in transactions %}
+                        <tr class="row-link-cyber {% if tx.tx_type == 'deposit' %}row-deposit{% else %}row-withdraw{% endif %}" 
+                            data-url="{% url 'transactions:transaction_detail' tx.id %}">
+                            
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-badge-table {% if tx.tx_type == 'deposit' %}badge-deposit-icon{% else %}badge-withdraw-icon{% endif %} me-2 me-sm-3">
+                                        {% if tx.tx_type == 'deposit' %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                        {% else %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold font-mono text-uppercase tracking-wider op-type-text">
+                                            {{ tx.tx_type }}
+                                        </span>
+                                        <div class="text-terminal-muted font-mono mobile-time d-md-none">
+                                            {{ tx.created_at|date:"m-d H:i" }}
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="fw-bold {% if tx.tx_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
-                                    {{ tx.tx_type|upper }}
-                                </span>
-                            </div>
-                        </td>
-                        <td class="fw-bold">${{ tx.amount }}</td>
-                        <td>
-                            {% if tx.status == 'approved' %}
-                                <span class="badge bg-success-subtle text-success px-3">Completed</span>
-                            {% elif tx.status == 'pending' %}
-                                <span class="badge bg-warning-subtle text-warning px-3">Pending</span>
-                            {% else %}
-                                <span class="badge bg-danger-subtle text-danger px-3">Rejected</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-muted small">{{ tx.created_at|date:"Y-m-d H:i" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center py-5 text-muted">No transactions recorded yet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            </td>
+                            
+                            <td class="fw-bold text-light font-mono amount-cell">${{ tx.amount }}</td>
+                            
+                            <td>
+                                {% if tx.status == 'approved' %}
+                                    <span class="badge-status-cyber status-completed">Completed</span>
+                                {% elif tx.status == 'pending' %}
+                                    <span class="badge-status-cyber status-pending">Pending</span>
+                                {% else %}
+                                    <span class="badge-status-cyber status-rejected">Rejected</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="text-terminal-muted font-mono small text-end pe-4 d-none d-md-table-cell">
+                                {{ tx.created_at|date:"Y-m-d H:i" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-terminal-muted font-mono">
+                                <div class="empty-state-box py-4 mx-3">
+                                    <p class="mb-0 small">NO TRANSACTION RECORDED IN LEDGER.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 </div>
+
+<script src="{% static 'js/history.js' %}"></script>
 {% endblock %}
