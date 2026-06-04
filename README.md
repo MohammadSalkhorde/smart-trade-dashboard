@@ -14,27 +14,55 @@ This repository demonstrates advanced full-stack capabilities, showcasing secure
 
 ## 🎨 System Previews & Interface Showcase
 
-Here is a comprehensive breakdown of the core operational windows across the application interface:
+<div align="center">
 
-| Admin Vector Controls & Root Override | Premium Verified Trader Profile |
-|:---:|:---:|
-| <img src="assets/1.png" alt="Admin Control Grid" width="430"> | <img src="assets/2.png" alt="Verified Trader View" width="430"> |
-| *Admin sub-system enabling live graph manipulation via draggable vector handles.* | *The premium matrix view accessible by regular users featuring historical nodes.* |
+  <table style="width: 100%; max-width: 880px; border: 2px solid #0052ff; border-radius: 12px; overflow: hidden; box-shadow: 0 0 30px rgba(0, 82, 255, 0.25); background: #0b0f1e;">
+    <tr>
+      <td align="center" style="padding: 12px;">
+        <img src="assets/1.png" alt="Admin Core Intercept" width="100%" style="border-radius: 8px;">
+        <div style="margin-top: 10px; font-family: monospace; font-size: 0.8rem; color: #0052ff; letter-spacing: 2px; font-weight: bold;">
+          ⚡ [MASTER_NODE_ALPHA] // ROOT OVERRIDE INTERFACE
+        </div>
+      </td>
+    </tr>
+  </table>
 
-| User Performance Analytics | Allocation & Link Protocol Modal |
-|:---:|:---:|
-| <img src="assets/3.png" alt="Performance Analytics" width="430"> | <img src="assets/4.png" alt="Investment Protocol" width="430"> |
-| *Responsive, animated timeline evolution charts rendering real-time ROI tracking.* | *Secure execution engine calculating proportional investment bounds before link initialization.* |
+  <br>
 
-| Global Market Monitor | Financial Transaction History |
-|:---:|:---:|
-| <img src="assets/5.png" alt="Market Grid" width="430"> | <img src="assets/6.png" alt="Ledger Management" width="430"> |
-| *Dynamic asset tracking panel managing manual percentage offsets on spot market tickers.* | *Immutable transaction logs capturing all approved, pending, and rejected system deposits.* |
+  <table style="width: 100%; max-width: 880px; border-collapse: separate; border-spacing: 16px 12px;">
+    <tr>
+      <td width="50%" align="center" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="assets/2.png" alt="Data Node 02" width="100%" style="border-radius: 6px;">
+        <div style="margin-top: 8px; font-family: monospace; font-size: 0.7rem; color: #10b981; letter-spacing: 1px;">💾 NODE_02 // SUBSYSTEM_V2</div>
+      </td>
+      <td width="50%" align="center" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="assets/3.png" alt="Data Node 03" width="100%" style="border-radius: 6px;">
+        <div style="margin-top: 8px; font-family: monospace; font-size: 0.7rem; color: #10b981; letter-spacing: 1px;">💾 NODE_03 // SUBSYSTEM_V3</div>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="assets/4.png" alt="Data Node 04" width="100%" style="border-radius: 6px;">
+        <div style="margin-top: 8px; font-family: monospace; font-size: 0.7rem; color: #0052ff; letter-spacing: 1px;">💾 NODE_04 // SUBSYSTEM_V4</div>
+      </td>
+      <td width="50%" align="center" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="assets/5.png" alt="Data Node 05" width="100%" style="border-radius: 6px;">
+        <div style="margin-top: 8px; font-family: monospace; font-size: 0.7rem; color: #0052ff; letter-spacing: 1px;">💾 NODE_05 // SUBSYSTEM_V5</div>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="assets/6.png" alt="Data Node 06" width="100%" style="border-radius: 6px;">
+        <div style="margin-top: 8px; font-family: monospace; font-size: 0.7rem; color: #ff3b30; letter-spacing: 1px;">💾 NODE_06 // SUBSYSTEM_V6</div>
+      </td>
+      <td width="50%" align="center" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <img src="assets/7.png" alt="Data Node 07" width="100%" style="border-radius: 6px;">
+        <div style="margin-top: 8px; font-family: monospace; font-size: 0.7rem; color: #ff3b30; letter-spacing: 1px;">💾 NODE_07 // SUBSYSTEM_V7</div>
+      </td>
+    </tr>
+  </table>
 
-| Investor Portfolio Status | Cyberpunk System Settings Panel |
-|:---:|:---:|
-| <img src="assets/7.png" alt="User Ledger Status" width="430"> | <img src="assets/8.png" alt="Core Global Control" width="430"> |
-| *Real-time position trackers rendering active copier equity pools and cumulative PnL metrics.* | *Global parameter console managing corporate assets, system wallets, and minimum load capacities.* |
+</div>
 
 ---
 
