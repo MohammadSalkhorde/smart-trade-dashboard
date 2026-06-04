@@ -147,5 +147,82 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/main_script.js' %}"></script>
+
+    <!-- انتهای فایل base.html قبل از بسته شدن تگ body -->
+{% if is_banned %}
+<!-- پاپ‌آ‌پ سراسری خطای IP و کشور برای کاربران بن شده -->
+<div class="cyber-modal-overlay" id="globalBanModal" style="z-index: 999999 !important;">
+    <div class="cyber-modal-card">
+        <div class="modal-cyber-header">
+            <span class="text-danger fw-bold font-mono">[!!] ACCESS TERMINATED</span>
+        </div>
+        <div class="modal-cyber-body text-center py-4">
+            <div class="lock-icon-wrap mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h5 class="text-light fw-bold mb-2">RESTRICTED REGION DETECTION</h5>
+            <p class="text-muted small px-3">
+                Your current IP routing originates from a jurisdiction with regulatory framework limitations. Enterprise API bridges and trading modules are locked for your instance.
+            </p>
+            <div class="cyber-error-badge font-mono">
+                ERROR_CODE: 403_REGIONAL_COMPLIANCE_LOCK
+            </div>
+        </div>
+        <div class="modal-cyber-footer text-center">
+            <!-- این دکمه پاپ‌آپ را می‌بندد تا کاربر بتواند در سایت بچرخد -->
+            <button class="btn btn-premium-outline w-100" onclick="closeBanModal()">Acknowledge & Investigate</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* استایل‌های پاپ‌آپ شیشه‌ای */
+    .cyber-modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(4, 7, 12, 0.75); backdrop-filter: blur(6px);
+        display: flex; align-items: center; justify-content: center; 
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    /* کلاس فعال‌سازی نمایش مودال */
+    .cyber-modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .cyber-modal-card { background: #0f172a; border: 2px solid #f43f5e; border-radius: 20px; width: 90%; max-width: 450px; padding: 25px; box-shadow: 0 0 40px rgba(244, 63, 94, 0.25); }
+    .modal-cyber-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+    .cyber-error-badge { background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.2); color: #f43f5e; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: bold; margin-top: 15px; display: inline-block; }
+</style>
+
+<script>
+    const banModal = document.getElementById('globalBanModal');
+
+    // باز کردن مودال خطا
+    function openBanModal() {
+        banModal.classList.add('active');
+    }
+
+    // بستن مودال خطا برای گشت‌وگذار در سایت
+    function closeBanModal() {
+        banModal.classList.remove('active');
+    }
+
+    // مدیریت هوشمند کلیک‌ها روی عناصر عملیاتی سایت
+    document.addEventListener('click', function(e) {
+        // اگر کاربر در حال کلیک روی خود دکمه‌های داخل مودال خطا است، کاری نداشته باش
+        if (e.target.closest('#globalBanModal')) {
+            return;
+        }
+
+        // بررسی اینکه آیا کاربر روی یک دکمه، لینک، اینپوت یا فرم کلیک کرده است یا خیر
+        const interactiveElement = e.target.closest('button, a, input, select, textarea, [role="button"], [style*="cursor: pointer"]');
+        
+        if (interactiveElement) {
+            // جلوی فرستادن فرم یا باز شدن لینک اصلی را بگیر
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // مودال خطا را به کاربر نشان بده
+            openBanModal();
+        }
+    }, true); // فاز Capture برای مسدودسازی آنی و قبل از اسکریپت‌های دیگر صفحات
+</script>
+{% endif %}
 </body>
 </html>
