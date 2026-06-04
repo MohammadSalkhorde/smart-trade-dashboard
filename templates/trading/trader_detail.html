@@ -2,23 +2,24 @@
 {% load static %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2.2.3/dist/chartjs-plugin-dragdata.min.js"></script>
+
 <div id="trader-page-context" 
      data-is-staff="{{ user.is_staff|yesno:'true,false' }}"
-     data-is-manual="{{ trader.is_manual_mode|yesno:'true,false' }}"
      data-trader-id="{{ trader.id }}"
-     data-chart-data="{{ trader.chart_history_json|safe|default:'[0,0,0,0,0]' }}"
+     data-chart-data="{{ chart_data|safe|default:'[0,0,0,0,0,0,0]' }}"
      data-csrf="{{ csrf_token }}"
-     data-update-url="{% if user.is_staff %}{% url 'trading:update_chart' trader.id %}{% endif %}">
-</div>
+     data-update-url="{% if user.is_staff %}{% url 'trading:update_chart' trader.id %}{% endif %}"</div>
 
-<div class="container-fluid py-4 cyber-matrix-bg">
+<div class="container-fluid py-4 cyber-matrix-bg" style="padding-bottom: 100px !important;">
     
     <div class="d-flex align-items-center mb-4 px-2 position-relative">
         <a href="javascript:history.back()" class="btn-cyber-back text-decoration-none">
             <i class="bi bi-chevron-left"></i>
         </a>
         <h6 class="fw-bold mb-0 mx-auto text-silver tracking-cyber text-uppercase" style="font-size: 0.85rem; letter-spacing: 2px;">
-            Node Protocol {% if user.is_staff %}<span class="text-neon-red">[Admin-Root]</span>{% endif %}
+            Core Network Operational Node {% if user.is_staff %}<span class="text-neon-red">[Admin-Root]</span>{% endif %}
         </h6>
     </div>
 
@@ -36,8 +37,8 @@
         
         <h3 class="fw-bold text-white mb-1 tracking-tight">{{ trader.name }}</h3>
         <div class="d-inline-flex align-items-center gap-2 mt-2">
-            <span class="badge-cyber-soft text-blue uppercase tracking-widest text-xs px-3 py-1">Autonomous Strategy</span>
-            <span class="badge-cyber-soft text-warning text-xs px-3 py-1">Verified Node</span>
+            <span class="badge-cyber-soft text-blue uppercase tracking-widest text-xs px-3 py-1">Quantum Strategy</span>
+            <span class="badge-cyber-soft text-warning text-xs px-3 py-1">Verified Expert</span>
         </div>
     </div>
 
@@ -67,13 +68,20 @@
 
     <div class="px-2 mb-4">
         <div class="card quantum-feature-card p-4 position-relative overflow-hidden">
-            <div class="d-flex justify-content-between align-items-center mb-4 position-relative" style="z-index: 5;">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 position-relative" style="z-index: 5;">
                 <div>
-                    <h6 class="fw-bold text-white mb-1" style="font-size: 0.95rem;">Performance Curve</h6>
-                    <p class="text-dimmed small mb-0" style="font-size: 0.75rem;">30-Day strategic matrix evolution</p>
+                    <h6 class="fw-bold text-white mb-1" style="font-size: 0.95rem;">Performance Analytics</h6>
+                    <p class="text-dimmed small mb-0" style="font-size: 0.75rem;">Vector matrix timeline evolution</p>
                 </div>
+                
+                <div class="cyber-time-filters d-flex gap-1 bg-dark-soft p-1 rounded-3" style="border: 1px solid rgba(255,255,255,0.05);">
+                    <button class="btn btn-cyber-time" data-days="1">1D</button>
+                    <button class="btn btn-cyber-time" data-days="7">7D</button>
+                    <button class="btn btn-cyber-time active" data-days="30">30D</button>
+                </div>
+
                 {% if user.is_staff %}
-                    <button id="saveChart" class="btn btn-cyber-save px-4 py-1.5 small fw-bold">
+                    <button id="saveChart" class="btn btn-cyber-save px-3 py-1.5 small fw-bold">
                         <i class="bi bi-shield-lock-fill me-1"></i> Commit Matrix
                     </button>
                 {% endif %}
@@ -83,33 +91,16 @@
                 <div class="admin-intercept-panel small mb-3">
                     <div class="d-flex align-items-center gap-2">
                         <i class="bi bi-terminal text-warning"></i>
-                        <span><strong>Root Override:</strong> Drag green nodes directly on the canvas grid to adjust vector values.</span>
+                        <span><strong>Root Override:</strong> Drag nodes vertically. Base array will be preserved.</span>
                     </div>
                 </div>
-                <div class="chart-container">
+            {% endif %}
+
+            <div class="chart-wrapper-area" style="min-height: 260px; position: relative;">
+                <div class="chart-container" style="position: relative; height: 260px; width:100%">
                     <canvas id="traderChart"></canvas>
                 </div>
-            {% else %}
-                {% if trader.is_manual_mode %}
-                    <div class="chart-container">
-                        <canvas id="traderChart"></canvas>
-                    </div>
-                {% else %}
-                    <div class="real-chart-wrapper-premium position-relative">
-                        <div id="tradingview_live" style="height: 100%;"></div>
-                        <div class="chart-touch-shield"></div>
-                        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                        <script type="text/javascript">
-                            new TradingView.MediumWidget({
-                                "symbols": [["BINANCE:{% if trader.id|divisibleby:5 %}ADAUSDT{% elif trader.id|divisibleby:4 %}BNBUSDT{% elif trader.id|divisibleby:3 %}SOLUSDT{% elif trader.id|divisibleby:2 %}ETHUSDT{% else %}BTCUSDT{% endif %}|1M"]],
-                                "chartOnly": true, "width": "100%", "height": "100%", "locale": "en", "colorTheme": "dark",
-                                "gridLineColor": "rgba(240, 243, 250, 0)", "fontColor": "#787B86", "isTransparent": true,
-                                "autosize": true, "showFloatingTooltip": true, "container_id": "tradingview_live"
-                            });
-                        </script>
-                    </div>
-                {% endif %}
-            {% endif %}
+            </div>
         </div>
     </div>
 
@@ -152,10 +143,6 @@
                     <input type="number" name="amount" class="form-control cyber-input-node" placeholder="Min. 10.00" min="10" step="0.01" required>
                     <div class="input-glow-effect"></div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mt-2 px-1">
-                    <span class="text-dimmed" style="font-size: 0.7rem;">Available Instance Balance:</span>
-                    <span class="text-white fw-bold font-monospace" style="font-size: 0.75rem;">${{ user.balance|floatformat:2 }}</span>
-                </div>
             </div>
             
             <div class="row g-3">
@@ -169,4 +156,169 @@
         </form>
     </div>
 </div>
+
+<style>
+    .btn-cyber-time {
+        background: transparent; border: none; color: #64748b; font-size: 0.75rem;
+        font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: all 0.25s ease-in-out;
+    }
+    .btn-cyber-time:hover { color: #fff; background: rgba(255,255,255,0.03); }
+    .btn-cyber-time.active { background: #0052ff; color: #fff; box-shadow: 0 0 12px rgba(0,82,255,0.5); }
+    .bg-dark-soft { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); }
+</style>
+
+<script>
+    const contextEl = document.getElementById('trader-page-context');
+    const isStaff = contextEl.getAttribute('data-is-staff') === 'true';
+    
+    // لود آرایه اصلی از فیلد دیتابیس
+    let baseData = [];
+    try {
+        baseData = JSON.parse(contextEl.getAttribute('data-chart-data'));
+        if (!Array.isArray(baseData) || baseData.length === 0) {
+            baseData = [0, 10, 25, 45, 30, 75, 110];
+        }
+    } catch(e) {
+        baseData = [0, 10, 25, 45, 30, 75, 110];
+    }
+
+    // متغیر نگهدارنده حالت فیلتر فعلی (پیش‌فرض ۳۰ روزه)
+    let currentDaysFilter = 30;
+
+    function getSliceParameters(days) {
+        let count = baseData.length;
+        if (days === 1) count = Math.max(3, Math.round(baseData.length * 0.2));
+        else if (days === 7) count = Math.max(5, Math.round(baseData.length * 0.5));
+        return baseData.slice(-count);
+    }
+
+    function openCopyFormDetail() { document.getElementById('copyModalContainer').style.display = 'flex'; }
+    function closeCopyFormDetail() { document.getElementById('copyModalContainer').style.display = 'none'; }
+
+    let myChart = null;
+    if (document.getElementById('traderChart')) {
+        const canvasCtx = document.getElementById('traderChart').getContext('2d');
+        
+        const fillGlow = canvasCtx.createLinearGradient(0, 0, 0, 240);
+        fillGlow.addColorStop(0, 'rgba(0, 82, 255, 0.35)');
+        fillGlow.addColorStop(1, 'rgba(0, 82, 255, 0.0)');
+
+        let initialDataset = getSliceParameters(30);
+
+        myChart = new Chart(canvasCtx, {
+            type: 'line',
+            data: {
+                labels: initialDataset.map((_, i) => `Node-${initialDataset.length - i}`),
+                datasets: [{
+                    label: 'Matrix Return %',
+                    data: initialDataset,
+                    borderColor: '#0052ff',
+                    borderWidth: 3,
+                    pointBackgroundColor: isStaff ? '#10b981' : '#0052ff',
+                    pointBorderColor: '#fff',
+                    pointRadius: isStaff ? 7 : 4,
+                    pointHoverRadius: 9,
+                    fill: true,
+                    backgroundColor: fillGlow,
+                    tension: 0.28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 800, easing: 'easeOutCubic' },
+                plugins: {
+                    legend: { display: false },
+                    dragData: {
+                        round: 2,
+                        showTooltip: true,
+                        onDragStart: function() { 
+                            // اجازه درگ کردن فقط در حالت ادمین و فیلتر ۳۰ روزه (برای جلوگیری از تخریب دیتای مرجع)
+                            if (!isStaff) return false;
+                            if (currentDaysFilter !== 30) {
+                                alert("Chart updates are only available in 30D mode (Full Database View).");                                return false;
+                            }
+                        },
+                        onDrag: function(e, datasetIndex, index, value) {
+                            if (isStaff) document.getElementById('display-roi').innerText = value + '%';
+                        },
+                        onDragEnd: function(e, datasetIndex, index, value) {
+                            if (isStaff && currentDaysFilter === 30) {
+                                baseData[index] = value; // اعمال بدون واسطه در سورس چارت ادمین
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } },
+                    y: { 
+                        min: isStaff ? -100 : undefined,
+                        max: isStaff ? 1000 : undefined,
+                        grid: { color: 'rgba(255,255,255,0.02)' }, 
+                        ticks: { color: '#64748b', font: { size: 10 } } 
+                    }
+                }
+            }
+        });
+    }
+
+    // فیلترهای زمانی چارت بدون لوپ شدن یا از بین بردن دیتا
+    document.querySelectorAll('.btn-cyber-time').forEach(filterBtn => {
+        filterBtn.addEventListener('click', function() {
+            document.querySelectorAll('.btn-cyber-time').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            currentDaysFilter = parseInt(this.getAttribute('data-days'));
+            if (myChart) {
+                const viewDataset = getSliceParameters(currentDaysFilter);
+                myChart.data.datasets[0].data = viewDataset;
+                myChart.data.labels = viewDataset.map((_, i) => `Node-${viewDataset.length - i}`);
+                myChart.update();
+            }
+        });
+    });
+
+    // عملیات ارسال دیتای اصلاح شده ادمین با فرمت دقیق فیلد points به ویوی جنگو
+    if (isStaff && document.getElementById('saveChart') && myChart) {
+        document.getElementById('saveChart').addEventListener('click', function() {
+            if (currentDaysFilter !== 30) {
+               alert("Please switch the chart filter to 30D before committing changes."); 
+               return;
+            }
+
+            const updateUrl = contextEl.getAttribute('data-update-url');
+            const csrfToken = contextEl.getAttribute('data-csrf');
+            
+            const commitBtn = this;
+            commitBtn.disabled = true;
+            commitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Syncing...`;
+
+            fetch(updateUrl, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ points: baseData }) // ساختار کلید دقیقاً هماهنگ با دیتای بک‌اند
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert('Matrix synchronized successfully. Current ROI updated to: ' + data.new_roi + '%');
+                    document.getElementById('display-roi').innerText = data.new_roi + '%';
+                } else {
+                    alert('Sync failure: ' + (data.message || 'Server internal error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Network protocol link error.');
+            })
+            .finally(() => {
+                commitBtn.disabled = false;
+                commitBtn.innerHTML = `<i class="bi bi-shield-lock-fill me-1"></i> Commit Matrix`;
+            });
+        });
+    }
+</script>
 {% endblock %}

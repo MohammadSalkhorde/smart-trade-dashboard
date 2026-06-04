@@ -3,34 +3,52 @@
 {% block content %}
 <style>
     :root {
-        --tg-blue: #0052ff;
-        --tg-bg: #f0f2f5;
-        --input-bg: #f4f4f7;
+        --cyber-blue: #0052ff;
+        --cyber-neon: #38bdf8;
+        --cyber-danger: #ff3366;
+        --cyber-bg: #090d14;
+        --card-bg: #0f172a;
+        --input-bg: rgba(6, 9, 15, 0.7);
     }
 
-    body { background-color: var(--tg-bg); }
+    body { 
+        background-color: var(--cyber-bg); 
+    }
 
     .create-card {
-        border: none;
+        border: 2px solid rgba(56, 189, 248, 0.15);
         border-radius: 24px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-        background: #ffffff;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(56, 189, 248, 0.05);
+        background: var(--card-bg);
         overflow: hidden;
+        position: relative;
     }
 
-    /* هدر فرم */
+    /* هدر فرم سایبرنتیک با افکت ماتریکسی */
     .form-header {
-        background: linear-gradient(135deg, #0052ff 0%, #003db3 100%);
+        background: linear-gradient(135deg, #090f1d 0%, #030712 100%);
+        border-bottom: 2px solid rgba(56, 189, 248, 0.2);
         padding: 40px 20px;
         text-align: center;
         color: white;
+        position: relative;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 4px, 3px 100%;
+        opacity: 0.4;
     }
 
     .form-header i {
         font-size: 3rem;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         display: inline-block;
-        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));
+        color: var(--cyber-neon);
+        text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
     }
 
     .form-body { padding: 40px; }
@@ -39,34 +57,39 @@
     .custom-label {
         font-size: 0.8rem;
         font-weight: 700;
-        color: #707579;
+        color: #94a3b8;
         margin-bottom: 8px;
         display: block;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
     }
 
     .custom-input {
         background-color: var(--input-bg);
-        border: 2px solid transparent;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #fff !important;
         border-radius: 15px;
         padding: 15px;
         font-size: 1rem;
-        transition: all 0.2s ease;
+        transition: all 0.25s ease;
+    }
+
+    .custom-input::placeholder {
+        color: #475569;
     }
 
     .custom-input:focus {
-        background-color: #fff;
-        border-color: var(--tg-blue);
-        box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.1);
+        background-color: rgba(15, 23, 42, 0.9);
+        border-color: var(--cyber-neon);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
         outline: none;
     }
 
-    /* طراحی انتخاب‌گر اولویت (Radio Cards) */
+    /* طراحی نئونی انتخاب‌گر اولویت (Radio Cards) */
     .urgency-selector {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        gap: 12px;
         margin-bottom: 25px;
     }
 
@@ -81,25 +104,51 @@
     .urgency-label {
         display: block;
         text-align: center;
-        padding: 12px 5px;
+        padding: 14px 5px;
         background: var(--input-bg);
-        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
         cursor: pointer;
         font-weight: 600;
         font-size: 0.85rem;
-        color: #555;
-        transition: all 0.2s;
+        color: #94a3b8;
+        transition: all 0.2s ease;
+    }
+
+    .urgency-label:hover {
+        border-color: rgba(56, 189, 248, 0.3);
+        color: #fff;
+    }
+
+    /* تغییر وضعیت رنگ‌ها متناسب با خطر و اهمیت تیکت */
+    .urgency-item input#low:checked + .urgency-label {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: #10b981;
+        color: #10b981;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+
+    .urgency-item input#medium:checked + .urgency-label {
+        background: rgba(245, 158, 11, 0.15);
+        border-color: #f59e0b;
+        color: #f59e0b;
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+
+    .urgency-item input#high:checked + .urgency-label {
+        background: rgba(255, 51, 102, 0.15);
+        border-color: var(--cyber-danger);
+        color: var(--cyber-danger);
+        box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
     }
 
     .urgency-item input:checked + .urgency-label {
-        background: var(--tg-blue);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 82, 255, 0.3);
+        transform: translateY(-2px);
     }
 
+    /* دکمه سابمیت با تم لایتنینگ و نئون */
     .submit-btn {
-        background: var(--tg-blue);
+        background: linear-gradient(90deg, #0052ff 0%, #003db3 100%);
         border: none;
         border-radius: 15px;
         padding: 16px;
@@ -115,9 +164,21 @@
     }
 
     .submit-btn:hover {
-        background: #003db3;
+        background: linear-gradient(90deg, #1d68ff 0%, #004ce6 100%);
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 82, 255, 0.2);
+        box-shadow: 0 12px 25px rgba(0, 82, 255, 0.35);
+    }
+
+    .text-silver {
+        color: #cbd5e1;
+    }
+
+    .dimmed-link {
+        color: #64748b;
+        transition: color 0.2s;
+    }
+    .dimmed-link:hover {
+        color: var(--cyber-neon);
     }
 
     @media (max-width: 768px) {
@@ -132,9 +193,9 @@
         <div class="col-lg-6 col-md-8">
             <div class="create-card">
                 <div class="form-header">
-                    <i class="bi bi-chat-right-dots-fill"></i>
-                    <h3 class="fw-bold mb-1">New Conversation</h3>
-                    <p class="mb-0 opacity-75 small">Tell us what's on your mind</p>
+                    <i class="bi bi-cpu-fill"></i>
+                    <h3 class="fw-bold mb-1" style="font-family: 'Space Grotesk', sans-serif;">COM-LINK PROTOCOL</h3>
+                    <p class="mb-0 text-silver small opacity-75">Initialize a secure terminal communication log</p>
                 </div>
 
                 <div class="form-body">
@@ -142,42 +203,42 @@
                         {% csrf_token %}
                         
                         <div class="mb-4">
-                            <label class="custom-label">Subject</label>
+                            <label class="custom-label">Subject Node</label>
                             <input type="text" name="subject" class="form-control custom-input" 
-                                   placeholder="What is this about?" required>
+                                   placeholder="Specify core topic routing..." required>
                         </div>
 
                         <div class="mb-4">
-                            <label class="custom-label">Priority Level</label>
+                            <label class="custom-label">Urgency Priority</label>
                             <div class="urgency-selector">
                                 <div class="urgency-item">
                                     <input type="radio" name="urgency" value="low" id="low">
-                                    <label for="low" class="urgency-label">Low</label>
+                                    <label for="low" class="urgency-label">Low Risk</label>
                                 </div>
                                 <div class="urgency-item">
                                     <input type="radio" name="urgency" value="medium" id="medium" checked>
-                                    <label for="medium" class="urgency-label">Medium</label>
+                                    <label for="medium" class="urgency-label">Standard</label>
                                 </div>
                                 <div class="urgency-item">
                                     <input type="radio" name="urgency" value="high" id="high">
-                                    <label for="high" class="urgency-label">High</label>
+                                    <label for="high" class="urgency-label">Critical</label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-5">
-                            <label class="custom-label">Detailed Message</label>
+                            <label class="custom-label">Detailed Transmission Request</label>
                             <textarea name="message" rows="5" class="form-control custom-input" 
-                                      placeholder="Describe your issue here..." required></textarea>
+                                      placeholder="Describe your system issue or requirement here..." required></textarea>
                         </div>
 
                         <button type="submit" class="submit-btn shadow">
-                            Send Message <i class="bi bi-send-fill"></i>
+                            Transmit Message <i class="bi bi-lightning-fill text-white" style="font-size: 0.9rem;"></i>
                         </button>
 
                         <div class="text-center mt-4">
-                            <a href="{% url 'accounts:ticket_list' %}" class="text-muted text-decoration-none small">
-                                <i class="bi bi-arrow-left me-1"></i> Back to support history
+                            <a href="{% url 'accounts:ticket_list' %}" class="dimmed-link text-decoration-none small">
+                                <i class="bi bi-arrow-left me-1"></i> Return to mainframe logs
                             </a>
                         </div>
                     </form>
@@ -185,10 +246,10 @@
             </div>
             
             <div class="mt-4 text-center px-4">
-                <div class="d-flex align-items-center justify-content-center gap-3 text-muted" style="font-size: 0.75rem;">
-                    <span><i class="bi bi-shield-check me-1"></i> Secure</span>
+                <div class="d-flex align-items-center justify-content-center gap-3 text-muted" style="font-size: 0.75rem; opacity: 0.6;">
+                    <span><i class="bi bi-shield-lock-fill text-neon me-1"></i> Encrypted</span>
                     <span>•</span>
-                    <span><i class="bi bi-clock-history me-1"></i> ~2h response time</span>
+                    <span><i class="bi bi-terminal-fill me-1"></i> Response: ~2h MTTR</span>
                 </div>
             </div>
         </div>
@@ -196,11 +257,9 @@
 </div>
 
 <script>
-    // انیمیشن کوچک برای انتخاب رادیو باتن‌ها
     document.querySelectorAll('.urgency-label').forEach(label => {
         label.addEventListener('click', () => {
-            // ایجاد یک لرزش ملایم هنگام انتخاب (Haptic feedback feel)
-            if (window.navigator.vibrate) window.navigator.vibrate(10);
+            if (window.navigator.vibrate) window.navigator.vibrate(12);
         });
     });
 </script>
