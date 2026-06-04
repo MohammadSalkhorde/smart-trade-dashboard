@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-prod-smarter-copy-trade-key-2026')
 
 # غیرفعال کردن دیباگ برای امنیت و کارایی در محیط سرور اصلی (Production)
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'platformcopytrade.com', 

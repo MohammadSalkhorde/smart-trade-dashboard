@@ -4,6 +4,7 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/about-premium.css' %}">
 
+<!-- پاپ‌آ‌پ اختصاصی هشدار امنیتی سیستم (Modal) -->
 <div class="cyber-modal-overlay" id="securityModal">
     <div class="cyber-modal-card animate-shake">
         <div class="modal-cyber-header">
@@ -18,28 +19,6 @@
             <p class="text-muted small px-3">
                 Your current IP routing originates from a jurisdiction with regulatory framework limitations. Enterprise API bridges and Institutional High-Frequency copying modules are locked for your node.
             </p>
-            <div class="cyber-panel-error-code font-mono">
-                ERROR_CODE: 403_REGIONAL_COMPLIANCE_LOCK
-            </div>
-        </div>
-        <div class="modal-cyber-footer text-center">
-            <button class="btn btn-premium-outline w-100" onclick="closeCyberModal()">Acknowledge & Exit</button>
-<!-- پاپ‌آپ اختصاصی هشدار امنیتی سیستم (Modal) -->
-<div class="cyber-modal-overlay" id="securityModal">
-    <div class="cyber-modal-card animate-shake">
-        <div class="modal-cyber-header">
-            <span class="text-danger fw-bold font-mono">[!!] ACCESS TERMINATED</span>
-            <button class="close-modal-btn" onclick="closeCyberModal()">&times;</button>
-        </div>
-        <div class="modal-cyber-body text-center py-4">
-            <div class="lock-icon-wrap mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <h5 class="text-light fw-bold mb-2">RESTRICTED REGION DETECTION</h5>
-            <p class="text-muted small px-3">
-                Your current IP routing originates from a jurisdiction with regulatory framework limitations. Enterprise API bridges and Institutional High-Frequency copying modules are locked for your node.
-            </p>
-            <!-- اصلاح رنگ پس‌زمینه و متن کد خطا برای خوانایی ۱۰۰٪ -->
             <div class="cyber-error-badge font-mono">
                 ERROR_CODE: 403_REGIONAL_COMPLIANCE_LOCK
             </div>
@@ -47,8 +26,6 @@
         <div class="modal-cyber-footer text-center">
             <button class="btn btn-premium-outline w-100" onclick="closeCyberModal()">Acknowledge & Exit</button>
         </div>
-    </div>
-</div>        </div>
     </div>
 </div>
 
@@ -114,8 +91,9 @@
             <span class="text-gradient-premium font-mono fw-bold d-block mb-2">// LATENCY MONITORING</span>
             <h2 class="premium-section-title">Interconnected Proxy Routing</h2>
         </div>
-        <div class="row g-3">
-            <div class="col-md-4">
+        <!-- اضافه شدن justify-content-center برای وسط‌چین شدن دو باکس باقی‌مانده -->
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-5 col-lg-4">
                 <div class="node-status-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="font-mono text-light fw-bold">SG-SINGAPORE-01</span>
@@ -127,7 +105,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5 col-lg-4">
                 <div class="node-status-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="font-mono text-light fw-bold">UK-LONDON-CORE</span>
@@ -137,19 +115,6 @@
                         <div>PING: <span class="text-success">0.82ms</span></div>
                         <div>LOAD: <span class="text-muted">32% / 100%</span></div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4" onclick="triggerCyberModal()">
-                <div class="node-status-card proxy-locked-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="font-mono text-secondary fw-bold">US-NY-WALLSTREET</span>
-                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle font-mono small px-2">BLOCKED</span>
-                    </div>
-                    <div class="node-meta mt-3 font-mono text-danger">
-                        <div>GEO_IP: <span class="fw-bold">UNAUTHORIZED</span></div>
-                        <div>REASON: <span class="small">REGULATORY LAWS</span></div>
-                    </div>
-                    <div class="lock-overlay-text font-mono">CLICK TO RESOLVE PROXY</div>
                 </div>
             </div>
         </div>
@@ -163,8 +128,9 @@
             <p class="text-muted font-mono">// Three pillars governing every transaction routing on our grid.</p>
         </div>
         
-        <div class="row g-4">
-            <div class="col-xl-4 col-md-6">
+        <!-- اضافه شدن justify-content-center برای هماهنگی و وسط‌چین شدن دو کارت مانیفست -->
+        <div class="row g-4 justify-content-center">
+            <div class="col-xl-5 col-md-6">
                 <div class="premium-pillar-card">
                     <div class="pillar-icon-wrap">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
@@ -175,7 +141,7 @@
                     </p>
                 </div>
             </div>
-            <div class="col-xl-4 col-md-6">
+            <div class="col-xl-5 col-md-6">
                 <div class="premium-pillar-card">
                     <div class="pillar-icon-wrap">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -184,52 +150,6 @@
                     <p class="pillar-desc text-muted mb-0">
                         Absolute elimination of operational opacity. Performance validation occurs via immutable execution histories, guaranteeing zero manual reporting manipulation.
                     </p>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-12">
-                <div class="premium-pillar-card" onclick="triggerCyberModal()">
-                    <div class="pillar-icon-wrap border-danger-subtle text-danger">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                    </div>
-                    <h4 class="pillar-title font-mono text-danger">> INSTITUTIONAL CO-LOCATION [LOCKED]</h4>
-                    <p class="pillar-desc text-muted mb-0">
-                        Direct server matching with dark pools via sub-nanosecond physical fiber lines. <span class="text-danger fw-bold">Unavailable for public retail traders.</span> Click to request special corporate onboarding documentation.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="py-5 career-terminal-section">
-    <div class="container py-4">
-        <div class="career-inner-box">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6">
-                    <span class="badge badge-tech-premium mb-3">// JOIN THE QUANT SYNDICATE</span>
-                    <h2 class="premium-section-title mb-3">Remote Engineering & Mathematics Careers</h2>
-                    <p class="text-muted small">
-                        We are perpetually scouting for elite Rust/Python back-end engineers, data scientists, and risk architects. Our production core operates outside standard geographic boundaries.
-                    </p>
-                    <div class="mt-4 font-mono small text-terminal-muted">
-                        <div>> CURRENT REQ: <span class="text-warning">0 OPENINGS AVAILABLE</span></div>
-                        <div>> ACTIVE SYNC PROTOCOL: <span class="text-light">ENCRYPTED END-TO-END</span></div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="career-fake-form" onclick="triggerCyberModal()">
-                        <div class="mb-3">
-                            <label class="form-label font-mono small text-secondary">> SECURE_IDENTIFICATION_NAME</label>
-                            <input type="text" class="form-control career-input" placeholder="e.g. Developer #8812" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label font-mono small text-secondary">> DEFINE_CORE_EXPERTISE</label>
-                            <select class="form-select career-input" disabled>
-                                <option>High-Frequency Algorithm (Rust/C++)</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-premium-primary w-100 mt-2 font-mono" type="button">SUBMIT APPLICATION ARCHIVE</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -252,7 +172,6 @@
 </section>
 
 <style>
-    /* باکس اختصاصی نمایش کد خطای سیستم */
 .cyber-error-badge {
     background: rgba(244, 63, 94, 0.1) !important;
     border: 1px solid rgba(244, 63, 94, 0.2) !important;
@@ -266,6 +185,7 @@
     font-weight: bold;
 }
 </style>
+
 <script>
     function triggerCyberModal() {
         document.getElementById('securityModal').classList.add('active');
@@ -273,7 +193,6 @@
     function closeCyberModal() {
         document.getElementById('securityModal').classList.remove('active');
     }
-    // بستن با کلیک روی پس‌زمینه خارج از باکس
     document.getElementById('securityModal').addEventListener('click', function(e) {
         if(e.target === this) closeCyberModal();
     });
