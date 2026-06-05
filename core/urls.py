@@ -3,6 +3,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
+from django.shortcuts import render  
+
+def custom_404_view(request, exception):
+    return render(request, 'errors/404.html', status=404)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,3 +26,5 @@ from django.contrib import admin
 admin.site.site_header = "SmartTrade Management" 
 admin.site.site_title = "SmartTrade Admin Portal" 
 admin.site.index_title = "Welcome to the Trading Control Center" 
+
+handler404 = custom_404_view

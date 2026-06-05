@@ -203,18 +203,7 @@ def copy_trading_dashboard(request):
     return render(request, 'trading/copy_trading.html', {'traders': traders, 'pairs': pairs, 'page_title': 'Copy Trading'})
 
 def market_list(request):
-    pairs = TradingPair.objects.filter(is_active=True)
-    market_data = [] 
-    for pair in pairs:
-        data = CryptoPriceService.fetch_market_data(pair.symbol)
-        market_data.append({
-            'name': pair.display_name,
-            'symbol': pair.symbol,
-            'display_price': data['price'] if data['price'] > 0 else pair.real_price,
-            'manipulation': data['change'] if data['change'] != 0 else pair.manipulation_percent
-        })
-    return render(request, 'trading/market.html', {'market_data': market_data})
-
+    return redirect('trading:copy_list')
 def trader_detail(request, trader_id):
     trader = get_object_or_404(LeadTrader, id=trader_id)
     context = {
