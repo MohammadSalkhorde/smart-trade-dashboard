@@ -2,3 +2,4 @@ venv/
 db.sqlite3
 cf.exe
 *.sqlite3
+.env

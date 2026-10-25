@@ -1,13 +1,14 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  
 
 # --- Basic Config ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# امنیت: حتماً در محیط سرور یک کلید اختصاصی تعریف کن، در غیر این صورت از این دیفالت استفاده می‌شود
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-prod-smarter-copy-trade-key-2026')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-local-dev-key-change-me-in-production')
 
-# غیرفعال کردن دیباگ برای امنیت و کارایی در محیط سرور اصلی (Production)
 DEBUG = False
 
 ALLOWED_HOSTS = [
@@ -117,6 +118,7 @@ USE_X_FORWARDED_PORT = True
 CSRF_TRUSTED_ORIGINS = [
     'https://platformcopytrade.com',
     'https://www.platformcopytrade.com',
+    'https://smart-trade-demo.onrender.com', # اضافه شده برای رندر
 ]
 
 SECURE_SSL_REDIRECT = False 
@@ -129,10 +131,10 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
-NOWPAYMENTS_API_KEY = "8346Z6K-3G84EJV-K5FN0B7-0RHC4AB"
-NOWPAYMENTS_IPN_SECRET = "1N0CVY6IuAhUVA6D5xRTU5pVBj7bv8QV"
-
-TRONGRID_API_KEY = "b3694730-c5b2-4639-8248-4e9b98596495"
+# --- API Keys & Wallets (از محیط خوانده می‌شوند) ---
+NOWPAYMENTS_API_KEY = os.environ.get('NOWPAYMENTS_API_KEY', '')
+NOWPAYMENTS_IPN_SECRET = os.environ.get('NOWPAYMENTS_IPN_SECRET', '')
+TRONGRID_API_KEY = os.environ.get('TRONGRID_API_KEY', '')
 TRONGRID_API_URL = "https://api.trongrid.io"
-MASTER_WALLET_ADDRESS = "TVS8Yw3skeg4h1SvYQQfzwr6kkLFFeg3CX"
+MASTER_WALLET_ADDRESS = os.environ.get('MASTER_WALLET_ADDRESS', '')
 MIN_BALANCE_TO_SWEEP = 5
