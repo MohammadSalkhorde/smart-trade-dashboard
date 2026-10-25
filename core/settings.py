@@ -16,6 +16,7 @@ ALLOWED_HOSTS = [
     '38.18.229.97',  
     '127.0.0.1',
     'localhost',
+    '*',
 ]
 
 # --- Apps & Models ---
