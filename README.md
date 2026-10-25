@@ -1,5 +1,36 @@
 # 📈 Smart Trade Dashboard – Advanced Copy-Trading Architecture
 
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
+![Django](https://img.shields.io/badge/Django-6.0-success?logo=django)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?logo=javascript)
+![Chart.js](https://img.shields.io/badge/Charts-Chart.js-orange?logo=chartdotjs)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+<br>
+
+<a href="https://smart-trade-demo.onrender.com/" target="_blank">
+  <img src="https://img.shields.io/badge/🚀_LIVE_DEMO-CLICK_HERE_TO_VIEW-0052ff?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo" height="40">
+</a>
+
+<br>
+<br>
+
+**🔑 Demo Credentials:**
+| Email | Password |
+| :--- | :--- |
+| `demo@smarttrade.com` | `demo12345` |
+
+*(Note: The demo is hosted on a free tier and may take ~30 seconds to wake up on the first request.)*
+
+</div>
+
+---
+
+Smart Trade Dashboard is a enterprise-grade, high-performance copy-trading simulation platform architected with Python/Django and real-time client-side interactive rendering. Inspired by tier-1 crypto exchanges like **BingX** and **Bitget**, this ecosystem models advanced internal ledger management, real-time matrix analytics, risk vectoring, and algorithmic trader replication protocols.
+
+This repository demonstrates advanced full-stack capabilities, showcasing secure transaction structures, data concurrency handling, and sleek cyberpunk-themed data visualizations.
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
 ![Django](https://img.shields.io/badge/Django-6.0-success?logo=django)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?logo=javascript)
