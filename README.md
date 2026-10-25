@@ -128,7 +128,7 @@ smart-trade-dashboard/
 ### 1️⃣ Obtain Local Environment
 
 ```bash
-git clone [https://github.com/MohammadSalkhorde/smart-trade-dashboard.git](https://github.com/MohammadSalkhorde/smart-trade-dashboard.git)
+git clone https://github.com/MohammadSalkhorde/smart-trade-dashboard.git
 cd smart-trade-dashboard
 
 ```
