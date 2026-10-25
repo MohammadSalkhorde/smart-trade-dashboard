@@ -31,15 +31,6 @@
 Smart Trade Dashboard is a enterprise-grade, high-performance copy-trading simulation platform architected with Python/Django and real-time client-side interactive rendering. Inspired by tier-1 crypto exchanges like **BingX** and **Bitget**, this ecosystem models advanced internal ledger management, real-time matrix analytics, risk vectoring, and algorithmic trader replication protocols.
 
 This repository demonstrates advanced full-stack capabilities, showcasing secure transaction structures, data concurrency handling, and sleek cyberpunk-themed data visualizations.
-![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
-![Django](https://img.shields.io/badge/Django-6.0-success?logo=django)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?logo=javascript)
-![Chart.js](https://img.shields.io/badge/Charts-Chart.js-orange?logo=chartdotjs)
-![License](https://img.shields.io/badge/License-MIT-green)
-
-Smart Trade Dashboard is a enterprise-grade, high-performance copy-trading simulation platform architected with Python/Django and real-time client-side interactive rendering. Inspired by tier-1 crypto exchanges like **BingX** and **Bitget**, this ecosystem models advanced internal ledger management, real-time matrix analytics, risk vectoring, and algorithmic trader replication protocols.
-
-This repository demonstrates advanced full-stack capabilities, showcasing secure transaction structures, data concurrency handling, and sleek cyberpunk-themed data visualizations.
 
 ---
 
